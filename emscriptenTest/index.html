@@ -131,7 +131,7 @@
 
 				// Create the floor
 				{
-					floor = new THREE.Mesh( new THREE.CubeGeometry( 150, 2, 10 ), material_red );
+					floor = new THREE.Mesh( new THREE.CubeGeometry( 200, 1, 10 ), material_red );
 					//floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 50 ), material_red );
 					scene.add( floor );
 
@@ -146,7 +146,7 @@
 					// fixDef.shape.SetAsBox( 50, .1 ); // "50" = half width of the floor, ".1" = half height
 					let shape2 = new BOX2D.PolygonShape();
 					fixDef.SetShape(shape2);
-					shape2.SetAsBox( 50, 1 ); // "25" = half width of the ramp, "1" = half height
+					shape2.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
 					//bodyDef.userData = floor; // Keep a reference to `floor`
 					//world.CreateBody( bodyDef ).CreateFixture( fixDef ); // Add this physics body to the world
 					//let floorRB = world.CreateBody( bodyDef );
@@ -175,7 +175,7 @@
 				scene.add( ball );
 				bodyDef.type = BOX2D.BodyType.b2_dynamicBody; // balls can move
 
-				let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 50);
+				let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 80);
 				bodyDef.position = ballPos;
 				// bodyDef.position.SetY(50);
 				// bodyDef.position.SetX(Math.random() * 40 - 20); // Random positon between -20 and 20
@@ -266,8 +266,8 @@
 				light2.position.set( 0, - 1, 0 );
 				scene.add( light2 );
 
-				camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.set( -10, 30, -500 );
+				camera = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 1, 3000 );
+				camera.position.set( -10, 30, -2500 );
 				camera.lookAt( scene.position ); // Look at the center of the scene
 
 				renderer = new THREE.WebGLRenderer();
@@ -318,7 +318,7 @@
 
 			}
 
-			setInterval( addBall, 100 );
+			setInterval( addBall, 10 );
 
 		</script>
 
