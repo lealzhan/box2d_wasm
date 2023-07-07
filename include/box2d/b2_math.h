@@ -125,6 +125,20 @@ struct B2_API b2Vec2
 		return b2Vec2(-y, x);
 	}
 
+	float GetX() {
+		return this->x;
+	}
+	void SetX(float in) {
+		this->x = in;
+	}
+
+	float GetY() {
+		return this->y;
+	}
+	void SetY(float in) {
+		this->y = in;
+	}
+	
 	float x, y;
 };
 

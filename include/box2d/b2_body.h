@@ -373,7 +373,7 @@ public:
 
 	/// Get the next body in the world's body list.
 	b2Body* GetNext();
-	const b2Body* GetNext() const;
+	//const b2Body* GetNext() const;
 
 	/// Get the user data pointer that was provided in the body definition.
 	b2BodyUserData& GetUserData();
@@ -381,7 +381,7 @@ public:
 
 	/// Get the parent world of this body.
 	b2World* GetWorld();
-	const b2World* GetWorld() const;
+	// const b2World* GetWorld() const;
 
 	/// Dump this body to a file
 	void Dump();
@@ -725,10 +725,10 @@ inline b2Body* b2Body::GetNext()
 	return m_next;
 }
 
-inline const b2Body* b2Body::GetNext() const
-{
-	return m_next;
-}
+// inline const b2Body* b2Body::GetNext() const
+// {
+// 	return m_next;
+// }
 
 inline b2BodyUserData& b2Body::GetUserData()
 {
@@ -877,9 +877,9 @@ inline b2World* b2Body::GetWorld()
 	return m_world;
 }
 
-inline const b2World* b2Body::GetWorld() const
-{
-	return m_world;
-}
+// inline const b2World* b2Body::GetWorld() const
+// {
+// 	return m_world;
+// }
 
 #endif
