@@ -9,7 +9,7 @@
 		<script src="box2d.Debug.js"></script>
 
 		<script src="three.min.js"></script>
-
+		<script src="stats.min.js"></script>
 	</head>
 	<body>
 		<div id="container"></div>
@@ -36,6 +36,7 @@
 		<script type="module">
 
 			let container;
+			var stats;
 
 			let camera, scene, renderer;
 			let time_last_run = 0;
@@ -171,7 +172,8 @@
 					shape.SetRadius( 4 );
 				}
 				fixDef.SetShape(shape);
-				
+				shape = null;
+
 				scene.add( ball );
 				bodyDef.type = BOX2D.BodyType.b2_dynamicBody; // balls can move
 
@@ -195,6 +197,7 @@
 				//ballRB.userData = ball;
 				b2MapingThree[ballRB.$$.ptr] = ball;
 				ballRB.CreateFixture( fixDef ); // Add this physics body to the world
+				ballPos = null;
 			}
 			
 			function updateBox2d() {
@@ -231,6 +234,14 @@
 						// GetAngle() function returns the rotation in radians
 						mesh.rotation.z = b2RB.GetAngle();
 						bodyList = b2RB.GetNext();
+
+						//free object not visible
+						if(mesh.position.y < -80) {
+							scene.remove(mesh);
+							mesh = null;
+							world.DestroyBody(b2RB);
+							delete b2MapingThree[b2RB.$$.ptr];
+						}
 					}
 				}
 				
@@ -254,6 +265,10 @@
 			}
 
 			function init() {
+				// performance monitor
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
+
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x050505 );
 				scene.fog = new THREE.Fog( 0x050505, 2000, 3500 );
@@ -315,10 +330,10 @@
 			function render() {
 				initBox2d();
 				renderer.render( scene, camera );
-
+				stats.update();
 			}
 
-			setInterval( addBall, 10 );
+			setInterval( addBall, 0.1 );
 
 		</script>
 
