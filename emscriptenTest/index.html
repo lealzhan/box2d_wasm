@@ -5,11 +5,12 @@
 		<title>three.js webgl - buffergeometry</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<!-- <script src="box2d.Release.js"></script> -->
-		<script src="box2d.Debug.js"></script>
+		<script src="box2d.Release.js"></script>
+		<!-- <script src="box2d.Debug.js"></script> -->
 
 		<script src="three.min.js"></script>
 		<script src="stats.min.js"></script>
+		<script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
 	</head>
 	<body>
 		<div id="container"></div>
@@ -17,13 +18,17 @@
 
 		<!-- Import maps polyfill -->
 		<!-- Remove this when import maps will be widely supported -->
-		<script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
-
+		<!-- <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script> -->
 		<script>
-			let loaded = false;
+			// 初始化
+			var vConsole = new VConsole();
+			console.log('Hello world');
+		  </script>
+		<script>
+			let box2dWASMloaded = false;
 			BOX2D({
 				onRuntimeInitialized() {
-				loaded = true
+				box2dWASMloaded = true
 				console.log('BOX2D loaded')
 				},
 			}).then((a) => {
@@ -37,15 +42,16 @@
 
 			let container;
 			var stats;
-
+			let inited = false;
 			let camera, scene, renderer;
 			let time_last_run = 0;
 			let mesh;
 			let b2MapingThree = {};
 			var ramp_0, ramp_1, floor, ramp_geometry, material_red, material_green, ball_geometry, ball_material, large_ball_geometry, large_ball_material;
+			let RBCount, RBActiveCount = 0;
 
 			//box2d test
-			let inited = false;
+			let box2dInited = false;
 			let world;
 			let bodyDef; // `bodyDef` will describe the type of bodies we're creating
 			// Create a fixture definition
@@ -61,8 +67,8 @@
 			updateBox2d();
 
 			function initBox2d() {
-				if(!loaded || inited) return;
-				inited = true;
+				if(!box2dWASMloaded || box2dInited) return;
+				box2dInited = true;
 
 				//box2d test
 				//Create the physics world
@@ -81,23 +87,23 @@
 				fixDef.restitution = 0.3;
 
 				// position the ramp 0
-				if(0)
+				if(1)
 				{
 					ramp_0 = new THREE.Mesh( ramp_geometry, material_red );
 					scene.add( ramp_0 );
 
-					let rampPos = new BOX2D.Vec2(-20, 25);
+					let rampPos = new BOX2D.Vec2(-200, 0);
 					bodyDef.position = rampPos;
 					// bodyDef.position.SetX(-20); //https://github.com/emscripten-core/emscripten/issues/17573
 					// bodyDef.position.SetY(25); 
 					ramp_0.position.x = rampPos.GetX();
 					ramp_0.position.y = rampPos.GetY();
-					bodyDef.angle = ramp_0.rotation.z = -Math.PI / 28;
+					bodyDef.angle = ramp_0.rotation.z = -Math.PI / 2;
 					//fixDef.shape = new BOX2D.PolygonShape();
 					//fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
 					let shape0 = new BOX2D.PolygonShape();
 					fixDef.SetShape(shape0);
-					shape0.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
+					shape0.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
 					//bodyDef.userData = ramp_0; // Keep a reference to `ramp_1`
 					let ramp0RB = world.CreateBody( bodyDef );
 					//ramp0RB.userData = ramp_0;
@@ -106,37 +112,37 @@
 				}
 
 				// position the ramp 1
-				if(0)
+				if(1)
 				{
 					ramp_1 = new THREE.Mesh( ramp_geometry, material_red );
     				scene.add( ramp_1 );
 
-					let rampPos = new BOX2D.Vec2(25, 5);
+					let rampPos = new BOX2D.Vec2(200, 0);
 					bodyDef.position = rampPos;
 					// bodyDef.position.SetX(25);
 					// bodyDef.position.SetY(5);
 					ramp_1.position.x = rampPos.GetX();
 					ramp_1.position.y = rampPos.GetY();
-					bodyDef.angle = ramp_1.rotation.z = Math.PI / 16;
+					bodyDef.angle = ramp_1.rotation.z = Math.PI / 2;
 					// fixDef.shape = new b2PolygonShape;
 					// fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
 					let shape1 = new BOX2D.PolygonShape();
 					fixDef.SetShape(shape1);
-					shape1.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
+					shape1.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
 					//bodyDef.userData = ramp_1; // Keep a reference to `ramp_2`
 					let ramp1RB = world.CreateBody( bodyDef );
 					//ramp1RB.userData = ramp_1;
-					b2MapingThree[ramp1RB.$$.ptr] = ramp_0;
+					b2MapingThree[ramp1RB.$$.ptr] = ramp_1;
 					ramp1RB.CreateFixture( fixDef ); // Add this physics body to the world
 				}
 
 				// Create the floor
 				{
-					floor = new THREE.Mesh( new THREE.CubeGeometry( 200, 1, 10 ), material_red );
+					floor = new THREE.Mesh( new THREE.CubeGeometry( 400, 1, 10 ), material_red );
 					//floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 50 ), material_red );
 					scene.add( floor );
 
-					let floorPos = new BOX2D.Vec2(0, -45);
+					let floorPos = new BOX2D.Vec2(0, -100);
 					bodyDef.position = floorPos;
 					// bodyDef.position.SetX(0);
 					// bodyDef.position.SetY(-45);
@@ -147,7 +153,7 @@
 					// fixDef.shape.SetAsBox( 50, .1 ); // "50" = half width of the floor, ".1" = half height
 					let shape2 = new BOX2D.PolygonShape();
 					fixDef.SetShape(shape2);
-					shape2.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
+					shape2.SetAsBox( 200, 1 ); // "25" = half width of the ramp, "1" = half height
 					//bodyDef.userData = floor; // Keep a reference to `floor`
 					//world.CreateBody( bodyDef ).CreateFixture( fixDef ); // Add this physics body to the world
 					//let floorRB = world.CreateBody( bodyDef );
@@ -160,11 +166,12 @@
 			}
 
 			function addBall() {
-				if(!inited) return;
+				if(!box2dInited) return;
+				if(RBCount > 2000) return;
 				var ball;
 								
 				let shape = new BOX2D.CircleShape();
-				if ( Math.random() >= .25 ) {
+				if ( Math.random() >= .05 ) {
 					ball = new THREE.Mesh( ball_geometry, ball_material );
 					shape.SetRadius( 3 );
 				} else {
@@ -177,7 +184,7 @@
 				scene.add( ball );
 				bodyDef.type = BOX2D.BodyType.b2_dynamicBody; // balls can move
 
-				let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 80);
+				let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 200);
 				bodyDef.position = ballPos;
 				// bodyDef.position.SetY(50);
 				// bodyDef.position.SetX(Math.random() * 40 - 20); // Random positon between -20 and 20
@@ -201,18 +208,18 @@
 			}
 			
 			function updateBox2d() {
-				if(!inited) return;
+				if(!box2dInited) return;
 
 				//addBall();
 
-				var delta, now = (new Date()).getTime();
-    
-				if ( time_last_run ) {
-					delta = ( now - time_last_run ) / 1000;
-				} else {
-					delta = 1 / 60;
-				}
-				time_last_run = now; 
+				// var delta, now = (new Date()).getTime();
+				var delta = 1 / 60;
+				// if ( time_last_run ) {
+				// 	delta = ( now - time_last_run ) / 1000;
+				// } else {
+				// 	delta = 1 / 60;
+				// }
+				// time_last_run = now; 
 				
 				world.Step(
 					delta * 2, // double the speed of the simulation
@@ -222,7 +229,10 @@
 
 				// Update the scene objects
 				let bodyList = world.GetBodyList();
+				RBCount = 0;
+				RBActiveCount = 0;
 				while(bodyList) {
+					RBCount++;
 					let b2RB = bodyList;
 					let mesh = b2MapingThree[b2RB.$$.ptr];
 					if ( b2RB && mesh ) {
@@ -236,16 +246,22 @@
 						bodyList = b2RB.GetNext();
 
 						//free object not visible
-						if(mesh.position.y < -80) {
+						if(mesh.position.y < -100) {
 							scene.remove(mesh);
 							mesh = null;
 							world.DestroyBody(b2RB);
 							delete b2MapingThree[b2RB.$$.ptr];
 						}
+						if(b2RB.IsAwake()){
+							RBActiveCount++;
+						}
+					}
+					else{
+						console.log("b2RB not valid", b2RB);
 					}
 				}
 				
-
+				console.log("rigid body count = , active = ", RBCount, RBActiveCount);
 				//var object = world.GetBody(i), mesh, position;
 				// while ( object ) {
 				// 	mesh = object.GetUserData();
@@ -265,13 +281,15 @@
 			}
 
 			function init() {
+				if(inited) return;
+				inited = true;
 				// performance monitor
 				stats = new Stats();
 				document.body.appendChild( stats.dom );
 
 				scene = new THREE.Scene();
 				scene.background = new THREE.Color( 0x050505 );
-				scene.fog = new THREE.Fog( 0x050505, 2000, 3500 );
+				// scene.fog = new THREE.Fog( 0x050505, 2000, 4500 );
 				//scene adds lights
 				scene.add( new THREE.AmbientLight( 0x444444 ) );
 				const light1 = new THREE.DirectionalLight( 0xffffff, 0.5 );
@@ -281,8 +299,8 @@
 				light2.position.set( 0, - 1, 0 );
 				scene.add( light2 );
 
-				camera = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 1, 3000 );
-				camera.position.set( -10, 30, -2500 );
+				camera = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 10, 4000 );
+				camera.position.set( -10, 30, 3500 );
 				camera.lookAt( scene.position ); // Look at the center of the scene
 
 				renderer = new THREE.WebGLRenderer();
@@ -295,7 +313,7 @@
 				window.addEventListener( 'resize', onWindowResize );
 
 				//add objects to scene
-				ramp_geometry= new THREE.CubeGeometry( 50, 1, 10 ),
+				ramp_geometry= new THREE.CubeGeometry( 200, 1, 10 ),
 				material_red = new THREE.MeshLambertMaterial({ color: 0xdd0000, overdraw: true }),
 				material_green = new THREE.MeshLambertMaterial({ color: 0x00bb00, overdraw: true });
 				
