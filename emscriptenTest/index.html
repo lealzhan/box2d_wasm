@@ -340,18 +340,21 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
-				
+
+				for(let i = 0; i < 2; i++){
+					addBall();
+				}
+				initBox2d();
 				updateBox2d();
 				render();
 			}
 
 			function render() {
-				initBox2d();
 				renderer.render( scene, camera );
 				stats.update();
 			}
 
-			setInterval( addBall, 0.1 );
+			//setInterval( addBall, 0.1 );
 
 		</script>
 
