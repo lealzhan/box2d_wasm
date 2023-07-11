@@ -312,6 +312,8 @@ export default class Box2DScene extends THREE.Scene
 					// mesh = null;
 					this.world.DestroyBody(b2RB);
 					// delete this.b2MapingThree[b2RB.$$.ptr];
+					//remove this element from this.RBArray
+					this.RBArray.splice(i, 1);
 				}
 				if(b2RB.IsAwake()){
 					this.RBActiveCount++;
