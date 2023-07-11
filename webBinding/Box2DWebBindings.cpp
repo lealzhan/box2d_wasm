@@ -20,6 +20,12 @@
         //         v->x = in;
         // }
         
+        struct b2RayCastCallbackWrapper : public wrapper<b2RayCastCallback> {
+                EMSCRIPTEN_WRAPPER(b2RayCastCallbackWrapper)
+                float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override {
+                        return call<float>("ReportFixture", fixture, point, normal, fraction);
+                }
+        };
 
         //----------------------------------------------------------------------------------------------------------------------
         EMSCRIPTEN_BINDINGS(b2) {
@@ -134,9 +140,16 @@
         class_<b2QueryCallback>("QueryCallback")
                 .function("ReportFixture", &b2QueryCallback::ReportFixture, allow_raw_pointers());
 
-        //binding class b2RayCastCallback
-        class_<b2RayCastCallback>("RayCastCallback")
-                .function("ReportFixture", &b2RayCastCallback::ReportFixture, allow_raw_pointers());
+        // //binding class b2RayCastCallback
+        // class_<b2RayCastCallback>("RayCastCallback")
+        //         .function("ReportFixture", &b2RayCastCallback::ReportFixture, allow_raw_pointers());
+
+        // override b2RayCastCallback in js and assign to
+        // PxControllerDesc.reportCallback
+        // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#deriving-from-c-classes-in-javascript
+        class_<b2RayCastCallback>("b2RayCastCallback")
+                .function("ReportFixture", &b2RayCastCallback::ReportFixture, pure_virtual(), allow_raw_pointers())
+                .allow_subclass<b2RayCastCallbackWrapper>("b2RayCastCallbackWrapper", constructor<>());
 
         //binding class b2ContactListener
         class_<b2ContactListener>("ContactListener")

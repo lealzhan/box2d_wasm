@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 // import BlasterScene from './BlasterScene'
-import Box2DScene from './Box2dScene'
+// import Box2DScene from './Box2dScene'
+import Box2DSceneRaycast from './Box2dSceneRaycast'
 import Stats from 'three/examples/jsm/libs/stats.module'
 
 
@@ -18,7 +19,7 @@ let stats = Stats();
 document.body.appendChild(stats.dom);
 
 // const scene = new BlasterScene(mainCamera)
-const scene = new Box2DScene(mainCamera)
+const scene = new Box2DSceneRaycast(mainCamera)
 scene.initialize()
 
 function tick()
