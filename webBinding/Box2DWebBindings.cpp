@@ -303,11 +303,9 @@
                 .constructor<>()
                 //.property("shape", &b2FixtureDef::getShape, &b2FixtureDef::setShape, allow_raw_pointers())
                 .function("SetShape", optional_override([](b2FixtureDef* f, const b2Shape* s) {
-                        f->shape = s;
-                        }), allow_raw_pointers())
+                        f->shape = s;}), allow_raw_pointers())
                 .function("GetShape", optional_override([](b2FixtureDef* f) {
-                        return f->shape;
-                        }), allow_raw_pointers())
+                        return f->shape;}), allow_raw_pointers())
                 .property("userData", &b2FixtureDef::userData)
                 .property("friction", &b2FixtureDef::friction)
                 .property("restitution", &b2FixtureDef::restitution)
@@ -431,12 +429,55 @@
 
         //binding class b2JointDef
         class_<b2JointDef>("JointDef")
+                .constructor<>()
                 .property("type", &b2JointDef::type)
                 .property("userData", &b2JointDef::userData)
                 //https://stackoverflow.com/questions/17056628/emscripten-error-when-binding-class-with-2d-double-array
                 // .property("bodyA", &b2JointDef::bodyA, allow_raw_pointers())
                 // .property("bodyB", &b2JointDef::bodyB, allow_raw_pointers())
+                .function("SetBodyA", optional_override([](b2JointDef* j, b2Body* b) {
+                        j->bodyA = b;}), allow_raw_pointers())
+                .function("GetBodyA", optional_override([](b2JointDef* j) {
+                        return j->bodyA;}), allow_raw_pointers())
+                .function("SetBodyB", optional_override([](b2JointDef* j, b2Body* b) {
+                        j->bodyB = b;}), allow_raw_pointers())
+                .function("GetBodyB", optional_override([](b2JointDef* j) {
+                        return j->bodyB;}), allow_raw_pointers())
                 .property("collideConnected", &b2JointDef::collideConnected);
+
+        //binding class b2DistanceJointDef
+        class_<b2DistanceJointDef, base<b2JointDef>>("DistanceJointDef")
+                .constructor<>()
+                .property("localAnchorA", &b2DistanceJointDef::localAnchorA)
+                .property("localAnchorB", &b2DistanceJointDef::localAnchorB)
+                .property("length", &b2DistanceJointDef::length)
+                .property("minLength", &b2DistanceJointDef::minLength)
+                .property("maxLength", &b2DistanceJointDef::maxLength)
+                .property("stiffness", &b2DistanceJointDef::stiffness)
+                .property("damping", &b2DistanceJointDef::damping);
+
+        //binding class b2WeldJointDef
+        class_<b2WeldJointDef, base<b2JointDef>>("WeldJointDef")
+                .constructor<>()
+                .property("localAnchorA", &b2WeldJointDef::localAnchorA)
+                .property("localAnchorB", &b2WeldJointDef::localAnchorB)
+                .property("referenceAngle", &b2WeldJointDef::referenceAngle)
+                .property("stiffness", &b2WeldJointDef::stiffness)
+                .property("damping", &b2WeldJointDef::damping);
+
+        //binding class b2RevoluteJointDef
+        class_<b2RevoluteJointDef, base<b2JointDef>>("RevoluteJointDef")
+                .constructor<>()
+                .property("localAnchorA", &b2RevoluteJointDef::localAnchorA)
+                .property("localAnchorB", &b2RevoluteJointDef::localAnchorB)
+                .property("referenceAngle", &b2RevoluteJointDef::referenceAngle)
+                .property("enableLimit", &b2RevoluteJointDef::enableLimit)
+                .property("lowerAngle", &b2RevoluteJointDef::lowerAngle)
+                .property("upperAngle", &b2RevoluteJointDef::upperAngle)
+                .property("enableMotor", &b2RevoluteJointDef::enableMotor)
+                .property("motorSpeed", &b2RevoluteJointDef::motorSpeed)
+                .property("maxMotorTorque", &b2RevoluteJointDef::maxMotorTorque);
+        
 
         //binding class b2Joint
         class_<b2Joint>("Joint")

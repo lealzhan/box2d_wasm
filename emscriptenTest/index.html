@@ -4,9 +4,9 @@
 	<head>
 		<title>three.js webgl - buffergeometry</title>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<script src="box2d.Release.js"></script>
+		<meta name="viewport" content="width=device-width">
 		<!-- <script src="box2d.Debug.js"></script> -->
+		<script src="box2d.Debug.js"></script>
 
 		<script src="three.min.js"></script>
 		<script src="stats.min.js"></script>
@@ -52,8 +52,6 @@
 
 			//box2d test
 			let box2dInited = false;
-			let callback;
-			let tempVec2_1, tempVec2_2;
 			let world;
 			let bodyDef; // `bodyDef` will describe the type of bodies we're creating
 			// Create a fixture definition
@@ -68,15 +66,6 @@
 			animate();
 			updateBox2d();
 
-			const Box2DCallback = {
-				rayCastCB: {
-					ReportFixture(fixture, point, normal, fraction){
-						//console.log("ReportFixture");
-						return 0;
-					},
-				}
-			}
-
 			function initBox2d() {
 				if(!box2dWASMloaded || box2dInited) return;
 				box2dInited = true;
@@ -86,10 +75,6 @@
 				world = new BOX2D.World(
 					new BOX2D.Vec2(0, -20), // Gravity
 				);
-
-				//callback = new BOX2D.RayCastCallback();
-				tempVec2_1 = new BOX2D.Vec2(0, 0);
-				tempVec2_2 = new BOX2D.Vec2(0, 0);
 
 				bodyDef = new BOX2D.BodyDef(); // `bodyDef` will describe the type of bodies we're creating
 				// Objects defined in this function are all static
@@ -101,91 +86,101 @@
 				fixDef.friction = 0.3;
 				fixDef.restitution = 0.3;
 
-				// // position the ramp 0
-				// if(1)
-				// {
-				// 	ramp_0 = new THREE.Mesh( ramp_geometry, material_red );
-				// 	scene.add( ramp_0 );
+				// position the ramp 0
+				if(1)
+				{
+					bodyDef.type = BOX2D.BodyType.b2_dynamicBody; 
 
-				// 	let rampPos = new BOX2D.Vec2(-200, 0);
-				// 	bodyDef.position = rampPos;
-				// 	// bodyDef.position.SetX(-20); //https://github.com/emscripten-core/emscripten/issues/17573
-				// 	// bodyDef.position.SetY(25); 
-				// 	ramp_0.position.x = rampPos.GetX();
-				// 	ramp_0.position.y = rampPos.GetY();
-				// 	bodyDef.angle = ramp_0.rotation.z = -Math.PI / 2;
-				// 	//fixDef.shape = new BOX2D.PolygonShape();
-				// 	//fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
-				// 	let shape0 = new BOX2D.PolygonShape();
-				// 	fixDef.SetShape(shape0);
-				// 	shape0.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
-				// 	//bodyDef.userData = ramp_0; // Keep a reference to `ramp_1`
-				// 	let ramp0RB = world.CreateBody( bodyDef );
-				// 	//ramp0RB.userData = ramp_0;
-				// 	b2MapingThree[ramp0RB.$$.ptr] = ramp_0;
-				// 	ramp0RB.CreateFixture( fixDef ); // Add this physics body to the world
-				// }
+					ramp_0 = new THREE.Mesh( ramp_geometry, material_red );
+					scene.add( ramp_0 );
 
-				// // position the ramp 1
-				// if(1)
-				// {
-				// 	ramp_1 = new THREE.Mesh( ramp_geometry, material_red );
-    			// 	scene.add( ramp_1 );
-
-				// 	let rampPos = new BOX2D.Vec2(200, 0);
-				// 	bodyDef.position = rampPos;
-				// 	// bodyDef.position.SetX(25);
-				// 	// bodyDef.position.SetY(5);
-				// 	ramp_1.position.x = rampPos.GetX();
-				// 	ramp_1.position.y = rampPos.GetY();
-				// 	bodyDef.angle = ramp_1.rotation.z = Math.PI / 2;
-				// 	// fixDef.shape = new b2PolygonShape;
-				// 	// fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
-				// 	let shape1 = new BOX2D.PolygonShape();
-				// 	fixDef.SetShape(shape1);
-				// 	shape1.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
-				// 	//bodyDef.userData = ramp_1; // Keep a reference to `ramp_2`
-				// 	let ramp1RB = world.CreateBody( bodyDef );
-				// 	//ramp1RB.userData = ramp_1;
-				// 	b2MapingThree[ramp1RB.$$.ptr] = ramp_1;
-				// 	ramp1RB.CreateFixture( fixDef ); // Add this physics body to the world
-				// }
-
-				// // Create the floor
-				// {
-				// 	floor = new THREE.Mesh( new THREE.CubeGeometry( 400, 1, 10 ), material_red );
-				// 	//floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 50 ), material_red );
-				// 	scene.add( floor );
-
-				// 	let floorPos = new BOX2D.Vec2(0, -100);
-				// 	bodyDef.position = floorPos;
-				// 	// bodyDef.position.SetX(0);
-				// 	// bodyDef.position.SetY(-45);
-				// 	floor.position.x = floorPos.GetX();
-				// 	floor.position.y = floorPos.GetY(); // position the floor
-				// 	bodyDef.angle = 0;
-				// 	// fixDef.shape = new b2PolygonShape;
-				// 	// fixDef.shape.SetAsBox( 50, .1 ); // "50" = half width of the floor, ".1" = half height
-				// 	let shape2 = new BOX2D.PolygonShape();
-				// 	fixDef.SetShape(shape2);
-				// 	shape2.SetAsBox( 200, 1 ); // "25" = half width of the ramp, "1" = half height
-				// 	//bodyDef.userData = floor; // Keep a reference to `floor`
-				// 	//world.CreateBody( bodyDef ).CreateFixture( fixDef ); // Add this physics body to the world
-				// 	//let floorRB = world.CreateBody( bodyDef );
-				// 	world.CreateBody( bodyDef );
-				// 	let floorRB = world.GetBodyList();
-				// 	//floorRB.userData = floor;
-				// 	b2MapingThree[floorRB.$$.ptr] = floor;
-				// 	floorRB.CreateFixture( fixDef );
-				// }
-
-				for(let i = 0; i < 50000; i++){
-					addBall();
+					let rampPos = new BOX2D.Vec2(-200, 0);
+					bodyDef.position = rampPos;
+					// bodyDef.position.SetX(-20); //https://github.com/emscripten-core/emscripten/issues/17573
+					// bodyDef.position.SetY(25); 
+					ramp_0.position.x = rampPos.GetX();
+					ramp_0.position.y = rampPos.GetY();
+					bodyDef.angle = ramp_0.rotation.z = -Math.PI / 2;
+					//fixDef.shape = new BOX2D.PolygonShape();
+					//fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
+					let shape0 = new BOX2D.PolygonShape();
+					fixDef.SetShape(shape0);
+					shape0.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
+					//bodyDef.userData = ramp_0; // Keep a reference to `ramp_1`
+					let ramp0RB = world.CreateBody( bodyDef );
+					//ramp0RB.userData = ramp_0;
+					b2MapingThree[ramp0RB.$$.ptr] = ramp_0;
+					ramp_0.box2dRB = ramp0RB;
+					ramp0RB.CreateFixture( fixDef ); // Add this physics body to the world
 				}
+
+				// position the ramp 1
+				if(1)
+				{
+					bodyDef.type = BOX2D.BodyType.b2_dynamicBody; 
+
+					ramp_1 = new THREE.Mesh( ramp_geometry, material_red );
+    				scene.add( ramp_1 );
+
+					let rampPos = new BOX2D.Vec2(200, 0);
+					bodyDef.position = rampPos;
+					// bodyDef.position.SetX(25);
+					// bodyDef.position.SetY(5);
+					ramp_1.position.x = rampPos.GetX();
+					ramp_1.position.y = rampPos.GetY();
+					bodyDef.angle = ramp_1.rotation.z = Math.PI / 2;
+					// fixDef.shape = new b2PolygonShape;
+					// fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
+					let shape1 = new BOX2D.PolygonShape();
+					fixDef.SetShape(shape1);
+					shape1.SetAsBox( 100, 1 ); // "25" = half width of the ramp, "1" = half height
+					//bodyDef.userData = ramp_1; // Keep a reference to `ramp_2`
+					let ramp1RB = world.CreateBody( bodyDef );
+					//ramp1RB.userData = ramp_1;
+					b2MapingThree[ramp1RB.$$.ptr] = ramp_1;
+					ramp_1.box2dRB = ramp1RB;
+					ramp1RB.CreateFixture( fixDef ); // Add this physics body to the world
+				}
+
+				// Create the floor
+				{
+					bodyDef.type = BOX2D.BodyType.b2_staticBody; 
+
+					floor = new THREE.Mesh( new THREE.CubeGeometry( 400, 1, 10 ), material_red );
+					//floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 50 ), material_red );
+					scene.add( floor );
+
+					let floorPos = new BOX2D.Vec2(0, -100);
+					bodyDef.position = floorPos;
+					// bodyDef.position.SetX(0);
+					// bodyDef.position.SetY(-45);
+					floor.position.x = floorPos.GetX();
+					floor.position.y = floorPos.GetY(); // position the floor
+					bodyDef.angle = 0;
+					// fixDef.shape = new b2PolygonShape;
+					// fixDef.shape.SetAsBox( 50, .1 ); // "50" = half width of the floor, ".1" = half height
+					let shape2 = new BOX2D.PolygonShape();
+					fixDef.SetShape(shape2);
+					shape2.SetAsBox( 200, 1 ); // "25" = half width of the ramp, "1" = half height
+					//bodyDef.userData = floor; // Keep a reference to `floor`
+					//world.CreateBody( bodyDef ).CreateFixture( fixDef ); // Add this physics body to the world
+					//let floorRB = world.CreateBody( bodyDef );
+					world.CreateBody( bodyDef );
+					let floorRB = world.GetBodyList();
+					//floorRB.userData = floor;
+					b2MapingThree[floorRB.$$.ptr] = floor;
+					floor.box2dRB = floorRB;
+					floorRB.CreateFixture( fixDef );
+				}
+
+				createFixedJoint(ramp_1.box2dRB, floor.box2dRB);
+				createHingeJoint(ramp_0.box2dRB, ramp_1.box2dRB);
+
 			}
 
 			function addBall() {
 				if(!box2dInited) return;
+				if(RBCount > 2000) return;
 				var ball;
 								
 				let shape = new BOX2D.CircleShape();
@@ -200,11 +195,9 @@
 				shape = null;
 
 				scene.add( ball );
-				bodyDef.type = BOX2D.BodyType.b2_staticBody//BOX2D.BodyType.b2_dynamicBody; // balls can move
+				bodyDef.type = BOX2D.BodyType.b2_dynamicBody; // balls can move
 
-				let randomX = (Math.random() * 2 - 1) * 400;
-				let randomY = (Math.random() * 2 - 1) * 100;
-				let ballPos = new BOX2D.Vec2(randomX, randomY);
+				let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 200);
 				bodyDef.position = ballPos;
 				// bodyDef.position.SetY(50);
 				// bodyDef.position.SetX(Math.random() * 40 - 20); // Random positon between -20 and 20
@@ -300,24 +293,38 @@
 				// }
 			}
 
+			function createFixedJoint(bodyA, bodyB) {
+				const def = new BOX2D.WeldJointDef();
+				def.localAnchorA = new BOX2D.Vec2(0, 0);
+				def.localAnchorB= new BOX2D.Vec2(40, 50);
+				def.referenceAngle = 0;
+				// def.frequencyHz = comp.frequency;
+				// def.dampingRatio = comp.dampingRatio;
 
+				def.SetBodyA(bodyA);
+				def.SetBodyB(bodyB);
+				def.collideConnected = false;
 
-			function raycastTest() {
-				if(!box2dInited) return;
-				tempVec2_1.SetX(-2000);
-				tempVec2_1.SetY(10);
-				tempVec2_2.SetX(1000);
-				tempVec2_2.SetY(10);
-
-				let time0 = Date.now();
-				for(let i = 0; i < 2000; i++){
-					tempVec2_1.SetX(-2000 + i);
-					world.RayCast(BOX2D.b2RayCastCallback.implement(Box2DCallback.rayCastCB), tempVec2_1, tempVec2_2);
-				}
-				let time1 = Date.now();
-				console.log("raycastTest time = ", time1 - time0);
+				let b2joint = world.CreateJoint(def);
+				return b2joint;
 			}
-			
+
+			function createHingeJoint(bodyA, bodyB) {
+				const def = new BOX2D.RevoluteJointDef();
+				def.localAnchorA = new BOX2D.Vec2(0, 0);
+				def.localAnchorB= new BOX2D.Vec2(0, 100);
+				def.referenceAngle = 0;
+				// def.frequencyHz = comp.frequency;
+				// def.dampingRatio = comp.dampingRatio;
+
+				def.SetBodyA(bodyA);
+				def.SetBodyB(bodyB);
+				def.collideConnected = false;
+
+				let b2joint = world.CreateJoint(def);
+				return b2joint;
+			}
+
 			function init() {
 				if(inited) return;
 				inited = true;
@@ -337,8 +344,8 @@
 				light2.position.set( 0, - 1, 0 );
 				scene.add( light2 );
 
-				camera = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 10, 4000 );
-				camera.position.set( -10, 30, 3500 );
+				camera = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 10, 5000 );
+				camera.position.set( -10, 30, 4500 );
 				camera.lookAt( scene.position ); // Look at the center of the scene
 
 				renderer = new THREE.WebGLRenderer();
@@ -379,10 +386,11 @@
 
 				requestAnimationFrame( animate );
 
-				
+				for(let i = 0; i < 2; i++){
+					addBall();
+				}
 				initBox2d();
-				//updateBox2d();
-				raycastTest();
+				updateBox2d();
 				render();
 			}
 

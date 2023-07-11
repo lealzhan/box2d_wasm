@@ -56,7 +56,7 @@ export default class Box2DScene extends THREE.Scene
 		this.add( light2 );
 
 		//camera = new THREE.PerspectiveCamera( 5, window.innerWidth / window.innerHeight, 10, 4000 );
-		this.camera.position.set( -10, 30, 3500 );
+		this.camera.position.set( -10, 30, 4500 );
 		this.camera.lookAt( this.position ); // Look at the center of the scene
 
 		// renderer = new THREE.WebGLRenderer();
@@ -78,6 +78,38 @@ export default class Box2DScene extends THREE.Scene
 		this.ball_material = new THREE.MeshLambertMaterial({ color: 0x0000ff}); // Balls will be blue
 		this.large_ball_geometry = new THREE.SphereGeometry( 4 ); // Create the ball geometry with a radius of `4`
 		this.large_ball_material = new THREE.MeshLambertMaterial({ color: 0x00ff00}); // Large balls are be green
+	}
+
+	private createFixedJoint(bodyA: BOX2D.Body, bodyB: BOX2D.Body) {
+		const def = new BOX2D.WeldJointDef();
+        def.localAnchorA.Set(0, 0);
+        def.localAnchorB.Set(40,50);
+        def.referenceAngle = 0;
+        // def.frequencyHz = comp.frequency;
+        // def.dampingRatio = comp.dampingRatio;
+
+		def.bodyA = bodyA;
+		def.bodyB = bodyB;
+		def.collideConnected = false;
+
+        let b2joint = this.world.CreateJoint(def);
+		return b2joint;
+	}
+
+	private createHingeJoint(bodyA: BOX2D.Body, bodyB: BOX2D.Body) {
+		const def = new BOX2D.RevoluteJointDef();
+        def.localAnchorA.Set(0, 0);
+        def.localAnchorB.Set(0,100);
+        def.referenceAngle = 0;
+        // def.frequencyHz = comp.frequency;
+        // def.dampingRatio = comp.dampingRatio;
+
+		def.bodyA = bodyA;
+		def.bodyB = bodyB;
+		def.collideConnected = false;
+
+        let b2joint = this.world.CreateJoint(def);
+		return b2joint;
 	}
 
 	private initBox2d() {
@@ -103,6 +135,7 @@ export default class Box2DScene extends THREE.Scene
 		// position the ramp 0
 		if(1)
 		{
+			this.bodyDef.type = BOX2D.BodyType.b2_dynamicBody; 
 			this.ramp_0 = new THREE.Mesh( this.ramp_geometry, this.material_red );
 			this.add( this.ramp_0 );
 
@@ -124,11 +157,13 @@ export default class Box2DScene extends THREE.Scene
 			ramp0RB.m_userData = this.ramp_0;
 			//b2MapingThree[ramp0RB.$$.ptr] = ramp_0;
 			ramp0RB.CreateFixture( this.fixDef ); // Add this physics body to the world
+			this.RBArray.push(ramp0RB);
 		}
 
 		// // position the ramp 1
 		if(1)
 		{
+			this.bodyDef.type = BOX2D.BodyType.b2_dynamicBody; 
 			this.ramp_1 = new THREE.Mesh( this.ramp_geometry, this.material_red );
 			this.add( this.ramp_1 );
 
@@ -155,6 +190,7 @@ export default class Box2DScene extends THREE.Scene
 
 		// Create the floor
 		{
+			this.bodyDef.type = BOX2D.BodyType.b2_staticBody; 
 			this.floor = new THREE.Mesh( new THREE.BoxGeometry( 400, 1, 10 ), this.material_red );
 			//floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 50 ), material_red );
 			this.add( this.floor );
@@ -182,6 +218,9 @@ export default class Box2DScene extends THREE.Scene
 			//add floorRB to RBArray
 			this.RBArray.push(floorRB);
 		}
+
+		this.createFixedJoint(this.RBArray[1], this.RBArray[2]);
+		this.createHingeJoint(this.RBArray[0], this.RBArray[1]);
 	}
 
 	// async initialize()
