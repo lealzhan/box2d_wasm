@@ -174,7 +174,7 @@
                 ;
 
         //binding class b2Contact
-        class_<b2Contact>("b2Contact")
+        class_<b2Contact>("Contact")
                 // .function("GetManifold", &b2Contact::GetManifold)
                 .function("GetWorldManifold", &b2Contact::GetWorldManifold, allow_raw_pointers())
                 .function("IsTouching", &b2Contact::IsTouching)
@@ -194,7 +194,6 @@
                 .function("SetTangentSpeed", &b2Contact::SetTangentSpeed)
                 .function("GetTangentSpeed", &b2Contact::GetTangentSpeed)
                 .function("Evaluate", &b2Contact::Evaluate, allow_raw_pointers())
-                // .function("Dump", &b2Contact::Dump)
                 ;
 
         //binding class b2World
@@ -251,6 +250,8 @@
 
         //binding class b2Shape
         class_<b2Shape>("Shape")
+                .property("m_type", &b2Shape::m_type)
+                .property("m_radius", &b2Shape::m_radius)
                 .function("GetType", &b2Shape::GetType)
                 .function("GetChildCount", &b2Shape::GetChildCount)
                 .function("TestPoint", &b2Shape::TestPoint)
