@@ -6,7 +6,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width">
 		<!-- <script src="box2d.Debug.js"></script> -->
-		<script src="box2d.Release.js"></script>
+		<script src="box2d.release.wasm.js"></script>
 
 		<script src="three.min.js"></script>
 		<script src="stats.min.js"></script>
@@ -73,7 +73,8 @@
 				//box2d test
 				//Create the physics world
 				world = new BOX2D.World(
-					new BOX2D.Vec2(0, -20), // Gravity
+					//new BOX2D.Vec2(0, -20), // Gravity
+					{x:0, y:-20} // Gravity
 				);
 
 				bodyDef = new BOX2D.BodyDef(); // `bodyDef` will describe the type of bodies we're creating
@@ -94,12 +95,13 @@
 					ramp_0 = new THREE.Mesh( ramp_geometry, material_red );
 					scene.add( ramp_0 );
 
-					let rampPos = new BOX2D.Vec2(-200, 0);
+					//let rampPos = new BOX2D.Vec2(-200, 0);
+					let rampPos = {x:-200, y:0};
 					bodyDef.position = rampPos;
 					// bodyDef.position.SetX(-20); //https://github.com/emscripten-core/emscripten/issues/17573
 					// bodyDef.position.SetY(25); 
-					ramp_0.position.x = rampPos.GetX();
-					ramp_0.position.y = rampPos.GetY();
+					ramp_0.position.x = rampPos.x;//rampPos.GetX();
+					ramp_0.position.y = rampPos.y;//rampPos.GetY();
 					bodyDef.angle = ramp_0.rotation.z = -Math.PI / 2;
 					//fixDef.shape = new BOX2D.PolygonShape();
 					//fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
@@ -122,12 +124,13 @@
 					ramp_1 = new THREE.Mesh( ramp_geometry, material_red );
     				scene.add( ramp_1 );
 
-					let rampPos = new BOX2D.Vec2(200, 0);
+					// let rampPos = new BOX2D.Vec2(200, 0);
+					let rampPos = {x:200, y:0};
 					bodyDef.position = rampPos;
 					// bodyDef.position.SetX(25);
 					// bodyDef.position.SetY(5);
-					ramp_1.position.x = rampPos.GetX();
-					ramp_1.position.y = rampPos.GetY();
+					ramp_1.position.x = rampPos.x;//rampPos.GetX();
+					ramp_1.position.y = rampPos.y;//rampPos.GetY();
 					bodyDef.angle = ramp_1.rotation.z = Math.PI / 2;
 					// fixDef.shape = new b2PolygonShape;
 					// fixDef.shape.SetAsBox( 25, 1 ); // "25" = half width of the ramp, "1" = half height
@@ -150,12 +153,13 @@
 					//floor = new THREE.Mesh( new THREE.PlaneGeometry( 100, 50 ), material_red );
 					scene.add( floor );
 
-					let floorPos = new BOX2D.Vec2(0, -100);
+					//let floorPos = new BOX2D.Vec2(0, -100);
+					let floorPos = {x:0, y:-100};
 					bodyDef.position = floorPos;
 					// bodyDef.position.SetX(0);
 					// bodyDef.position.SetY(-45);
-					floor.position.x = floorPos.GetX();
-					floor.position.y = floorPos.GetY(); // position the floor
+					floor.position.x = floorPos.x;//floorPos.GetX();
+					floor.position.y = floorPos.y;//floorPos.GetY(); // position the floor
 					bodyDef.angle = 0;
 					// fixDef.shape = new b2PolygonShape;
 					// fixDef.shape.SetAsBox( 50, .1 ); // "50" = half width of the floor, ".1" = half height
@@ -197,13 +201,14 @@
 				scene.add( ball );
 				bodyDef.type = BOX2D.BodyType.b2_dynamicBody; // balls can move
 
-				let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 200);
+				// let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 200);
+				let ballPos = {x:Math.random() * 40 - 20, y:200};
 				bodyDef.position = ballPos;
 				// bodyDef.position.SetY(50);
 				// bodyDef.position.SetX(Math.random() * 40 - 20); // Random positon between -20 and 20
 
-				ball.position.x = ballPos.GetX();
-				ball.position.y = ballPos.GetY();
+				ball.position.x = ballPos.x;//ballPos.GetX();
+				ball.position.y = ballPos.y;//ballPos.GetY();
 				//bodyDef.userData = ball; // Keep a reference to `ball`
 				//world.CreateBody( bodyDef ).CreateFixture( fixDef ); // Add this physics body to the world
 				//let ballRB = world.CreateBody( bodyDef );//this ballRB is a new object, not the same sa inside the world
@@ -251,8 +256,8 @@
 					if ( b2RB && mesh ) {
 						// Nice and simple, we only need to work with 2 dimensions
 						let position = b2RB.GetPosition();
-						mesh.position.x = position.GetX();
-						mesh.position.y = position.GetY();
+						mesh.position.x = position.x;//position.GetX();
+						mesh.position.y = position.y;//position.GetY();
 						
 						// GetAngle() function returns the rotation in radians
 						mesh.rotation.z = b2RB.GetAngle();
@@ -295,8 +300,8 @@
 
 			function createFixedJoint(bodyA, bodyB) {
 				const def = new BOX2D.WeldJointDef();
-				def.localAnchorA = new BOX2D.Vec2(0, 0);
-				def.localAnchorB= new BOX2D.Vec2(40, 50);
+				def.localAnchorA = {x:0, y:0};//new BOX2D.Vec2(0, 0);
+				def.localAnchorB= {x:40, y:50};//new BOX2D.Vec2(40, 50);
 				def.referenceAngle = 0;
 				// def.frequencyHz = comp.frequency;
 				// def.dampingRatio = comp.dampingRatio;
@@ -311,8 +316,8 @@
 
 			function createHingeJoint(bodyA, bodyB) {
 				const def = new BOX2D.RevoluteJointDef();
-				def.localAnchorA = new BOX2D.Vec2(0, 0);
-				def.localAnchorB= new BOX2D.Vec2(0, 100);
+				def.localAnchorA = {x:0, y:0};//new BOX2D.Vec2(0, 0);
+				def.localAnchorB= {x:0, y:100};//new BOX2D.Vec2(0, 100);
 				def.referenceAngle = 0;
 				// def.frequencyHz = comp.frequency;
 				// def.dampingRatio = comp.dampingRatio;

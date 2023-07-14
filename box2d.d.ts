@@ -16,20 +16,31 @@ declare namespace B2 {
       HEAPF32: Float32Array;
   }
 
-  class Vec2 {
-      constructor();
-      constructor(x: number, y: number);
-      SetX(v: number): void;
-      GetX(): number;
-      SetY(v: number): void;
-      GetY(): number;
-      SetZero(): void;
-      Set(x: number, y: number): void;
-      Length(): number;
-      LengthSquared(): number;
-      Normalize(): number;
-      IsValid(): boolean;
+  interface Vec2 {
+      x: number, y: number
   }
+
+  // interface Transform {
+  //     p: Vec2, q: Vec2
+  // }
+
+  interface Color {
+      r: number, g: number, b: number, a: number
+  }
+  // class Vec2 {
+  //     constructor();
+  //     constructor(x: number, y: number);
+  //     SetX(v: number): void;
+  //     GetX(): number;
+  //     SetY(v: number): void;
+  //     GetY(): number;
+  //     SetZero(): void;
+  //     Set(x: number, y: number): void;
+  //     Length(): number;
+  //     LengthSquared(): number;
+  //     Normalize(): number;
+  //     IsValid(): boolean;
+  // }
 
   class Transform {
       constructor();
@@ -206,12 +217,12 @@ declare namespace B2 {
       Collide(): void;
   }
 
-  class Color {
-      r: number;
-      g: number;
-      b: number;
-      a: number;
-  }
+  // class Color {
+  //     r: number;
+  //     g: number;
+  //     b: number;
+  //     a: number;
+  // }
 
   class Draw {
       SetFlags(flags: number): void;
@@ -236,6 +247,8 @@ declare namespace B2 {
       DestroyBody(body: Body): void;
       CreateFixture(body: Body, fixtureDef: FixtureDef): Fixture;
       DestroyFixture(fixture: Fixture): void;
+      CreateJoint(def: JointDef): Joint;
+      DestroyJoint(joint: Joint): void;
       Step(timeStep: number, velocityIterations: number, positionIterations: number): void;
       ClearForces(): void;
       DrawDebugData(): void;
@@ -285,6 +298,7 @@ declare namespace B2 {
 
   class CircleShape extends Shape {
       constructor();
+      m_p: Vec2;
       Clone(): CircleShape;
       GetChildCount(): number;
       TestPoint(transform: Transform, p: Vec2): boolean;
@@ -454,6 +468,7 @@ declare namespace B2 {
       constructor(type: JointType);
       type: JointType;
       userData: any;
+      collideConnected: boolean;
       SetBodyA(bodyA: Body): void;
       SetBodyB(bodyB: Body): void;
       GetBodyA(): Body;
@@ -530,6 +545,142 @@ declare namespace B2 {
       GetFrequency(): number;
       SetDampingRatio(ratio: number): void;
       GetDampingRatio(): number;
+      Dump(): void;
+  }
+
+  class WheelJointDef extends JointDef {
+      constructor();
+      Initialize(bodyA: Body, bodyB: Body, anchor: Vec2, axis: Vec2): void;
+      localAnchorA: Vec2;
+      localAnchorB: Vec2;
+      localAxisA: Vec2;
+      enableMotor: boolean;
+      maxMotorTorque: number;
+      motorSpeed: number;
+      frequencyHz: number;
+      dampingRatio: number;
+  }
+
+  class WheelJoint extends Joint {
+      GetLocalAnchorA(): Vec2;
+      GetLocalAnchorB(): Vec2;
+      GetLocalAxisA(): Vec2;
+      GetJointTranslation(): number;
+      GetJointSpeed(): number;
+      IsMotorEnabled(): boolean;
+      EnableMotor(flag: boolean): void;
+      SetMotorSpeed(speed: number): void;
+      GetMotorSpeed(): number;
+      SetMaxMotorTorque(torque: number): void;
+      GetMaxMotorTorque(): number;
+      GetMotorTorque(inv_dt: number): number;
+      SetSpringFrequencyHz(hz: number): void;
+      GetSpringFrequencyHz(): number;
+      SetSpringDampingRatio(ratio: number): void;
+      GetSpringDampingRatio(): number;
+      Dump(): void;
+  }
+
+  class DistanceJointDef extends JointDef {
+      constructor();
+      Initialize(bodyA: Body, bodyB: Body, anchorA: Vec2, anchorB: Vec2): void;
+      localAnchorA: Vec2;
+      localAnchorB: Vec2;
+      length: number;
+      frequencyHz: number;
+      dampingRatio: number;
+  }
+
+  class DistanceJoint extends Joint {
+      GetLocalAnchorA(): Vec2;
+      GetLocalAnchorB(): Vec2;
+      SetLength(length: number): void;
+      GetLength(): number;
+      SetFrequency(hz: number): void;
+      GetFrequency(): number;
+      SetDampingRatio(ratio: number): void;
+      GetDampingRatio(): number;
+      Dump(): void;
+  }
+
+  class MotorJointDef extends JointDef {
+      constructor();
+      Initialize(bodyA: Body, bodyB: Body): void;
+      linearOffset: Vec2;
+      angularOffset: number;
+      maxForce: number;
+      maxTorque: number;
+      correctionFactor: number;
+  }
+
+  class MotorJoint extends Joint {
+      SetLinearOffset(linearOffset: Vec2): void;
+      GetLinearOffset(): Vec2;
+      SetAngularOffset(angularOffset: number): void;
+      GetAngularOffset(): number;
+      SetMaxForce(force: number): void;
+      GetMaxForce(): number;
+      SetMaxTorque(torque: number): void;
+      GetMaxTorque(): number;
+      SetCorrectionFactor(factor: number): void;
+      GetCorrectionFactor(): number;
+      Dump(): void;
+  }
+
+  class MouseJointDef extends JointDef {
+      constructor();
+      target: Vec2;
+      maxForce: number;
+      frequencyHz: number;
+      dampingRatio: number;
+  }
+
+  class MouseJoint extends Joint {
+      SetTarget(target: Vec2): void;
+      GetTarget(): Vec2;
+      SetMaxForce(force: number): void;
+      GetMaxForce(): number;
+      SetFrequency(hz: number): void;
+      GetFrequency(): number;
+      SetDampingRatio(ratio: number): void;
+      GetDampingRatio(): number;
+      Dump(): void;
+  }
+
+  class PrismaticJointDef extends JointDef {
+      constructor();
+      Initialize(bodyA: Body, bodyB: Body, anchor: Vec2, axis: Vec2): void;
+      localAnchorA: Vec2;
+      localAnchorB: Vec2;
+      localAxisA: Vec2;
+      referenceAngle: number;
+      enableLimit: boolean;
+      lowerTranslation: number;
+      upperTranslation: number;
+      enableMotor: boolean;
+      maxMotorForce: number;
+      motorSpeed: number;
+  }
+
+  class PrismaticJoint extends Joint {
+      GetLocalAnchorA(): Vec2;
+      GetLocalAnchorB(): Vec2;
+      GetLocalAxisA(): Vec2;
+      GetReferenceAngle(): number;
+      GetJointTranslation(): number;
+      GetJointSpeed(): number;
+      IsLimitEnabled(): boolean;
+      EnableLimit(flag: boolean): void;
+      GetLowerLimit(): number;
+      GetUpperLimit(): number;
+      SetLimits(lower: number, upper: number): void;
+      IsMotorEnabled(): boolean;
+      EnableMotor(flag: boolean): void;
+      SetMotorSpeed(speed: number): void;
+      GetMotorSpeed(): number;
+      SetMaxMotorForce(force: number): void;
+      GetMaxMotorForce(): number;
+      GetMotorForce(inv_dt: number): number;
       Dump(): void;
   }
 

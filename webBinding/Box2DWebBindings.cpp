@@ -29,9 +29,9 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         EMSCRIPTEN_BINDINGS(b2) {
-        //     value_object<b2Vec2>("Vec2")
-        //             .field("x", &b2Vec2::x)
-        //             .field("y", &b2Vec2::y);
+        value_object<b2Vec2>("Vec2")
+                .field("x", &b2Vec2::x)
+                .field("y", &b2Vec2::y);
         value_object<b2Vec3>("Vec3")
                 .field("x", &b2Vec3::x)
                 .field("y", &b2Vec3::y)
@@ -117,22 +117,22 @@
 
         //b2_maxPolygonVertices
 
-        //binding class b2Vec2
-        class_<b2Vec2>("Vec2")
-                .constructor<>()
-                .constructor<float, float>()
-                // .property("x", &b2Vec2::GetX, &b2Vec2::SetX)
-                // .property("y", &b2Vec2::GetY, &b2Vec2::SetY)
-                .function("SetX", &b2Vec2::SetX)
-                .function("GetX", &b2Vec2::GetX)
-                .function("SetY", &b2Vec2::SetY)
-                .function("GetY", &b2Vec2::GetY)
-                .function("SetZero", &b2Vec2::SetZero)
-                .function("Set", &b2Vec2::Set)
-                .function("Length", &b2Vec2::Length)
-                .function("LengthSquared", &b2Vec2::LengthSquared)
-                .function("Normalize", &b2Vec2::Normalize)
-                .function("IsValid", &b2Vec2::IsValid);
+        // //binding class b2Vec2
+        // class_<b2Vec2>("Vec2")
+        //         .constructor<>()
+        //         .constructor<float, float>()
+        //         // .property("x", &b2Vec2::GetX, &b2Vec2::SetX)
+        //         // .property("y", &b2Vec2::GetY, &b2Vec2::SetY)
+        //         .function("SetX", &b2Vec2::SetX)
+        //         .function("GetX", &b2Vec2::GetX)
+        //         .function("SetY", &b2Vec2::SetY)
+        //         .function("GetY", &b2Vec2::GetY)
+        //         .function("SetZero", &b2Vec2::SetZero)
+        //         .function("Set", &b2Vec2::Set)
+        //         .function("Length", &b2Vec2::Length)
+        //         .function("LengthSquared", &b2Vec2::LengthSquared)
+        //         .function("Normalize", &b2Vec2::Normalize)
+        //         .function("IsValid", &b2Vec2::IsValid);
 
 
 
@@ -269,6 +269,7 @@
         //binding class b2CircleShape
         class_<b2CircleShape, base<b2Shape>>("CircleShape")
                 .constructor<>()
+                .property("m_p", &b2CircleShape::m_p)
                 .function("Clone", &b2CircleShape::Clone, allow_raw_pointers())
                 .function("GetChildCount", &b2CircleShape::GetChildCount)
                 .function("TestPoint", &b2CircleShape::TestPoint)
