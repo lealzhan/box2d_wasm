@@ -91,9 +91,13 @@ b2Body::b2Body(const b2BodyDef* bd, b2World* world)
 
 	m_type = bd->type;
 
-	m_mass = 1.0f;
-	m_invMass = 1.0f;
-
+	if (bd->type == b2BodyType::b2_dynamicBody) {
+      m_mass = 1;
+      m_invMass = 1;
+    } else {
+      m_mass = 0;
+      m_invMass = 0;
+    }
 	m_I = 0.0f;
 	m_invI = 0.0f;
 
