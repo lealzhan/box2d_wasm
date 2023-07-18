@@ -5,3 +5,4 @@ settings.ini
 CMakeSettings.json
 out/
 .vs/
+BUILD_WASM/

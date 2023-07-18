@@ -245,7 +245,7 @@ public:
 	float GetInertia() const;
 
 	/// Get the mass data of the body.
-	/// @return a struct containing the mass, inertia and center of the body.
+	/// return a struct containing the mass, inertia and center of the body.
 	void GetMassData(b2MassData* data) const;
 
 	/// Set the mass properties to override the mass properties of the fixtures.
@@ -376,7 +376,7 @@ public:
 
 	/// Get the next body in the world's body list.
 	b2Body* GetNext();
-	const b2Body* GetNext() const;
+	// const b2Body* GetNext() const;
 
 	/// Get the user data pointer that was provided in the body definition.
 	void* GetUserData() const;
@@ -386,7 +386,7 @@ public:
 
 	/// Get the parent world of this body.
 	b2World* GetWorld();
-	const b2World* GetWorld() const;
+	// const b2World* GetWorld() const;
 
 	/// Dump this body to a file
 	void Dump();
@@ -729,10 +729,10 @@ inline b2Body* b2Body::GetNext()
 	return m_next;
 }
 
-inline const b2Body* b2Body::GetNext() const
-{
-	return m_next;
-}
+// inline const b2Body* b2Body::GetNext() const
+// {
+// 	return m_next;
+// }
 
 inline void b2Body::SetUserData(void* data)
 {
@@ -881,9 +881,9 @@ inline b2World* b2Body::GetWorld()
 	return m_world;
 }
 
-inline const b2World* b2Body::GetWorld() const
-{
-	return m_world;
-}
+// inline const b2World* b2Body::GetWorld() const
+// {
+// 	return m_world;
+// }
 
 #endif
