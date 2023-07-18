@@ -532,6 +532,21 @@
                 .property("motorSpeed", &b2PrismaticJointDef::motorSpeed)
                 .property("maxMotorForce", &b2PrismaticJointDef::maxMotorForce);
 
+        //binding class b2WheelJointDef
+        class_<b2WheelJointDef, base<b2JointDef>>("WheelJointDef")
+                .constructor<>()
+                .property("localAnchorA", &b2WheelJointDef::localAnchorA)
+                .property("localAnchorB", &b2WheelJointDef::localAnchorB)
+                .property("localAxisA", &b2WheelJointDef::localAxisA)
+                .property("enableLimit", &b2WheelJointDef::enableLimit)
+                .property("lowerTranslation", &b2WheelJointDef::lowerTranslation)
+                .property("upperTranslation", &b2WheelJointDef::upperTranslation)
+                .property("enableMotor", &b2WheelJointDef::enableMotor)
+                .property("maxMotorTorque", &b2WheelJointDef::maxMotorTorque)
+                .property("motorSpeed", &b2WheelJointDef::motorSpeed)
+                .property("stiffness", &b2WheelJointDef::stiffness)
+                .property("damping", &b2WheelJointDef::damping);
+
         //binding class b2RopeJointDef
         class_<b2RopeJointDef, base<b2JointDef>>("RopeJointDef")
                 .constructor<>()

@@ -567,11 +567,14 @@ declare namespace B2 {
         localAnchorA: Vec2;
         localAnchorB: Vec2;
         localAxisA: Vec2;
+        enableLimit: boolean;
+        lowerTranslation: number;
+        upperTranslation: number;
         enableMotor: boolean;
         maxMotorTorque: number;
         motorSpeed: number;
-        frequencyHz: number;
-        dampingRatio: number;
+        stiffness: number;
+        damping: number;
     }
 
     class WheelJoint extends Joint {
@@ -600,8 +603,8 @@ declare namespace B2 {
         localAnchorA: Vec2;
         localAnchorB: Vec2;
         length: number;
-        frequencyHz: number;
-        dampingRatio: number;
+        stiffness: number;
+        damping: number;
     }
 
     class DistanceJoint extends Joint {
@@ -642,10 +645,17 @@ declare namespace B2 {
 
     class MouseJointDef extends JointDef {
         constructor();
-        target: Vec2;
-        maxForce: number;
-        frequencyHz: number;
-        dampingRatio: number;
+        localAnchorA: Vec2;
+        localAnchorB: Vec2;
+        localAxisA: Vec2;
+        enableLimit: boolean;
+        lowerTranslation: number;
+        upperTranslation: number;
+        enableMotor: boolean;
+        maxMotorForce: number;
+        motorSpeed: number;
+        stiffness: number;
+        damping: number;
     }
 
     class MouseJoint extends Joint {
