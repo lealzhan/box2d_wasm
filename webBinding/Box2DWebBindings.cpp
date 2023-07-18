@@ -32,6 +32,8 @@
         value_object<b2Vec2>("Vec2")
                 .field("x", &b2Vec2::x)
                 .field("y", &b2Vec2::y);
+        register_vector<b2Vec2>("Vec2Vector");
+
         value_object<b2Vec3>("Vec3")
                 .field("x", &b2Vec3::x)
                 .field("y", &b2Vec3::y)
@@ -79,10 +81,10 @@
                 .field("localPoint", &b2Manifold::localPoint)
                 .field("type", &b2Manifold::type)
                 .field("pointCount", &b2Manifold::pointCount);
-        value_object<b2WorldManifold>("WorldManifold")
-                .field("normal", &b2WorldManifold::normal)
-                .field("points", &b2WorldManifold::points)
-                .field("separations", &b2WorldManifold::separations);
+        // value_object<b2WorldManifold>("WorldManifold")
+        //         .field("normal", &b2WorldManifold::normal)
+        //         .field("points", &b2WorldManifold::points)
+        //         .field("separations", &b2WorldManifold::separations);
         value_object<b2ClipVertex>("ClipVertex")
                 .field("v", &b2ClipVertex::v)
                 .field("id", &b2ClipVertex::id);
@@ -93,9 +95,9 @@
         value_object<b2RayCastOutput>("RayCastOutput")
                 .field("normal", &b2RayCastOutput::normal)
                 .field("fraction", &b2RayCastOutput::fraction);
-        value_object<b2AABB>("AABB")
-                .field("lowerBound", &b2AABB::lowerBound)
-                .field("upperBound", &b2AABB::upperBound);
+        // value_object<b2AABB>("AABB")
+        //         .field("lowerBound", &b2AABB::lowerBound)
+        //         .field("upperBound", &b2AABB::upperBound);
         value_object<b2MassData>("MassData")
                 .field("mass", &b2MassData::mass)
                 .field("center", &b2MassData::center)
@@ -147,9 +149,9 @@
         // override b2RayCastCallback in js and assign to
         // PxControllerDesc.reportCallback
         // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#deriving-from-c-classes-in-javascript
-        class_<b2RayCastCallback>("b2RayCastCallback")
+        class_<b2RayCastCallback>("RayCastCallback")
                 .function("ReportFixture", &b2RayCastCallback::ReportFixture, pure_virtual(), allow_raw_pointers())
-                .allow_subclass<b2RayCastCallbackWrapper>("b2RayCastCallbackWrapper", constructor<>());
+                .allow_subclass<b2RayCastCallbackWrapper>("RayCastCallbackWrapper", constructor<>());
 
         //binding class b2ContactListener
         class_<b2ContactListener>("ContactListener")
@@ -173,6 +175,20 @@
                 // .function("DrawAABB", &b2Draw::DrawAABB, allow_raw_pointers())
                 ;
 
+        //b2WorldManifold
+        class_<b2WorldManifold>("WorldManifold")
+                .constructor<>()
+                .function("Initialize", &b2WorldManifold::Initialize, allow_raw_pointers())
+                .property("normal", &b2WorldManifold::normal);
+                //.property("points", &b2WorldManifold::points)
+                //.property("separations", &b2WorldManifold::separations);
+        // //b2Filter
+        // class_<b2Filter>("Filter")
+        //         .constructor<>()
+        //         .property("categoryBits", &b2Filter::categoryBits)
+        //         .property("maskBits", &b2Filter::maskBits)
+        //         .property("groupIndex", &b2Filter::groupIndex);
+
         //binding class b2Contact
         class_<b2Contact>("Contact")
                 // .function("GetManifold", &b2Contact::GetManifold)
@@ -195,6 +211,20 @@
                 .function("GetTangentSpeed", &b2Contact::GetTangentSpeed)
                 .function("Evaluate", &b2Contact::Evaluate, allow_raw_pointers())
                 ;
+
+        //b2AABB
+        class_<b2AABB>("AABB")
+                .constructor<>()
+                .function("IsValid", &b2AABB::IsValid)
+                .function("GetCenter", &b2AABB::GetCenter)
+                .function("GetExtents", &b2AABB::GetExtents)
+                .function("GetPerimeter", &b2AABB::GetPerimeter)
+                // .function("Combine", &b2AABB::Combine)
+                // .function("CombineTwo", &b2AABB::Combine)
+                .function("Contains", &b2AABB::Contains)
+                .function("RayCast", &b2AABB::RayCast, allow_raw_pointers())
+                .property("lowerBound", &b2AABB::lowerBound)
+                .property("upperBound", &b2AABB::upperBound);
 
         //binding class b2World
         class_<b2World>("World")
@@ -291,6 +321,11 @@
                 .constructor<>()
                 .function("Clone", &b2PolygonShape::Clone, allow_raw_pointers())
                 .function("GetChildCount", &b2PolygonShape::GetChildCount)
+                //.function("Set", select_overload<bool(const b2Vec2*, int32)>(&b2PolygonShape::Set), allow_raw_pointers())
+                .function("Set", optional_override([](b2PolygonShape* p, std::vector<b2Vec2> &vertices, int32 count) {
+                        return p->Set(vertices.data(), count);
+                        }), allow_raw_pointers())
+                .function("SetWithConvexHull", select_overload<void(const b2Hull&)>(&b2PolygonShape::Set))
                 .function("TestPoint", &b2PolygonShape::TestPoint)
                 .function("RayCast", &b2PolygonShape::RayCast, allow_raw_pointers())
                 .function("ComputeAABB", &b2PolygonShape::ComputeAABB, allow_raw_pointers())
@@ -390,7 +425,10 @@
                 .function("GetMass", &b2Body::GetMass)
                 .function("GetInertia", &b2Body::GetInertia)
                 .function("GetMassData", &b2Body::GetMassData)
-                .function("SetMassData", &b2Body::SetMassData, allow_raw_pointers())
+                // .function("SetMassData", &b2Body::SetMassData, allow_raw_pointers())
+                .function("SetMassData", optional_override([](b2Body* body, const b2MassData& f) {
+                        return body->SetMassData(&f);
+                        }), allow_raw_pointers())
                 .function("ResetMassData", &b2Body::ResetMassData)
                 .function("GetWorldPoint", &b2Body::GetWorldPoint)
                 .function("GetWorldVector", &b2Body::GetWorldVector)
@@ -412,8 +450,8 @@
                 .function("IsSleepingAllowed", &b2Body::IsSleepingAllowed)
                 .function("SetAwake", &b2Body::SetAwake)
                 .function("IsAwake", &b2Body::IsAwake)
-                // .function("SetActive", &b2Body::SetActive)
-                // .function("IsActive", &b2Body::IsActive)
+                .function("SetEnabled", &b2Body::SetEnabled)
+                .function("IsEnabled", &b2Body::IsEnabled)
                 .function("SetFixedRotation", &b2Body::SetFixedRotation)
                 .function("IsFixedRotation", &b2Body::IsFixedRotation)
                 // .function("GetFixtureList", &b2Body::GetFixtureList)
@@ -480,6 +518,19 @@
                 .property("motorSpeed", &b2RevoluteJointDef::motorSpeed)
                 .property("maxMotorTorque", &b2RevoluteJointDef::maxMotorTorque);
         
+        //binding class b2PrismaticJointDef
+        class_<b2PrismaticJointDef, base<b2JointDef>>("PrismaticJointDef")
+                .constructor<>()
+                .property("localAnchorA", &b2PrismaticJointDef::localAnchorA)
+                .property("localAnchorB", &b2PrismaticJointDef::localAnchorB)
+                .property("localAxisA", &b2PrismaticJointDef::localAxisA)
+                .property("referenceAngle", &b2PrismaticJointDef::referenceAngle)
+                .property("enableLimit", &b2PrismaticJointDef::enableLimit)
+                .property("lowerTranslation", &b2PrismaticJointDef::lowerTranslation)
+                .property("upperTranslation", &b2PrismaticJointDef::upperTranslation)
+                .property("enableMotor", &b2PrismaticJointDef::enableMotor)
+                .property("motorSpeed", &b2PrismaticJointDef::motorSpeed)
+                .property("maxMotorForce", &b2PrismaticJointDef::maxMotorForce);
 
         //binding class b2Joint
         class_<b2Joint>("Joint")

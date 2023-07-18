@@ -202,7 +202,7 @@
 				bodyDef.type = BOX2D.BodyType.b2_dynamicBody; // balls can move
 
 				// let ballPos = new BOX2D.Vec2(Math.random() * 40 - 20, 200);
-				let ballPos = {x:Math.random() * 40 - 20, y:200};
+				let ballPos = {x:Math.random() * 40 - 20, y:100};
 				bodyDef.position = ballPos;
 				// bodyDef.position.SetY(50);
 				// bodyDef.position.SetX(Math.random() * 40 - 20); // Random positon between -20 and 20
@@ -221,7 +221,10 @@
 
 				//ballRB.userData = ball;
 				b2MapingThree[ballRB.$$.ptr] = ball;
-				ballRB.CreateFixture( fixDef ); // Add this physics body to the world
+				//ballRB.CreateFixture( fixDef ); // Add this physics body to the world
+				// ballRB.SetEnabled(true);
+				// ballRB.SetAwake(true);
+				ballRB.SetMassData({mass:1, center:{x:0,y:0}, I:1});
 				ballPos = null;
 			}
 			
@@ -279,7 +282,7 @@
 					}
 				}
 				
-				console.log("rigid body count = , active = ", RBCount, RBActiveCount);
+				console.log("rigid body count = ", RBCount, "active = ", RBActiveCount);
 				//var object = world.GetBody(i), mesh, position;
 				// while ( object ) {
 				// 	mesh = object.GetUserData();
