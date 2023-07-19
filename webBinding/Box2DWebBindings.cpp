@@ -27,6 +27,24 @@
                 }
         };
 
+        //b2ContactListenerWrapper
+        struct b2ContactListenerWrapper : public wrapper<b2ContactListener> {
+                EMSCRIPTEN_WRAPPER(b2ContactListenerWrapper)
+                void BeginContact(b2Contact* contact) override {
+                        return call<void>("BeginContact", contact);
+                }
+                void EndContact(b2Contact* contact) override {
+                        return call<void>("EndContact", contact);
+                }
+                void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override {
+                        return call<void>("PreSolve", contact, oldManifold);
+                }
+                void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override {
+                        return call<void>("PostSolve", contact, impulse);
+                }
+        };
+
+
         //----------------------------------------------------------------------------------------------------------------------
         EMSCRIPTEN_BINDINGS(b2) {
         value_object<b2Vec2>("Vec2")
@@ -75,12 +93,12 @@
                 .field("normalImpulse", &b2ManifoldPoint::normalImpulse)
                 .field("tangentImpulse", &b2ManifoldPoint::tangentImpulse)
                 .field("id", &b2ManifoldPoint::id);
-        value_object<b2Manifold>("Manifold")
-                .field("points", &b2Manifold::points)
-                .field("localNormal", &b2Manifold::localNormal)
-                .field("localPoint", &b2Manifold::localPoint)
-                .field("type", &b2Manifold::type)
-                .field("pointCount", &b2Manifold::pointCount);
+        // value_object<b2Manifold>("Manifold")
+        //         .field("points", &b2Manifold::points)
+        //         .field("localNormal", &b2Manifold::localNormal)
+        //         .field("localPoint", &b2Manifold::localPoint)
+        //         .field("type", &b2Manifold::type)
+        //         .field("pointCount", &b2Manifold::pointCount);
         // value_object<b2WorldManifold>("WorldManifold")
         //         .field("normal", &b2WorldManifold::normal)
         //         .field("points", &b2WorldManifold::points)
@@ -112,10 +130,10 @@
                 .field("categoryBits", &b2Filter::categoryBits)
                 .field("maskBits", &b2Filter::maskBits)
                 .field("groupIndex", &b2Filter::groupIndex);
-        value_object<b2ContactImpulse>("ContactImpulse")
-                .field("normalImpulses", &b2ContactImpulse::normalImpulses)
-                .field("tangentImpulses", &b2ContactImpulse::tangentImpulses)
-                .field("count", &b2ContactImpulse::count);
+        // value_object<b2ContactImpulse>("ContactImpulse")
+        //         .field("normalImpulses", &b2ContactImpulse::normalImpulses)
+        //         .field("tangentImpulses", &b2ContactImpulse::tangentImpulses)
+        //         .field("count", &b2ContactImpulse::count);
 
         //b2_maxPolygonVertices
 
@@ -158,7 +176,8 @@
                 .function("BeginContact", &b2ContactListener::BeginContact, allow_raw_pointers())
                 .function("EndContact", &b2ContactListener::EndContact, allow_raw_pointers())
                 .function("PreSolve", &b2ContactListener::PreSolve, allow_raw_pointers())
-                .function("PostSolve", &b2ContactListener::PostSolve, allow_raw_pointers());
+                .function("PostSolve", &b2ContactListener::PostSolve, allow_raw_pointers())
+                .allow_subclass<b2ContactListenerWrapper>("ContactListenerWrapper", constructor<>());
 
         //binding class b2Draw
         class_<b2Draw>("Draw")
@@ -179,9 +198,29 @@
         class_<b2WorldManifold>("WorldManifold")
                 .constructor<>()
                 .function("Initialize", &b2WorldManifold::Initialize, allow_raw_pointers())
-                .property("normal", &b2WorldManifold::normal);
+                .property("normal", &b2WorldManifold::normal)
+                // .function("GetPoint0", optional_override([](b2WorldManifold* m) {
+                //         return m->points[0];
+                //         }), allow_raw_pointers())
+                // .function("GetPoint1", optional_override([](b2WorldManifold* m) {
+                //         return m->points[1];
+                //         }), allow_raw_pointers())
+                // .function("GetSeperation0", optional_override([](b2WorldManifold* m) {
+                //         return m->separations[0];
+                //         }), allow_raw_pointers())
+                // .function("GetSeperation1", optional_override([](b2WorldManifold* m) {
+                //         return m->separations[1];
+                //         }), allow_raw_pointers())
+                .function("GetPoint", optional_override([](b2WorldManifold* m, int32 i) {
+                        return m->points[i];
+                        }), allow_raw_pointers())
+                .function("GetSeparation", optional_override([](b2WorldManifold* m, int32 i) {
+                        return (m->separations[i]);
+                        }), allow_raw_pointers())
+                ;
                 //.property("points", &b2WorldManifold::points)
                 //.property("separations", &b2WorldManifold::separations);
+        
         // //b2Filter
         // class_<b2Filter>("Filter")
         //         .constructor<>()
@@ -189,17 +228,40 @@
         //         .property("maskBits", &b2Filter::maskBits)
         //         .property("groupIndex", &b2Filter::groupIndex);
 
+        //b2Manifold
+        class_<b2Manifold>("Manifold")
+                .constructor<>()
+                // .property("points", &b2Manifold::points)
+                .property("localNormal", &b2Manifold::localNormal)
+                .property("localPoint", &b2Manifold::localPoint)
+                .property("type", &b2Manifold::type)
+                .property("pointCount", &b2Manifold::pointCount)
+                .function("GetPoint", optional_override([](b2Manifold* m, int32 i) {
+                        if(i >= 0 && i < m->pointCount) {
+                                return &(m->points[i]);
+                        } else {
+                                return (b2ManifoldPoint*)nullptr;
+                        }
+                        }), allow_raw_pointers())
+                ;
+        //b2ContactImpulse
+        class_<b2ContactImpulse>("ContactImpulse")
+                .constructor<>()
+                // .property("normalImpulses", &b2ContactImpulse::normalImpulses)
+                // .property("tangentImpulses", &b2ContactImpulse::tangentImpulses)
+                .property("count", &b2ContactImpulse::count);
+
         //binding class b2Contact
         class_<b2Contact>("Contact")
-                // .function("GetManifold", &b2Contact::GetManifold)
+                .function("GetManifold", &b2Contact::GetManifold, allow_raw_pointers())
                 .function("GetWorldManifold", &b2Contact::GetWorldManifold, allow_raw_pointers())
                 .function("IsTouching", &b2Contact::IsTouching)
                 .function("SetEnabled", &b2Contact::SetEnabled)
                 .function("IsEnabled", &b2Contact::IsEnabled)
-                // .function("GetNext", &b2Contact::GetNext)
-                // .function("GetFixtureA", &b2Contact::GetFixtureA)
+                .function("GetNext", &b2Contact::GetNext, allow_raw_pointers())
+                .function("GetFixtureA", &b2Contact::GetFixtureA, allow_raw_pointers())
                 .function("GetChildIndexA", &b2Contact::GetChildIndexA)
-                // .function("GetFixtureB", &b2Contact::GetFixtureB)
+                .function("GetFixtureB", &b2Contact::GetFixtureB, allow_raw_pointers())
                 .function("GetChildIndexB", &b2Contact::GetChildIndexB)
                 .function("SetFriction", &b2Contact::SetFriction)
                 .function("GetFriction", &b2Contact::GetFriction)
@@ -252,6 +314,13 @@
                         }), allow_raw_pointers())
                 // .function("GetJointList", &b2World::GetJointList)
                 // .function("GetContactList", &b2World::GetContactList)
+                .function("GetContactList", optional_override([](b2World* f) {
+                                if(f->GetBodyCount()) {
+                                        return &(f->GetContactList()[0]);
+                                }else{
+                                        return (b2Contact*)nullptr;
+                                }
+                        }), allow_raw_pointers())
                 .function("SetAllowSleeping", &b2World::SetAllowSleeping)
                 .function("GetAllowSleeping", &b2World::GetAllowSleeping)
                 .function("SetWarmStarting", &b2World::SetWarmStarting)
@@ -568,6 +637,9 @@
                 // .function("SetUserData", &b2Joint::SetUserData)
                 // .function("IsActive", &b2Joint::IsActive)
                 .function("GetCollideConnected", &b2Joint::GetCollideConnected)
+                .function("Cast2MotorJoint", optional_override([](b2Joint* j) {
+                        return (b2MotorJoint*)j;
+                        }), allow_raw_pointers())
                 .function("Dump", &b2Joint::Dump);
 
         //binding class b2DistanceJoint
@@ -603,6 +675,15 @@
                 .function("SetRatio", &b2GearJoint::SetRatio)
                 .function("GetRatio", &b2GearJoint::GetRatio)
                 .function("Dump", &b2GearJoint::Dump);
+
+        //b2MotorJointDef
+        class_<b2MotorJointDef, base<b2JointDef>>("MotorJointDef")
+                .constructor<>()
+                .property("linearOffset", &b2MotorJointDef::linearOffset)
+                .property("angularOffset", &b2MotorJointDef::angularOffset)
+                .property("maxForce", &b2MotorJointDef::maxForce)
+                .property("maxTorque", &b2MotorJointDef::maxTorque)
+                .property("correctionFactor", &b2MotorJointDef::correctionFactor);
 
         //binding class b2MotorJoint
         class_<b2MotorJoint, base<b2Joint>>("MotorJoint")
@@ -736,6 +817,8 @@
         // counting embind doesn't deal with this well, so we have to override the
         // destructors to keep them private in the bindings See:
         // https://github.com/emscripten-core/emscripten/issues/5587
+        template <> void raw_destructor<b2Manifold>(b2Manifold *) {}
+        template <> void raw_destructor<b2ContactImpulse>(b2ContactImpulse *) {}
         template <> void raw_destructor<b2Contact>(b2Contact *) {}
         template <> void raw_destructor<b2Shape>(b2Shape *) {}
         template <> void raw_destructor<b2CircleShape>(b2CircleShape *) {}

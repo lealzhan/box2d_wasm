@@ -85,7 +85,7 @@ public:
 	/// Get the contact manifold. Do not modify the manifold unless you understand the
 	/// internals of Box2D.
 	b2Manifold* GetManifold();
-	const b2Manifold* GetManifold() const;
+	// const b2Manifold* GetManifold() const;
 
 	/// Get the world manifold.
 	void GetWorldManifold(b2WorldManifold* worldManifold) const;
@@ -103,18 +103,18 @@ public:
 
 	/// Get the next contact in the world's contact list.
 	b2Contact* GetNext();
-	const b2Contact* GetNext() const;
+	// const b2Contact* GetNext() const;
 
 	/// Get fixture A in this contact.
 	b2Fixture* GetFixtureA();
-	const b2Fixture* GetFixtureA() const;
+	// const b2Fixture* GetFixtureA() const;
 
 	/// Get the child primitive index for fixture A.
 	int32 GetChildIndexA() const;
 
 	/// Get fixture B in this contact.
 	b2Fixture* GetFixtureB();
-	const b2Fixture* GetFixtureB() const;
+	// const b2Fixture* GetFixtureB() const;
 
 	/// Get the child primitive index for fixture B.
 	int32 GetChildIndexB() const;
@@ -228,10 +228,10 @@ inline b2Manifold* b2Contact::GetManifold()
 	return &m_manifold;
 }
 
-inline const b2Manifold* b2Contact::GetManifold() const
-{
-	return &m_manifold;
-}
+// inline const b2Manifold* b2Contact::GetManifold() const
+// {
+// 	return &m_manifold;
+// }
 
 inline void b2Contact::GetWorldManifold(b2WorldManifold* worldManifold) const
 {
@@ -270,20 +270,20 @@ inline b2Contact* b2Contact::GetNext()
 	return m_next;
 }
 
-inline const b2Contact* b2Contact::GetNext() const
-{
-	return m_next;
-}
+// inline const b2Contact* b2Contact::GetNext() const
+// {
+// 	return m_next;
+// }
 
 inline b2Fixture* b2Contact::GetFixtureA()
 {
 	return m_fixtureA;
 }
 
-inline const b2Fixture* b2Contact::GetFixtureA() const
-{
-	return m_fixtureA;
-}
+// inline const b2Fixture* b2Contact::GetFixtureA() const
+// {
+// 	return m_fixtureA;
+// }
 
 inline b2Fixture* b2Contact::GetFixtureB()
 {
@@ -295,10 +295,10 @@ inline int32 b2Contact::GetChildIndexA() const
 	return m_indexA;
 }
 
-inline const b2Fixture* b2Contact::GetFixtureB() const
-{
-	return m_fixtureB;
-}
+// inline const b2Fixture* b2Contact::GetFixtureB() const
+// {
+// 	return m_fixtureB;
+// }
 
 inline int32 b2Contact::GetChildIndexB() const
 {
