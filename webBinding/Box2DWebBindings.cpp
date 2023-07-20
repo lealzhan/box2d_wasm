@@ -45,8 +45,54 @@
         };
 
 
+        void SetLinearFrequencyAndDampingRatio(b2Joint* j, float frequencyHertz, float dampingRatio){
+                float stiffness, damping;
+                b2LinearStiffness(stiffness, damping, frequencyHertz, dampingRatio, j->GetBodyA(), j->GetBodyB());
+                //cast j to specific type based on its type
+                switch (j->GetType())
+                {
+                case b2JointType::e_distanceJoint:
+                        ((b2DistanceJoint*)j)->SetStiffness(stiffness);
+                        ((b2DistanceJoint*)j)->SetDamping(damping);
+                        break;
+                case b2JointType::e_weldJoint:
+                        ((b2WeldJoint*)j)->SetStiffness(stiffness);
+                        ((b2WeldJoint*)j)->SetDamping(damping);
+                        break;
+                case b2JointType::e_wheelJoint:
+                        ((b2WheelJoint*)j)->SetStiffness(stiffness);
+                        ((b2WheelJoint*)j)->SetDamping(damping);
+                        break;
+                case b2JointType::e_frictionJoint:
+                case b2JointType::e_ropeJoint:
+                case b2JointType::e_motorJoint:
+                case b2JointType::e_prismaticJoint:
+                case b2JointType::e_revoluteJoint:
+                case b2JointType::e_pulleyJoint:
+                case b2JointType::e_mouseJoint:
+                case b2JointType::e_gearJoint:
+                case b2JointType::e_unknownJoint:
+                default:
+                        break;
+                }
+        }
+
+
         //----------------------------------------------------------------------------------------------------------------------
         EMSCRIPTEN_BINDINGS(b2) {
+                
+        constant("VERSION_MAJOR", b2_version.major);
+        constant("VERSION_MINOR", b2_version.minor);
+        constant("VERSION_REVISION", b2_version.revision);
+
+        enum_<b2Shape::Type>("ShapeType")
+                .value("e_circle", b2Shape::e_circle)
+                .value("e_edge", b2Shape::e_edge)
+                .value("e_polygon", b2Shape::e_polygon)
+                .value("e_chain", b2Shape::e_chain)
+                .value("e_typeCount", b2Shape::e_typeCount);
+        
+        // value object        
         value_object<b2Vec2>("Vec2")
                 .field("x", &b2Vec2::x)
                 .field("y", &b2Vec2::y);
@@ -120,12 +166,7 @@
                 .field("mass", &b2MassData::mass)
                 .field("center", &b2MassData::center)
                 .field("I", &b2MassData::I);
-        // value_object<b2Shape::Type>("ShapeType")
-        //         .field("e_circle", &b2Shape::e_circle)
-        //         .field("e_edge", &b2Shape::e_edge)
-        //         .field("e_polygon", &b2Shape::e_polygon)
-        //         .field("e_chain", &b2Shape::e_chain)
-        //         .field("e_typeCount", &b2Shape::e_typeCount);
+        
         value_object<b2Filter>("Filter")
                 .field("categoryBits", &b2Filter::categoryBits)
                 .field("maskBits", &b2Filter::maskBits)
@@ -155,6 +196,8 @@
         //         .function("IsValid", &b2Vec2::IsValid);
 
 
+
+        function("SetLinearFrequencyAndDampingRatio", &SetLinearFrequencyAndDampingRatio, allow_raw_pointers());
 
         //binding class b2QueryCallback
         class_<b2QueryCallback>("QueryCallback")
@@ -422,7 +465,7 @@
         //binding class b2Fixture
         class_<b2Fixture>("Fixture")
                 .function("GetType", &b2Fixture::GetType)
-                // .function("GetShape", &b2Fixture::GetShape)
+                .function("GetShape", &b2Fixture::GetShape, allow_raw_pointers())
                 .function("SetSensor", &b2Fixture::SetSensor)
                 .function("IsSensor", &b2Fixture::IsSensor)
                 .function("SetFilterData", &b2Fixture::SetFilterData)
@@ -637,9 +680,28 @@
                 // .function("SetUserData", &b2Joint::SetUserData)
                 // .function("IsActive", &b2Joint::IsActive)
                 .function("GetCollideConnected", &b2Joint::GetCollideConnected)
+                .function("Cast2DistanceJoint", optional_override([](b2Joint* j) {
+                        return (b2DistanceJoint*)j;}), allow_raw_pointers())
+                .function("Cast2FrictionJoint", optional_override([](b2Joint* j) {
+                        return (b2FrictionJoint*)j;}), allow_raw_pointers())
+                .function("Cast2GearJoint", optional_override([](b2Joint* j) {
+                        return (b2GearJoint*)j;}), allow_raw_pointers())
                 .function("Cast2MotorJoint", optional_override([](b2Joint* j) {
-                        return (b2MotorJoint*)j;
-                        }), allow_raw_pointers())
+                        return (b2MotorJoint*)j;}), allow_raw_pointers())
+                .function("Cast2MouseJoint", optional_override([](b2Joint* j) {
+                        return (b2MouseJoint*)j;}), allow_raw_pointers())
+                .function("Cast2PrismaticJoint", optional_override([](b2Joint* j) {
+                        return (b2PrismaticJoint*)j;}), allow_raw_pointers())
+                .function("Cast2PulleyJoint", optional_override([](b2Joint* j) {
+                        return (b2PulleyJoint*)j;}), allow_raw_pointers())
+                .function("Cast2RevoluteJoint", optional_override([](b2Joint* j) {
+                        return (b2RevoluteJoint*)j;}), allow_raw_pointers())
+                .function("Cast2RopeJoint", optional_override([](b2Joint* j) {
+                        return (b2RopeJoint*)j;}), allow_raw_pointers())
+                .function("Cast2WeldJoint", optional_override([](b2Joint* j) {
+                        return (b2WeldJoint*)j;}), allow_raw_pointers())
+                .function("Cast2WheelJoint", optional_override([](b2Joint* j) {
+                        return (b2WheelJoint*)j;}), allow_raw_pointers())
                 .function("Dump", &b2Joint::Dump);
 
         //binding class b2DistanceJoint

@@ -119,7 +119,7 @@ public:
 	/// number of vertices because this will crash some collision caching mechanisms.
 	/// Manipulating the shape may lead to non-physical behavior.
 	b2Shape* GetShape();
-	const b2Shape* GetShape() const;
+	// const b2Shape* GetShape() const;
 
 	/// Set if this fixture is a sensor.
 	void SetSensor(bool sensor);
@@ -250,10 +250,10 @@ inline b2Shape* b2Fixture::GetShape()
 	return m_shape;
 }
 
-inline const b2Shape* b2Fixture::GetShape() const
-{
-	return m_shape;
-}
+// inline const b2Shape* b2Fixture::GetShape() const
+// {
+// 	return m_shape;
+// }
 
 inline bool b2Fixture::IsSensor() const
 {

@@ -120,9 +120,10 @@ declare namespace B2 {
     class Manifold {
         localNormal: Vec2;
         localPoint: Vec2;
-        points: ManifoldPoint[];
+        //points: ManifoldPoint[];
         type: number;
         pointCount: number;
+        GetPoint(id: number): ManifoldPoint;
     }
 
     class Contact {
@@ -182,9 +183,12 @@ declare namespace B2 {
 
     class WorldManifold {
         constructor();
+        Initialize(manifold: Manifold, xfA: Transform, radiusA: number, xfB: Transform, radiusB: number): void;
         normal: Vec2;
-        points: Vec2[];
-        separations: number[];
+        //points: Vec2[];
+        //separations: number[];
+        GetPoint(index: number): Vec2;
+        GetSeparation(index: number): number;
     }
 
     class ContactEdge {
@@ -502,6 +506,17 @@ declare namespace B2 {
         SetUserData(data: any): void;
         IsActive(): boolean;
         GetCollideConnected(): boolean;
+        Cast2DistanceJoint(): DistanceJoint;
+        // Cast2FrictionJoint(): FrictionJoint;
+        // Cast2GearJoint(): GearJoint;
+        Cast2MotorJoint(): MotorJoint;
+        Cast2MouseJoint(): MouseJoint;
+        Cast2PrismaticJoint(): PrismaticJoint;
+        // Cast2PulleyJoint(): PulleyJoint;
+        Cast2RevoluteJoint(): RevoluteJoint;
+        Cast2RopeJoint(): RopeJoint;
+        Cast2WeldJoint(): WeldJoint;
+        Cast2WheelJoint(): WheelJoint;
         Dump(): void;
     }
 
@@ -554,10 +569,10 @@ declare namespace B2 {
         GetLocalAnchorA(): Vec2;
         GetLocalAnchorB(): Vec2;
         GetReferenceAngle(): number;
-        SetFrequency(hz: number): void;
-        GetFrequency(): number;
-        SetDampingRatio(ratio: number): void;
-        GetDampingRatio(): number;
+        SetStiffness(stiffness: number): void;
+        GetStiffness(): number;
+        SetDamping(damping: number): void;
+        GetDamping(): number;
         Dump(): void;
     }
 
@@ -590,10 +605,10 @@ declare namespace B2 {
         SetMaxMotorTorque(torque: number): void;
         GetMaxMotorTorque(): number;
         GetMotorTorque(inv_dt: number): number;
-        SetSpringFrequencyHz(hz: number): void;
-        GetSpringFrequencyHz(): number;
-        SetSpringDampingRatio(ratio: number): void;
-        GetSpringDampingRatio(): number;
+        SetStiffness(stiffness: number): void;
+        GetStiffness(): number;
+        SetDamping(damping: number): void;
+        GetDamping(): number;
         Dump(): void;
     }
 
@@ -612,10 +627,10 @@ declare namespace B2 {
         GetLocalAnchorB(): Vec2;
         SetLength(length: number): void;
         GetLength(): number;
-        SetFrequency(hz: number): void;
-        GetFrequency(): number;
-        SetDampingRatio(ratio: number): void;
-        GetDampingRatio(): number;
+        SetStiffness(stiffness: number): void;
+        GetStiffness(): number;
+        SetDamping(damping: number): void;
+        GetDamping(): number;
         Dump(): void;
     }
 
@@ -663,10 +678,10 @@ declare namespace B2 {
         GetTarget(): Vec2;
         SetMaxForce(force: number): void;
         GetMaxForce(): number;
-        SetFrequency(hz: number): void;
-        GetFrequency(): number;
-        SetDampingRatio(ratio: number): void;
-        GetDampingRatio(): number;
+        SetStiffness(stiffness: number): void;
+        GetStiffness(): number;
+        SetDamping(damping: number): void;
+        GetDamping(): number;
         Dump(): void;
     }
 
