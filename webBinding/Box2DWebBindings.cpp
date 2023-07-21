@@ -20,6 +20,13 @@
         //         v->x = in;
         // }
         
+        //b2QueryCallbackWrapper
+        struct b2QueryCallbackWrapper : public wrapper<b2QueryCallback> {
+                EMSCRIPTEN_WRAPPER(b2QueryCallbackWrapper)
+                bool ReportFixture(b2Fixture* fixture) override {
+                        return call<bool>("ReportFixture", fixture);
+                }
+        };
         struct b2RayCastCallbackWrapper : public wrapper<b2RayCastCallback> {
                 EMSCRIPTEN_WRAPPER(b2RayCastCallbackWrapper)
                 float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override {
@@ -44,6 +51,33 @@
                 }
         };
 
+        //b2DrawWrapper
+        struct b2DrawWrapper : public wrapper<b2Draw> {
+                EMSCRIPTEN_WRAPPER(b2DrawWrapper)
+                void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override {
+                        std::vector<b2Vec2> v(vertices, vertices + vertexCount);
+                        return call<void>("DrawPolygon", v, vertexCount, color);
+                }
+                void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override {
+                        std::vector<b2Vec2> v(vertices, vertices + vertexCount);
+                        return call<void>("DrawSolidPolygon", v, vertexCount, color);
+                }
+                void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override {
+                        return call<void>("DrawCircle", center, radius, color);
+                }
+                void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) override {
+                        return call<void>("DrawSolidCircle", center, radius, axis, color);
+                }
+                void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) override {
+                        return call<void>("DrawSegment", p1, p2, color);
+                }
+                void DrawTransform(const b2Transform& xf) override {
+                        return call<void>("DrawTransform", xf);
+                }
+                void DrawPoint(const b2Vec2& p, float size, const b2Color& color) override {
+                        return call<void>("DrawPoint", p, size, color);
+                }
+        };
 
         void SetLinearFrequencyAndDampingRatio(b2Joint* j, float frequencyHertz, float dampingRatio){
                 float stiffness, damping;
@@ -80,7 +114,7 @@
 
         //----------------------------------------------------------------------------------------------------------------------
         EMSCRIPTEN_BINDINGS(b2) {
-                
+
         constant("VERSION_MAJOR", b2_version.major);
         constant("VERSION_MINOR", b2_version.minor);
         constant("VERSION_REVISION", b2_version.revision);
@@ -97,7 +131,6 @@
                 .field("x", &b2Vec2::x)
                 .field("y", &b2Vec2::y);
         register_vector<b2Vec2>("Vec2Vector");
-
         value_object<b2Vec3>("Vec3")
                 .field("x", &b2Vec3::x)
                 .field("y", &b2Vec3::y)
@@ -201,7 +234,8 @@
 
         //binding class b2QueryCallback
         class_<b2QueryCallback>("QueryCallback")
-                .function("ReportFixture", &b2QueryCallback::ReportFixture, allow_raw_pointers());
+                .function("ReportFixture", &b2QueryCallback::ReportFixture, allow_raw_pointers())
+                .allow_subclass<b2QueryCallbackWrapper>("QueryCallbackWrapper", constructor<>());
 
         // //binding class b2RayCastCallback
         // class_<b2RayCastCallback>("RayCastCallback")
@@ -224,8 +258,10 @@
 
         //binding class b2Draw
         class_<b2Draw>("Draw")
-                // .function("PushTransform", &b2Draw::PushTransform, allow_raw_pointers())
-                // .function("PopTransform", &b2Draw::PopTransform, allow_raw_pointers())
+                .function("SetFlags", &b2Draw::SetFlags)
+                .function("GetFlags", &b2Draw::GetFlags)
+                .function("AppendFlags", &b2Draw::AppendFlags)
+                .function("ClearFlags", &b2Draw::ClearFlags)
                 .function("DrawPolygon", &b2Draw::DrawPolygon, allow_raw_pointers())
                 .function("DrawSolidPolygon", &b2Draw::DrawSolidPolygon, allow_raw_pointers())
                 .function("DrawCircle", &b2Draw::DrawCircle, allow_raw_pointers())
@@ -233,9 +269,7 @@
                 .function("DrawSegment", &b2Draw::DrawSegment, allow_raw_pointers())
                 .function("DrawTransform", &b2Draw::DrawTransform, allow_raw_pointers())
                 .function("DrawPoint", &b2Draw::DrawPoint, allow_raw_pointers())
-                // .function("DrawString", &b2Draw::DrawString, allow_raw_pointers())
-                // .function("DrawAABB", &b2Draw::DrawAABB, allow_raw_pointers())
-                ;
+                .allow_subclass<b2DrawWrapper>("DrawWrapper", constructor<>());
 
         //b2WorldManifold
         class_<b2WorldManifold>("WorldManifold")
@@ -338,6 +372,7 @@
                 .function("SetContactFilter", &b2World::SetContactFilter, allow_raw_pointers())
                 .function("SetContactListener", &b2World::SetContactListener, allow_raw_pointers())
                 .function("SetDebugDraw", &b2World::SetDebugDraw, allow_raw_pointers())
+                .function("DebugDraw", &b2World::DebugDraw, allow_raw_pointers())
                 .function("CreateBody", &b2World::CreateBody, allow_raw_pointers())
                 .function("DestroyBody", &b2World::DestroyBody, allow_raw_pointers())
                 .function("CreateJoint", &b2World::CreateJoint, allow_raw_pointers())
@@ -471,8 +506,8 @@
                 .function("SetFilterData", &b2Fixture::SetFilterData)
                 .function("GetFilterData", &b2Fixture::GetFilterData)
                 .function("Refilter", &b2Fixture::Refilter)
-                // .function("GetBody", &b2Fixture::GetBody)
-                // .function("GetNext", &b2Fixture::GetNext)
+                .function("GetBody", &b2Fixture::GetBody, allow_raw_pointers())
+                .function("GetNext", &b2Fixture::GetNext, allow_raw_pointers())
                 // .function("GetUserData", &b2Fixture::GetUserData)
                 // .function("SetUserData", &b2Fixture::SetUserData)
                 .function("TestPoint", &b2Fixture::TestPoint)
@@ -566,7 +601,7 @@
                 .function("IsEnabled", &b2Body::IsEnabled)
                 .function("SetFixedRotation", &b2Body::SetFixedRotation)
                 .function("IsFixedRotation", &b2Body::IsFixedRotation)
-                // .function("GetFixtureList", &b2Body::GetFixtureList)
+                .function("GetFixtureList", &b2Body::GetFixtureList, allow_raw_pointers())
                 // .function("GetJointList", &b2Body::GetJointList)
                 // .function("GetContactList", &b2Body::GetContactList)
                 .function("GetNext", &b2Body::GetNext, allow_raw_pointers())
@@ -760,6 +795,14 @@
                 .function("SetCorrectionFactor", &b2MotorJoint::SetCorrectionFactor)
                 .function("GetCorrectionFactor", &b2MotorJoint::GetCorrectionFactor)
                 .function("Dump", &b2MotorJoint::Dump);
+
+        //binding class b2MouseJointDef
+        class_<b2MouseJointDef, base<b2JointDef>>("MouseJointDef")
+                .constructor<>()
+                .property("target", &b2MouseJointDef::target)
+                .property("maxForce", &b2MouseJointDef::maxForce)
+                .property("frequencyHz", &b2MouseJointDef::frequencyHz)
+                .property("dampingRatio", &b2MouseJointDef::dampingRatio);
 
         //binding class b2MouseJoint
         class_<b2MouseJoint, base<b2Joint>>("MouseJoint")

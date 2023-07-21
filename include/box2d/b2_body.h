@@ -362,7 +362,7 @@ public:
 
 	/// Get the list of all fixtures attached to this body.
 	b2Fixture* GetFixtureList();
-	const b2Fixture* GetFixtureList() const;
+	// const b2Fixture* GetFixtureList() const;
 
 	/// Get the list of all joints attached to this body.
 	b2JointEdge* GetJointList();
@@ -699,10 +699,10 @@ inline b2Fixture* b2Body::GetFixtureList()
 	return m_fixtureList;
 }
 
-inline const b2Fixture* b2Body::GetFixtureList() const
-{
-	return m_fixtureList;
-}
+// inline const b2Fixture* b2Body::GetFixtureList() const
+// {
+// 	return m_fixtureList;
+// }
 
 inline b2JointEdge* b2Body::GetJointList()
 {

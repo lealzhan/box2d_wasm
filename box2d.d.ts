@@ -4,7 +4,7 @@
 //   export default PhysX;
 // }
 
-declare module 'external:emscripten/box2d/box2d.release.wasm.js' {
+declare module 'external:emscripten/box2d/box2d.debug.wasm.js' {
     export default BOX2D;
 }
 

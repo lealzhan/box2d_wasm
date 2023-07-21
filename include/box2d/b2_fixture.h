@@ -142,12 +142,12 @@ public:
 	/// Get the parent body of this fixture. This is nullptr if the fixture is not attached.
 	/// @return the parent body.
 	b2Body* GetBody();
-	const b2Body* GetBody() const;
+	// const b2Body* GetBody() const;
 
 	/// Get the next fixture in the parent body's fixture list.
 	/// @return the next shape.
 	b2Fixture* GetNext();
-	const b2Fixture* GetNext() const;
+	// const b2Fixture* GetNext() const;
 
 	/// Get the user data that was assigned in the fixture definition. Use this to
 	/// store your application specific data.
@@ -280,20 +280,20 @@ inline b2Body* b2Fixture::GetBody()
 	return m_body;
 }
 
-inline const b2Body* b2Fixture::GetBody() const
-{
-	return m_body;
-}
+// inline const b2Body* b2Fixture::GetBody() const
+// {
+// 	return m_body;
+// }
 
 inline b2Fixture* b2Fixture::GetNext()
 {
 	return m_next;
 }
 
-inline const b2Fixture* b2Fixture::GetNext() const
-{
-	return m_next;
-}
+// inline const b2Fixture* b2Fixture::GetNext() const
+// {
+// 	return m_next;
+// }
 
 inline void b2Fixture::SetDensity(float density)
 {

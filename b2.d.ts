@@ -26,6 +26,12 @@ declare namespace B2 {
         x: number, y: number
     }
 
+    class Vec2Vector {
+        push_back(v: Vec2): void;
+        get(i: number): Vec2;
+        length(): number;
+    }
+
     // interface Transform {
     //     p: Vec2, q: Vec2
     // }
@@ -258,7 +264,7 @@ declare namespace B2 {
         SetDestructionListener(listener: any): void;
         SetContactFilter(filter: any): void;
         SetContactListener(listener: any): void;
-        SetDebugDraw(debugDraw: any): void;
+        SetDebugDraw(debugDraw: B2.Draw): void;
         CreateBody(def: BodyDef): Body;
         DestroyBody(body: Body): void;
         CreateFixture(body: Body, fixtureDef: FixtureDef): Fixture;
@@ -267,7 +273,7 @@ declare namespace B2 {
         DestroyJoint(joint: Joint): void;
         Step(timeStep: number, velocityIterations: number, positionIterations: number): void;
         ClearForces(): void;
-        DrawDebugData(): void;
+        DebugDraw(): void;
         QueryAABB(callback: QueryCallback, aabb: AABB): void;
         RayCast(callback: RayCastCallback, point1: Vec2, point2: Vec2): void;
         GetBodyList(): Body;
@@ -678,10 +684,10 @@ declare namespace B2 {
         GetTarget(): Vec2;
         SetMaxForce(force: number): void;
         GetMaxForce(): number;
-        SetStiffness(stiffness: number): void;
-        GetStiffness(): number;
-        SetDamping(damping: number): void;
-        GetDamping(): number;
+        SetFrequency(hz: number): void;
+        GetFrequency(): number;
+        SetDampingRatio(ratio: number): void;
+        GetDampingRatio(): number;
         Dump(): void;
     }
 
