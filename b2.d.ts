@@ -1,27 +1,4 @@
-// interface Vec2 {
-//     x: number, y: number
-// }
-
-// interface Vec3 {
-//     x: number, y: number, z: number
-// }
-
-// interface Quat {
-//     x: number, y: number, z: number, w: number
-// }
-
-// interface FilterData {
-//     word0: number
-//     word1: number
-//     word2: number
-//     word3: number
-// }
-
 declare namespace B2 {
-    // interface instance {
-    //     HEAPF32: Float32Array;
-    // }
-
     interface Vec2 {
         x: number, y: number
     }
@@ -237,13 +214,6 @@ declare namespace B2 {
         Destroy(c: Contact): void;
         Collide(): void;
     }
-
-    // class Color {
-    //     r: number;
-    //     g: number;
-    //     b: number;
-    //     a: number;
-    // }
 
     class Draw {
         constructor();

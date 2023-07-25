@@ -1,24 +1,81 @@
         #include <box2d.h>
+        #include "tesselator.h"
 
         #include <emscripten.h>
         #include <emscripten/bind.h>
 
         using namespace emscripten;
 
-        // static void setShape(b2FixtureDef* f, const b2Shape* shape) {
-        //         f->shape = shape;
-        // }
+        static void ConvexPartition(const std::vector<b2Vec2>& points, const std::vector<int>& pathVertCounts,
+                                std::vector<b2Vec2>& resultPoints, std::vector<int>& resultPathVertCounts)
+        {
+                const int maxPolygonVerts = b2_maxPolygonVertices;
+                const int vertexDimension = 2;
+                
+                // new Tessellation
+                TESStesselator* tess = tessNewTess (nullptr);
 
-        // static const b2Shape* getShape(b2FixtureDef* f) {
-        //         return f->shape;
-        // }
+                // add all paths as a tessellation contour
+                const int pathCount = pathVertCounts.size();
+                int addedContours = 0;
+                int prevPathVertCount = 0;
+                for (int pathID = 0; pathID < pathCount; ++pathID)
+                {
+                        const int pathVertCount = pathVertCounts[pathID];
 
-        // static float b2Vec2GetX(b2Vec2* v) {
-        //         return v->x;
-        // }
-        // static void b2Vec2SetX(b2Vec2* v, float in) {
-        //         v->x = in;
-        // }
+                        if (pathVertCount < 3)
+                                continue;
+
+                        // Add path contour.
+                        tessAddContour (tess, vertexDimension, points.data() + prevPathVertCount * sizeof(b2Vec2), sizeof(b2Vec2), pathVertCount);
+                        addedContours++;
+                        prevPathVertCount = pathVertCount;
+                }
+
+                // return if no contours added
+                if (addedContours == 0)
+                        return;
+
+                // perform the tessellation
+                tessTesselate(tess, TESS_WINDING_ODD, TESS_POLYGONS, maxPolygonVerts, vertexDimension, nullptr);
+
+                // get the tessellation result
+                const int elemCount = tessGetElementCount (tess);
+                if (elemCount == 0)
+                        return;
+
+                const TESSindex* elements = tessGetElements(tess);
+                const TESSreal* real = tessGetVertices(tess);
+                std::vector<b2Vec2> buffer;
+                buffer.resize(maxPolygonVerts);
+                resultPoints.clear();
+                resultPathVertCounts.clear();
+                for (int elemID = 0; elemID < elemCount; ++elemID)
+                {
+                        const int* indices = &elements[elemID * maxPolygonVerts];
+                        int bufSize = 0;
+                        for (int i = 0; i < maxPolygonVerts && indices[i] != TESS_UNDEF; ++i)
+                        {
+                                const float& x = real[indices[i]*vertexDimension];
+                                const float& y = real[indices[i]*vertexDimension + 1];
+
+                                b2Vec2 newPoint(x, y);
+                                if (bufSize > 0 && b2DistanceSquared(buffer[bufSize-1], newPoint) <= b2_linearSlop * b2_linearSlop)
+                                        continue;
+                                
+                                buffer[bufSize] = newPoint;
+                                ++bufSize;
+                        }
+
+                        if (bufSize < 3)
+                                continue;
+        
+                        resultPoints.insert(resultPoints.end(), buffer.begin(), buffer.begin() + bufSize);
+                        resultPathVertCounts.push_back(bufSize);
+                }
+
+                tessDeleteTess(tess);
+        }
         
         //b2QueryCallbackWrapper
         struct b2QueryCallbackWrapper : public wrapper<b2QueryCallback> {
@@ -119,6 +176,8 @@
         constant("VERSION_MINOR", b2_version.minor);
         constant("VERSION_REVISION", b2_version.revision);
 
+        function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
+
         enum_<b2Shape::Type>("ShapeType")
                 .value("e_circle", b2Shape::e_circle)
                 .value("e_edge", b2Shape::e_edge)
@@ -127,6 +186,7 @@
                 .value("e_typeCount", b2Shape::e_typeCount);
         
         // value object        
+        register_vector<int32>("Int32Vector");
         value_object<b2Vec2>("Vec2")
                 .field("x", &b2Vec2::x)
                 .field("y", &b2Vec2::y);
@@ -910,18 +970,11 @@
                 .function("SetMaxLength", &b2RopeJoint::SetMaxLength)
                 .function("GetMaxLength", &b2RopeJoint::GetMaxLength)
                 .function("GetLength", &b2RopeJoint::GetLength)
-                .function("Dump", &b2RopeJoint::Dump);
-
-
+                .function("Dump", &b2RopeJoint::Dump);        
         }
-
 
         namespace emscripten {
         namespace internal {
-        // Physx uses private destructors all over the place for its own reference
-        // counting embind doesn't deal with this well, so we have to override the
-        // destructors to keep them private in the bindings See:
-        // https://github.com/emscripten-core/emscripten/issues/5587
         template <> void raw_destructor<b2Manifold>(b2Manifold *) {}
         template <> void raw_destructor<b2ContactImpulse>(b2ContactImpulse *) {}
         template <> void raw_destructor<b2Contact>(b2Contact *) {}
@@ -943,7 +996,5 @@
         template <> void raw_destructor<b2RevoluteJoint>(b2RevoluteJoint *) {}
         template <> void raw_destructor<b2WeldJoint>(b2WeldJoint *) {}
         template <> void raw_destructor<b2WheelJoint>(b2WheelJoint *) {}
-        // template <> void raw_destructor<b2World>(b2World *) {}
-
         } // namespace internal
         } // namespace emscripten

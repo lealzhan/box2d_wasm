@@ -13,7 +13,7 @@ cp -r ./bin/box2d.debug.wasm.wasm ../emscriptenTest
 cp -r ./bin/box2d.release.wasm.js ../emscriptenTest
 cp -r ./bin/box2d.release.wasm.wasm ../emscriptenTest
 
-cp -r ./bin/box2d.debug.wasm.js ../cocos-engine/native/external/emscripten/box2d
-cp -r ./bin/box2d.debug.wasm.wasm ../cocos-engine/native/external/emscripten/box2d
-cp -r ./bin/box2d.release.wasm.js ../cocos-engine/native/external/emscripten/box2d
-cp -r ./bin/box2d.release.wasm.wasm ../cocos-engine/native/external/emscripten/box2d
+cp -r ./bin/box2d.debug.wasm.js ../../cocos-engine/native/external/emscripten/box2d
+cp -r ./bin/box2d.debug.wasm.wasm ../../cocos-engine/native/external/emscripten/box2d
+cp -r ./bin/box2d.release.wasm.js ../../cocos-engine/native/external/emscripten/box2d
+cp -r ./bin/box2d.release.wasm.wasm ../../cocos-engine/native/external/emscripten/box2d

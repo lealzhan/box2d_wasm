@@ -12,6 +12,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(src)
+add_subdirectory(libtess2)
 
 # option(BOX2D_BUILD_UNIT_TESTS "Build the Box2D unit tests" ON)
 # option(BOX2D_BUILD_TESTBED "Build the Box2D testbed" ON)
