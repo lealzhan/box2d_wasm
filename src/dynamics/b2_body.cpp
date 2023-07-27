@@ -450,6 +450,8 @@ void b2Body::SetTransform(const b2Vec2& position, float angle)
 	{
 		f->Synchronize(broadPhase, m_xf, m_xf);
 	}
+
+	this->m_world->m_contactManager.FindNewContacts();
 }
 
 void b2Body::SynchronizeFixtures()
