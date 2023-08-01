@@ -1,3 +1,5 @@
+        #include <set>
+
         #include <box2d.h>
         #include "tesselator.h"
 
@@ -93,19 +95,47 @@
 
         //b2ContactListenerWrapper
         struct b2ContactListenerWrapper : public wrapper<b2ContactListener> {
+                private:
+                std::set<b2Fixture*> _contactFixtures;
+
+                public:
+                void registerContactFixture(unsigned int fixturePtr) {
+                        b2Fixture* fixture = (b2Fixture*)fixturePtr;
+                        _contactFixtures.insert(fixture);
+                }
+
+                void unregisterContactFixture(unsigned int  fixturePtr) {
+                        b2Fixture* fixture = (b2Fixture*)fixturePtr;
+                        _contactFixtures.erase(fixture);
+                }
+
+                bool isIndexOf(unsigned int  fixturePtr) {
+                        b2Fixture* fixture = (b2Fixture*)fixturePtr;
+                        return _contactFixtures.find(fixture) != _contactFixtures.end();
+                }
+
                 EMSCRIPTEN_WRAPPER(b2ContactListenerWrapper)
                 void BeginContact(b2Contact* contact) override {
-                        return call<void>("BeginContact", contact);
+                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                               return call<void>("BeginContact", contact);
+                        }
                 }
                 void EndContact(b2Contact* contact) override {
-                        return call<void>("EndContact", contact);
+                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                               return call<void>("EndContact", contact);
+                        }
                 }
                 void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override {
-                        return call<void>("PreSolve", contact, oldManifold);
+                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                               return call<void>("PreSolve", contact, oldManifold);
+                        }
                 }
                 void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override {
-                        return call<void>("PostSolve", contact, impulse);
+                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                               return call<void>("PostSolve", contact, impulse);
+                        }
                 }
+                
         };
 
         //b2DrawWrapper
@@ -314,6 +344,9 @@
                 .function("EndContact", &b2ContactListener::EndContact, allow_raw_pointers())
                 .function("PreSolve", &b2ContactListener::PreSolve, allow_raw_pointers())
                 .function("PostSolve", &b2ContactListener::PostSolve, allow_raw_pointers())
+                .function("registerContactFixture", &b2ContactListenerWrapper::registerContactFixture)
+                .function("unregisterContactFixture", &b2ContactListenerWrapper::unregisterContactFixture)
+                .function("isIndexOf", &b2ContactListenerWrapper::isIndexOf)
                 .allow_subclass<b2ContactListenerWrapper>("ContactListenerWrapper", constructor<>());
 
         //binding class b2Draw
