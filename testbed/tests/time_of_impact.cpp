@@ -84,7 +84,7 @@ public:
 		{
 			vertices[i] = b2Mul(transformA, m_shapeA.m_vertices[i]);
 		}
-		g_debugDraw.DrawPolygon(vertices, m_shapeA.m_count, b2Color(0.9f, 0.9f, 0.9f));
+		g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_shapeA.m_count, b2Color(0.9f, 0.9f, 0.9f));
 
 		b2Transform transformB;
 		sweepB.GetTransform(&transformB, 0.0f);
@@ -95,21 +95,21 @@ public:
 		{
 			vertices[i] = b2Mul(transformB, m_shapeB.m_vertices[i]);
 		}
-		g_debugDraw.DrawPolygon(vertices, m_shapeB.m_count, b2Color(0.5f, 0.9f, 0.5f));
+		g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_shapeB.m_count, b2Color(0.5f, 0.9f, 0.5f));
 
 		sweepB.GetTransform(&transformB, output.t);
 		for (int32 i = 0; i < m_shapeB.m_count; ++i)
 		{
 			vertices[i] = b2Mul(transformB, m_shapeB.m_vertices[i]);
 		}
-		g_debugDraw.DrawPolygon(vertices, m_shapeB.m_count, b2Color(0.5f, 0.7f, 0.9f));
+		g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_shapeB.m_count, b2Color(0.5f, 0.7f, 0.9f));
 
 		sweepB.GetTransform(&transformB, 1.0f);
 		for (int32 i = 0; i < m_shapeB.m_count; ++i)
 		{
 			vertices[i] = b2Mul(transformB, m_shapeB.m_vertices[i]);
 		}
-		g_debugDraw.DrawPolygon(vertices, m_shapeB.m_count, b2Color(0.9f, 0.5f, 0.5f));
+		g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_shapeB.m_count, b2Color(0.9f, 0.5f, 0.5f));
 
 #if 0
 		for (float t = 0.0f; t < 1.0f; t += 0.1f)
@@ -119,7 +119,7 @@ public:
 			{
 				vertices[i] = b2Mul(transformB, m_shapeB.m_vertices[i]);
 			}
-			g_debugDraw.DrawPolygon(vertices, m_shapeB.m_count, b2Color(0.9f, 0.5f, 0.5f));
+			g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_shapeB.m_count, b2Color(0.9f, 0.5f, 0.5f));
 		}
 #endif
 	}

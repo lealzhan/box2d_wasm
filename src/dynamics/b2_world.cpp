@@ -1197,7 +1197,7 @@ void b2World::DebugDraw()
 					vs[2].Set(aabb.upperBound.x, aabb.upperBound.y);
 					vs[3].Set(aabb.lowerBound.x, aabb.upperBound.y);
 
-					m_debugDraw->DrawPolygon(vs, 4, color);
+					m_debugDraw->DrawPolygon( uint32(&vs[0]), 4, color);
 				}
 			}
 		}

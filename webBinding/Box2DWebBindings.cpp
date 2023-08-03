@@ -146,9 +146,8 @@
         //b2DrawWrapper
         struct b2DrawWrapper : public wrapper<b2Draw> {
                 EMSCRIPTEN_WRAPPER(b2DrawWrapper)
-                void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override {
-                        std::vector<b2Vec2> v(vertices, vertices + vertexCount);
-                        return call<void>("DrawPolygon", v, vertexCount, color);
+                void DrawPolygon(uint32 vertices, int32 vertexCount, const b2Color& color) override {
+                        return call<void>("DrawPolygon", vertices, vertexCount, color);
                 }
                 void DrawSolidPolygon(uint32 vertices, int32 vertexCount, const b2Color& color) override {
                         return call<void>("DrawSolidPolygon", vertices, vertexCount, color);

@@ -80,7 +80,7 @@ public:
 		g_debugDraw.DrawString(5, m_textLine, "Press g to generate a new random convex hull");
 		m_textLine += m_textIncrement;
 
-		g_debugDraw.DrawPolygon(shape.m_vertices, shape.m_count, b2Color(0.9f, 0.9f, 0.9f));
+		g_debugDraw.DrawPolygon(uint32(&shape.m_vertices[0]), shape.m_count, b2Color(0.9f, 0.9f, 0.9f));
 
 		for (int32 i = 0; i < m_count; ++i)
 		{

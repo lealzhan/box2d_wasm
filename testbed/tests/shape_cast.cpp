@@ -111,21 +111,21 @@ public:
 			vertices[i] = b2Mul(transformA, m_vAs[i]);
 		}
         //g_debugDraw.DrawCircle(vertices[0], m_radiusA, b2Color(0.9f, 0.9f, 0.9f));
-		g_debugDraw.DrawPolygon(vertices, m_countA, b2Color(0.9f, 0.9f, 0.9f));
+		g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_countA, b2Color(0.9f, 0.9f, 0.9f));
 
 		for (int32 i = 0; i < m_countB; ++i)
 		{
 			vertices[i] = b2Mul(transformB, m_vBs[i]);
 		}
         //g_debugDraw.DrawCircle(vertices[0], m_radiusB, b2Color(0.5f, 0.9f, 0.5f));
-        g_debugDraw.DrawPolygon(vertices, m_countB, b2Color(0.5f, 0.9f, 0.5f));
+        g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_countB, b2Color(0.5f, 0.9f, 0.5f));
 
 		for (int32 i = 0; i < m_countB; ++i)
 		{
 			vertices[i] = b2Mul(transformB2, m_vBs[i]);
 		}
         //g_debugDraw.DrawCircle(vertices[0], m_radiusB, b2Color(0.5f, 0.7f, 0.9f));
-        g_debugDraw.DrawPolygon(vertices, m_countB, b2Color(0.5f, 0.7f, 0.9f));
+        g_debugDraw.DrawPolygon(uint32(&vertices[0]), m_countB, b2Color(0.5f, 0.7f, 0.9f));
 
 		if (hit)
 		{

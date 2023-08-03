@@ -73,7 +73,7 @@ public:
 	void ClearFlags(uint32 flags);
 
 	/// Draw a closed polygon provided in CCW order.
-	virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) = 0;
+	virtual void DrawPolygon(uint32 v, int32 vertexCount, const b2Color& color) = 0;
 
 	/// Draw a solid closed polygon provided in CCW order.
 	virtual void DrawSolidPolygon(uint32 vertices, int32 vertexCount, const b2Color& color) = 0;

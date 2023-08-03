@@ -459,7 +459,7 @@ public:
 				vs[i] = b2Mul(xf, shape.m_vertices[i]);
 			}
 
-			g_debugDraw.DrawPolygon(vs, 4, color);
+			g_debugDraw.DrawPolygon(uint32(&v[0]), 4, color);
 			g_debugDraw.DrawSegment(input.p1, input.p2, color);
 		}
 #endif

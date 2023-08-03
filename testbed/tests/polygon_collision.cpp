@@ -65,13 +65,13 @@ public:
 			{
 				v[i] = b2Mul(m_transformA, m_polygonA.m_vertices[i]);
 			}
-			g_debugDraw.DrawPolygon(v, m_polygonA.m_count, color);
+			g_debugDraw.DrawPolygon(uint32(&v[0]), m_polygonA.m_count, color);
 
 			for (int32 i = 0; i < m_polygonB.m_count; ++i)
 			{
 				v[i] = b2Mul(m_transformB, m_polygonB.m_vertices[i]);
 			}
-			g_debugDraw.DrawPolygon(v, m_polygonB.m_count, color);
+			g_debugDraw.DrawPolygon(uint32(&v[0]), m_polygonB.m_count, color);
 		}
 
 		for (int32 i = 0; i < manifold.pointCount; ++i)

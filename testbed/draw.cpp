@@ -636,8 +636,9 @@ void DebugDraw::Destroy()
 }
 
 //
-void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawPolygon(uint32 v, int32 vertexCount, const b2Color& color)
 {
+	const b2Vec2* vertices = (const b2Vec2*)v;
     b2Vec2 p1 = vertices[vertexCount - 1];
 	for (int32 i = 0; i < vertexCount; ++i)
 	{

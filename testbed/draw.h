@@ -67,7 +67,7 @@ public:
 	void Create();
 	void Destroy();
 
-	void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;
+	void DrawPolygon(uint32 v, int32 vertexCount, const b2Color& color) override;
 
 	void DrawSolidPolygon(uint32 v, int32 vertexCount, const b2Color& color) override;
 
