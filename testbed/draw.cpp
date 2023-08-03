@@ -649,8 +649,9 @@ void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2C
 }
 
 //
-void DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+void DebugDraw::DrawSolidPolygon(uint32 v, int32 vertexCount, const b2Color& color)
 {
+	const b2Vec2* vertices = (const b2Vec2*)v;
 	b2Color fillColor(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
 
     for (int32 i = 1; i < vertexCount - 1; ++i)

@@ -1095,7 +1095,7 @@ void b2World::DrawShape(b2Fixture* fixture, const b2Transform& xf, const b2Color
 				vertices[i] = b2Mul(xf, poly->m_vertices[i]);
 			}
 
-			m_debugDraw->DrawSolidPolygon(vertices, vertexCount, color);
+			m_debugDraw->DrawSolidPolygon((uint32)(&vertices[0]), vertexCount, color);
 		}
 		break;
 

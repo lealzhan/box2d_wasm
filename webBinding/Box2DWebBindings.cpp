@@ -8,6 +8,11 @@
 
         using namespace emscripten;
 
+        //Get Float32 from pointer
+        static float GetFloat32(uint32 ptr, int id) {
+                return *((float*)ptr + id);
+        }
+
         static void ConvexPartition(const std::vector<b2Vec2>& points, const std::vector<int>& pathVertCounts,
                                 std::vector<b2Vec2>& resultPoints, std::vector<int>& resultPathVertCounts)
         {
@@ -145,9 +150,8 @@
                         std::vector<b2Vec2> v(vertices, vertices + vertexCount);
                         return call<void>("DrawPolygon", v, vertexCount, color);
                 }
-                void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override {
-                        std::vector<b2Vec2> v(vertices, vertices + vertexCount);
-                        return call<void>("DrawSolidPolygon", v, vertexCount, color);
+                void DrawSolidPolygon(uint32 vertices, int32 vertexCount, const b2Color& color) override {
+                        return call<void>("DrawSolidPolygon", vertices, vertexCount, color);
                 }
                 void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override {
                         return call<void>("DrawCircle", center, radius, color);
@@ -206,6 +210,7 @@
         constant("VERSION_MINOR", b2_version.minor);
         constant("VERSION_REVISION", b2_version.revision);
 
+        function("GetFloat32", &GetFloat32);
         function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
 
         enum_<b2Shape::Type>("ShapeType")

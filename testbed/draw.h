@@ -69,7 +69,7 @@ public:
 
 	void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;
 
-	void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;
+	void DrawSolidPolygon(uint32 v, int32 vertexCount, const b2Color& color) override;
 
 	void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) override;
 
