@@ -85,8 +85,9 @@ public:
 	}
 
 	// Implement contact listener.
-	void BeginContact(b2Contact* contact) override
+	void BeginContact(uint32 c) override
 	{
+		b2Contact* contact = (b2Contact*)c;
 		b2Fixture* fixtureA = contact->GetFixtureA();
 		b2Fixture* fixtureB = contact->GetFixtureB();
 
@@ -112,8 +113,9 @@ public:
 	}
 
 	// Implement contact listener.
-	void EndContact(b2Contact* contact) override
+	void EndContact(uint32 c) override
 	{
+		b2Contact* contact = (b2Contact*)c;
 		b2Fixture* fixtureA = contact->GetFixtureA();
 		b2Fixture* fixtureB = contact->GetFixtureB();
 

@@ -88,10 +88,10 @@ public:
 	virtual ~b2ContactListener() {}
 
 	/// Called when two fixtures begin to touch.
-	virtual void BeginContact(b2Contact* contact) { B2_NOT_USED(contact); }
+	virtual void BeginContact(uint32 contact) { B2_NOT_USED(contact); }
 
 	/// Called when two fixtures cease to touch.
-	virtual void EndContact(b2Contact* contact) { B2_NOT_USED(contact); }
+	virtual void EndContact(uint32 contact) { B2_NOT_USED(contact); }
 
 	/// This is called after a contact is updated. This allows you to inspect a
 	/// contact before it goes to the solver. If you are careful, you can modify the
@@ -103,7 +103,7 @@ public:
 	/// Note: if you set the number of contact points to zero, you will not
 	/// get an EndContact callback. However, you may get a BeginContact callback
 	/// the next step.
-	virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+	virtual void PreSolve(uint32 contact, const b2Manifold* oldManifold)
 	{
 		B2_NOT_USED(contact);
 		B2_NOT_USED(oldManifold);
@@ -115,7 +115,7 @@ public:
 	/// arbitrarily large if the sub-step is small. Hence the impulse is provided explicitly
 	/// in a separate data structure.
 	/// Note: this is only called for contacts that are touching, solid, and awake.
-	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+	virtual void PostSolve(uint32 contact, const b2ContactImpulse* impulse)
 	{
 		B2_NOT_USED(contact);
 		B2_NOT_USED(impulse);

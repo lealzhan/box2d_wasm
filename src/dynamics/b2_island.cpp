@@ -539,6 +539,6 @@ void b2Island::Report(const b2ContactVelocityConstraint* constraints)
 			impulse.tangentImpulses[j] = vc->points[j].tangentImpulse;
 		}
 
-		m_listener->PostSolve(c, &impulse);
+		m_listener->PostSolve((uint32)c, &impulse);
 	}
 }

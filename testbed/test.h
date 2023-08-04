@@ -103,10 +103,10 @@ public:
 	virtual void JointDestroyed(b2Joint* joint) { B2_NOT_USED(joint); }
 
 	// Callbacks for derived classes.
-	virtual void BeginContact(b2Contact* contact)  override { B2_NOT_USED(contact); }
-	virtual void EndContact(b2Contact* contact)  override { B2_NOT_USED(contact); }
-	virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
-	virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override
+	virtual void BeginContact(uint32 contact)  override { B2_NOT_USED(contact); }
+	virtual void EndContact(uint32 contact)  override { B2_NOT_USED(contact); }
+	virtual void PreSolve(uint32 contact, const b2Manifold* oldManifold) override;
+	virtual void PostSolve(uint32 contact, const b2ContactImpulse* impulse) override
 	{
 		B2_NOT_USED(contact);
 		B2_NOT_USED(impulse);

@@ -12,6 +12,135 @@
         static float GetFloat32(uint32 ptr, int id) {
                 return *((float*)ptr + id);
         }
+        
+        static void ContactSetEnabled(uint32 ptr, bool enabled) {
+                ((b2Contact*)ptr)->SetEnabled(enabled);
+        }
+
+        static bool ContactIsTouching(uint32 ptr) {
+                return ((b2Contact*)ptr)->IsTouching();
+        }
+
+        static void ContactSetTangentSpeed(uint32 ptr, float speed) {
+                ((b2Contact*)ptr)->SetTangentSpeed(speed);
+        }
+        
+        static float ContactGetTangentSpeed(uint32 ptr) {
+                return ((b2Contact*)ptr)->GetTangentSpeed();
+        }
+
+        static void ContactSetFriction(uint32 ptr, float friction) {
+                ((b2Contact*)ptr)->SetFriction(friction);
+        }
+
+        static float ContactGetFriction(uint32 ptr) {
+                return ((b2Contact*)ptr)->GetFriction();
+        }
+
+        static void ContactResetFriction(uint32 ptr) {
+                ((b2Contact*)ptr)->ResetFriction();
+        }
+
+        static void ContactSetRestitution(uint32 ptr, float restitution) {
+                ((b2Contact*)ptr)->SetRestitution(restitution);
+        }
+
+        static float ContactGetRestitution(uint32 ptr) {
+                return ((b2Contact*)ptr)->GetRestitution();
+        }
+
+        static void ContactResetRestitution(uint32 ptr) {
+                ((b2Contact*)ptr)->ResetRestitution();
+        }
+
+        static uint32 ContactGetFixtureARawPtr(uint32 ptr) {
+                return (uint32)((b2Contact*)ptr)->GetFixtureA();
+        }
+
+        static uint32 ContactGetFixtureBRawPtr(uint32 ptr) {
+                return (uint32)((b2Contact*)ptr)->GetFixtureB();
+        }
+
+        static void ContactGetWorldManifoldRawPtr(uint32 ptr, uint32 worldManifoldPtr) {
+                ((b2Contact*)ptr)->GetWorldManifold((b2WorldManifold*)worldManifoldPtr);
+        }
+
+        static uint32 ContactGetManifoldRawPtr(uint32 ptr) {
+                return (uint32)((b2Contact*)ptr)->GetManifold();
+        }
+
+        //Manifold
+        static uint32 ManifoldGetType(uint32 ptr) {
+                //0 = e_circles, e_faceA, e_faceB
+                return ((b2Manifold*)ptr)->type;
+        }
+        static uint32 ManifoldGetPointCount(uint32 ptr) {
+                return ((b2Manifold*)ptr)->pointCount;
+        }
+
+        static uint32 ManifoldGetManifoldPointPtr(uint32 ptr, int id) {
+                return (uint32)(&(((b2Manifold*)ptr)->points[id]));
+        }
+
+        static float ManifoldGetLocalPointValueX(uint32 ptr) {
+                return ((b2Manifold*)ptr)->localPoint.x;
+        }
+
+        static float ManifoldGetLocalPointValueY(uint32 ptr) {
+                return ((b2Manifold*)ptr)->localPoint.y;
+        }
+
+        static float ManifoldGetLocalNormalValueX(uint32 ptr) {
+                return ((b2Manifold*)ptr)->localNormal.x;
+        }
+
+        static float ManifoldGetLocalNormalValueY(uint32 ptr) {
+                return ((b2Manifold*)ptr)->localNormal.y;
+        }
+
+        //ManifoldPoint
+        static float ManifoldPointGetLocalPointX(uint32 ptr) {
+                return ((b2ManifoldPoint*)ptr)->localPoint.x;
+        }
+
+        static float ManifoldPointGetLocalPointY(uint32 ptr) {
+                return ((b2ManifoldPoint*)ptr)->localPoint.y;
+        }
+
+        static float ManifoldPointGetNormalImpulse(uint32 ptr) {
+                return ((b2ManifoldPoint*)ptr)->normalImpulse;
+        }
+
+        static float ManifoldPointGetTangentImpulse(uint32 ptr) {
+                return ((b2ManifoldPoint*)ptr)->tangentImpulse;
+        }
+
+
+        //WorldManifold
+        static float WorldManifoldGetPointValueX(uint32 ptr, int id) {
+                return ((b2WorldManifold*)ptr)->points[id].x;
+        }
+
+        static float WorldManifoldGetPointValueY(uint32 ptr, int id) {
+                return ((b2WorldManifold*)ptr)->points[id].y;
+        }
+
+        static float WorldManifoldGetSeparationValue(uint32 ptr, int id) {
+                return ((b2WorldManifold*)ptr)->separations[id];
+        }
+
+        static float WorldManifoldGetNormalValueX(uint32 ptr) {
+                return ((b2WorldManifold*)ptr)->normal.x;
+        }
+
+        static float WorldManifoldGetNormalValueY(uint32 ptr) {
+                return ((b2WorldManifold*)ptr)->normal.y;
+        }
+
+        static void WorldManifoldDelete(uint32 ptr) {
+                if(ptr)
+                        delete ((b2WorldManifold*)ptr);
+        }
 
         static void ConvexPartition(const std::vector<b2Vec2>& points, const std::vector<int>& pathVertCounts,
                                 std::vector<b2Vec2>& resultPoints, std::vector<int>& resultPathVertCounts)
@@ -120,23 +249,23 @@
                 }
 
                 EMSCRIPTEN_WRAPPER(b2ContactListenerWrapper)
-                void BeginContact(b2Contact* contact) override {
-                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                void BeginContact(uint32 contact) override {
+                        if(isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureA()) || isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureB())) {
                                return call<void>("BeginContact", contact);
                         }
                 }
-                void EndContact(b2Contact* contact) override {
-                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                void EndContact(uint32 contact) override {
+                        if(isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureA()) || isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureB())) {
                                return call<void>("EndContact", contact);
                         }
                 }
-                void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override {
-                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                void PreSolve(uint32 contact, const b2Manifold* oldManifold) override {
+                        if(isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureA()) || isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureB())) {
                                return call<void>("PreSolve", contact, oldManifold);
                         }
                 }
-                void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override {
-                        if(isIndexOf((unsigned int)contact->GetFixtureA()) || isIndexOf((unsigned int)contact->GetFixtureB())) {
+                void PostSolve(uint32 contact, const b2ContactImpulse* impulse) override {
+                        if(isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureA()) || isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureB())) {
                                return call<void>("PostSolve", contact, impulse);
                         }
                 }
@@ -210,6 +339,42 @@
         constant("VERSION_REVISION", b2_version.revision);
 
         function("GetFloat32", &GetFloat32);
+        function("ContactSetEnabled", &ContactSetEnabled);
+        function("ContactIsTouching", &ContactIsTouching);
+        function("ContactSetTangentSpeed", &ContactSetTangentSpeed);
+        function("ContactGetTangentSpeed", &ContactGetTangentSpeed);
+        function("ContactSetFriction", &ContactSetFriction);
+        function("ContactGetFriction", &ContactGetFriction);
+        function("ContactResetFriction", &ContactResetFriction);
+        function("ContactSetRestitution", &ContactSetRestitution);
+        function("ContactGetRestitution", &ContactGetRestitution);
+        function("ContactResetRestitution", &ContactResetRestitution);
+        function("ContactGetFixtureARawPtr", &ContactGetFixtureARawPtr);
+        function("ContactGetFixtureBRawPtr", &ContactGetFixtureBRawPtr);
+        function("ContactGetWorldManifoldRawPtr", &ContactGetWorldManifoldRawPtr);
+        function("ContactGetManifoldRawPtr", &ContactGetManifoldRawPtr);
+
+        function("ManifoldGetType", &ManifoldGetType);
+        function("ManifoldGetPointCount", &ManifoldGetPointCount);
+        function("ManifoldGetManifoldPointPtr", &ManifoldGetManifoldPointPtr);
+        function("ManifoldGetLocalPointValueX", &ManifoldGetLocalPointValueX);
+        function("ManifoldGetLocalPointValueY", &ManifoldGetLocalPointValueY);
+        function("ManifoldGetLocalNormalValueX", &ManifoldGetLocalNormalValueX);
+        function("ManifoldGetLocalNormalValueY", &ManifoldGetLocalNormalValueY);
+
+        function("ManifoldPointGetLocalPointX", &ManifoldPointGetLocalPointX);
+        function("ManifoldPointGetLocalPointY", &ManifoldPointGetLocalPointY);
+        function("ManifoldPointGetNormalImpulse", &ManifoldPointGetNormalImpulse);
+        function("ManifoldPointGetTangentImpulse", &ManifoldPointGetTangentImpulse);
+        
+        function("WorldManifoldGetPointValueX", &WorldManifoldGetPointValueX);
+        function("WorldManifoldGetPointValueY", &WorldManifoldGetPointValueY);
+        function("WorldManifoldGetSeparationValue", &WorldManifoldGetSeparationValue);
+        function("WorldManifoldGetNormalValueX", &WorldManifoldGetNormalValueX);
+        function("WorldManifoldGetNormalValueY", &WorldManifoldGetNormalValueY);
+        function("WorldManifoldDelete", &WorldManifoldDelete);
+
+
         function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
 
         enum_<b2Shape::Type>("ShapeType")

@@ -236,16 +236,16 @@ void b2Contact::Update(b2ContactListener* listener)
 
 	if (wasTouching == false && touching == true && listener)
 	{
-		listener->BeginContact(this);
+		listener->BeginContact((uint32)this);
 	}
 
 	if (wasTouching == true && touching == false && listener)
 	{
-		listener->EndContact(this);
+		listener->EndContact((uint32)this);
 	}
 
 	if (sensor == false && touching && listener)
 	{
-		listener->PreSolve(this, &oldManifold);
+		listener->PreSolve((uint32)this, &oldManifold);
 	}
 }
