@@ -88,6 +88,10 @@
                 return *((float*)ptr + id);
         }
         
+        static b2Vec2 TransformVector2(const b2Transform& transform, const b2Vec2& vector) {
+                return b2Mul(transform, vector);
+        }
+
         static void ContactSetEnabled(uint32 ptr, bool enabled) {
                 ((b2Contact*)ptr)->SetEnabled(enabled);
         }
@@ -367,6 +371,7 @@
         #endif
         function("GetFloat32", &GetFloat32);
         function("SetLinearFrequencyAndDampingRatio", &SetLinearFrequencyAndDampingRatio, allow_raw_pointers());
+        function("TransformVector2", &TransformVector2, allow_raw_pointers());
 
         function("ContactSetEnabled", &ContactSetEnabled);
         function("ContactIsTouching", &ContactIsTouching);
@@ -437,12 +442,12 @@
         //         .field("ex", &b2Mat33::ex)
         //         .field("ey", &b2Mat33::ey)
         //         .field("ez", &b2Mat33::ez); 
-        // value_object<b2Rot>("Rot")
-        //         .field("s", &b2Rot::s)
-        //         .field("c", &b2Rot::c);
-        // value_object<b2Transform>("Transform")
-        //         .field("p", &b2Transform::p)
-        //         .field("q", &b2Transform::q);
+        value_object<b2Rot>("Rot")
+                .field("s", &b2Rot::s)
+                .field("c", &b2Rot::c);
+        value_object<b2Transform>("Transform")
+                .field("p", &b2Transform::p)
+                .field("q", &b2Transform::q);
         value_object<b2Sweep>("Sweep")
                 .field("localCenter", &b2Sweep::localCenter)
                 .field("c0", &b2Sweep::c0)
