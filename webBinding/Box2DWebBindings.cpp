@@ -337,6 +337,7 @@
         constant("VERSION_MAJOR", b2_version.major);
         constant("VERSION_MINOR", b2_version.minor);
         constant("VERSION_REVISION", b2_version.revision);
+        constant("maxPolygonVertices", b2_maxPolygonVertices);
 
         function("GetFloat32", &GetFloat32);
         function("ContactSetEnabled", &ContactSetEnabled);
