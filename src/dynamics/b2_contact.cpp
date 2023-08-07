@@ -246,6 +246,6 @@ void b2Contact::Update(b2ContactListener* listener)
 
 	if (sensor == false && touching && listener)
 	{
-		listener->PreSolve((uint32)this, &oldManifold);
+		listener->PreSolve((uint32)this, uint32(&oldManifold));
 	}
 }

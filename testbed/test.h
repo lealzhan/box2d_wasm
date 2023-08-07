@@ -106,7 +106,7 @@ public:
 	virtual void BeginContact(uint32 contact)  override { B2_NOT_USED(contact); }
 	virtual void EndContact(uint32 contact)  override { B2_NOT_USED(contact); }
 	virtual void PreSolve(uint32 contact, const b2Manifold* oldManifold) override;
-	virtual void PostSolve(uint32 contact, const b2ContactImpulse* impulse) override
+	virtual void PostSolve(uint32 contact, uint32 impulse) override
 	{
 		B2_NOT_USED(contact);
 		B2_NOT_USED(impulse);

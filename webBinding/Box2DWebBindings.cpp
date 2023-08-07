@@ -128,19 +128,19 @@
                 ((b2Contact*)ptr)->ResetRestitution();
         }
 
-        static uint32 ContactGetFixtureARawPtr(uint32 ptr) {
+        static uint32 ContactGetFixtureA(uint32 ptr) {
                 return (uint32)((b2Contact*)ptr)->GetFixtureA();
         }
 
-        static uint32 ContactGetFixtureBRawPtr(uint32 ptr) {
+        static uint32 ContactGetFixtureB(uint32 ptr) {
                 return (uint32)((b2Contact*)ptr)->GetFixtureB();
         }
 
-        static void ContactGetWorldManifoldRawPtr(uint32 ptr, uint32 worldManifoldPtr) {
+        static void ContactGetWorldManifold(uint32 ptr, uint32 worldManifoldPtr) {
                 ((b2Contact*)ptr)->GetWorldManifold((b2WorldManifold*)worldManifoldPtr);
         }
 
-        static uint32 ContactGetManifoldRawPtr(uint32 ptr) {
+        static uint32 ContactGetManifold(uint32 ptr) {
                 return (uint32)((b2Contact*)ptr)->GetManifold();
         }
 
@@ -192,6 +192,10 @@
 
 
         //WorldManifold
+        static uint32 WorldManifoldNew() {
+                return (uint32)(new b2WorldManifold());
+        }
+
         static float WorldManifoldGetPointValueX(uint32 ptr, int id) {
                 return ((b2WorldManifold*)ptr)->points[id].x;
         }
@@ -217,7 +221,16 @@
                         delete ((b2WorldManifold*)ptr);
         }
 
-
+        //ContactImpulse
+        static float ContactImpulseGetNormalImpulsesValue(uint32 ptr, int id) {
+                return ((b2ContactImpulse*)ptr)->normalImpulses[id];
+        }
+        static float ContactImpulseGetTangentImpulsesValue(uint32 ptr, int id) {
+                return ((b2ContactImpulse*)ptr)->tangentImpulses[id];
+        }
+        static int ContactImpulseGetCount(uint32 ptr) {
+                return ((b2ContactImpulse*)ptr)->count;
+        }
 
         //b2QueryCallbackWrapper
         struct b2QueryCallbackWrapper : public wrapper<b2QueryCallback> {
@@ -265,12 +278,12 @@
                                return call<void>("EndContact", contact);
                         }
                 }
-                void PreSolve(uint32 contact, const b2Manifold* oldManifold) override {
+                void PreSolve(uint32 contact, uint32 oldManifold) override {
                         if(isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureA()) || isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureB())) {
                                return call<void>("PreSolve", contact, oldManifold);
                         }
                 }
-                void PostSolve(uint32 contact, const b2ContactImpulse* impulse) override {
+                void PostSolve(uint32 contact, uint32 impulse) override {
                         if(isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureA()) || isIndexOf((unsigned int)((b2Contact*)contact)->GetFixtureB())) {
                                return call<void>("PostSolve", contact, impulse);
                         }
@@ -304,7 +317,7 @@
                 }
         };
 
-        void SetLinearFrequencyAndDampingRatio(b2Joint* j, float frequencyHertz, float dampingRatio){
+        static void SetLinearFrequencyAndDampingRatio(b2Joint* j, float frequencyHertz, float dampingRatio) {
                 float stiffness, damping;
                 b2LinearStiffness(stiffness, damping, frequencyHertz, dampingRatio, j->GetBodyA(), j->GetBodyB());
                 //cast j to specific type based on its type
@@ -337,15 +350,24 @@
         }
 
 
-        //----------------------------------------------------------------------------------------------------------------------
+//
+//----------------------------------------------- START EMBINDING ------------------------------------------
+//
         EMSCRIPTEN_BINDINGS(b2) {
 
+        // constants
         constant("VERSION_MAJOR", b2_version.major);
         constant("VERSION_MINOR", b2_version.minor);
         constant("VERSION_REVISION", b2_version.revision);
         constant("maxPolygonVertices", b2_maxPolygonVertices);
-
+        
+        // functions
+        #ifdef ENABLE_LIBTESS
+        function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
+        #endif
         function("GetFloat32", &GetFloat32);
+        function("SetLinearFrequencyAndDampingRatio", &SetLinearFrequencyAndDampingRatio, allow_raw_pointers());
+
         function("ContactSetEnabled", &ContactSetEnabled);
         function("ContactIsTouching", &ContactIsTouching);
         function("ContactSetTangentSpeed", &ContactSetTangentSpeed);
@@ -356,10 +378,10 @@
         function("ContactSetRestitution", &ContactSetRestitution);
         function("ContactGetRestitution", &ContactGetRestitution);
         function("ContactResetRestitution", &ContactResetRestitution);
-        function("ContactGetFixtureARawPtr", &ContactGetFixtureARawPtr);
-        function("ContactGetFixtureBRawPtr", &ContactGetFixtureBRawPtr);
-        function("ContactGetWorldManifoldRawPtr", &ContactGetWorldManifoldRawPtr);
-        function("ContactGetManifoldRawPtr", &ContactGetManifoldRawPtr);
+        function("ContactGetFixtureA", &ContactGetFixtureA);
+        function("ContactGetFixtureB", &ContactGetFixtureB);
+        function("ContactGetWorldManifold", &ContactGetWorldManifold);
+        function("ContactGetManifold", &ContactGetManifold);
 
         function("ManifoldGetType", &ManifoldGetType);
         function("ManifoldGetPointCount", &ManifoldGetPointCount);
@@ -374,6 +396,7 @@
         function("ManifoldPointGetNormalImpulse", &ManifoldPointGetNormalImpulse);
         function("ManifoldPointGetTangentImpulse", &ManifoldPointGetTangentImpulse);
         
+        function("WorldManifoldNew", &WorldManifoldNew, allow_raw_pointers());
         function("WorldManifoldGetPointValueX", &WorldManifoldGetPointValueX);
         function("WorldManifoldGetPointValueY", &WorldManifoldGetPointValueY);
         function("WorldManifoldGetSeparationValue", &WorldManifoldGetSeparationValue);
@@ -381,39 +404,45 @@
         function("WorldManifoldGetNormalValueY", &WorldManifoldGetNormalValueY);
         function("WorldManifoldDelete", &WorldManifoldDelete);
 
-#ifdef ENABLE_LIBTESS
-        function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
-#endif
+        function("ContactImpulseGetNormalImpulsesValue", &ContactImpulseGetNormalImpulsesValue);
+        function("ContactImpulseGetTangentImpulsesValue", &ContactImpulseGetTangentImpulsesValue);
+        function("ContactImpulseGetCount", &ContactImpulseGetCount);
+
+        // enum
         enum_<b2Shape::Type>("ShapeType")
                 .value("e_circle", b2Shape::e_circle)
                 .value("e_edge", b2Shape::e_edge)
                 .value("e_polygon", b2Shape::e_polygon)
                 .value("e_chain", b2Shape::e_chain)
                 .value("e_typeCount", b2Shape::e_typeCount);
-        
+        enum_<b2BodyType>("BodyType")
+                .value("b2_staticBody", b2_staticBody)
+                .value("b2_kinematicBody", b2_kinematicBody)
+                .value("b2_dynamicBody", b2_dynamicBody);
+
         // value object        
         register_vector<int32>("Int32Vector");
         value_object<b2Vec2>("Vec2")
                 .field("x", &b2Vec2::x)
                 .field("y", &b2Vec2::y);
         register_vector<b2Vec2>("Vec2Vector");
-        value_object<b2Vec3>("Vec3")
-                .field("x", &b2Vec3::x)
-                .field("y", &b2Vec3::y)
-                .field("z", &b2Vec3::z);
-        value_object<b2Mat22>("Mat22")
-                .field("ex", &b2Mat22::ex)
-                .field("ey", &b2Mat22::ey);
-        value_object<b2Mat33>("Mat33")
-                .field("ex", &b2Mat33::ex)
-                .field("ey", &b2Mat33::ey)
-                .field("ez", &b2Mat33::ez); 
-        value_object<b2Rot>("Rot")
-                .field("s", &b2Rot::s)
-                .field("c", &b2Rot::c);
-        value_object<b2Transform>("Transform")
-                .field("p", &b2Transform::p)
-                .field("q", &b2Transform::q);
+        // value_object<b2Vec3>("Vec3")
+        //         .field("x", &b2Vec3::x)
+        //         .field("y", &b2Vec3::y)
+        //         .field("z", &b2Vec3::z);
+        // value_object<b2Mat22>("Mat22")
+        //         .field("ex", &b2Mat22::ex)
+        //         .field("ey", &b2Mat22::ey);
+        // value_object<b2Mat33>("Mat33")
+        //         .field("ex", &b2Mat33::ex)
+        //         .field("ey", &b2Mat33::ey)
+        //         .field("ez", &b2Mat33::ez); 
+        // value_object<b2Rot>("Rot")
+        //         .field("s", &b2Rot::s)
+        //         .field("c", &b2Rot::c);
+        // value_object<b2Transform>("Transform")
+        //         .field("p", &b2Transform::p)
+        //         .field("q", &b2Transform::q);
         value_object<b2Sweep>("Sweep")
                 .field("localCenter", &b2Sweep::localCenter)
                 .field("c0", &b2Sweep::c0)
@@ -475,46 +504,15 @@
         //         .field("tangentImpulses", &b2ContactImpulse::tangentImpulses)
         //         .field("count", &b2ContactImpulse::count);
 
-        //b2_maxPolygonVertices
-
-        // //binding class b2Vec2
-        // class_<b2Vec2>("Vec2")
-        //         .constructor<>()
-        //         .constructor<float, float>()
-        //         // .property("x", &b2Vec2::GetX, &b2Vec2::SetX)
-        //         // .property("y", &b2Vec2::GetY, &b2Vec2::SetY)
-        //         .function("SetX", &b2Vec2::SetX)
-        //         .function("GetX", &b2Vec2::GetX)
-        //         .function("SetY", &b2Vec2::SetY)
-        //         .function("GetY", &b2Vec2::GetY)
-        //         .function("SetZero", &b2Vec2::SetZero)
-        //         .function("Set", &b2Vec2::Set)
-        //         .function("Length", &b2Vec2::Length)
-        //         .function("LengthSquared", &b2Vec2::LengthSquared)
-        //         .function("Normalize", &b2Vec2::Normalize)
-        //         .function("IsValid", &b2Vec2::IsValid);
-
-
-
-        function("SetLinearFrequencyAndDampingRatio", &SetLinearFrequencyAndDampingRatio, allow_raw_pointers());
-
-        //binding class b2QueryCallback
+        // callbacks
         class_<b2QueryCallback>("QueryCallback")
                 .function("ReportFixture", &b2QueryCallback::ReportFixture, allow_raw_pointers())
                 .allow_subclass<b2QueryCallbackWrapper>("QueryCallbackWrapper", constructor<>());
 
-        // //binding class b2RayCastCallback
-        // class_<b2RayCastCallback>("RayCastCallback")
-        //         .function("ReportFixture", &b2RayCastCallback::ReportFixture, allow_raw_pointers());
-
-        // override b2RayCastCallback in js and assign to
-        // PxControllerDesc.reportCallback
-        // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#deriving-from-c-classes-in-javascript
         class_<b2RayCastCallback>("RayCastCallback")
                 .function("ReportFixture", &b2RayCastCallback::ReportFixture, pure_virtual(), allow_raw_pointers())
                 .allow_subclass<b2RayCastCallbackWrapper>("RayCastCallbackWrapper", constructor<>());
 
-        //binding class b2ContactListener
         class_<b2ContactListener>("ContactListener")
                 .function("BeginContact", &b2ContactListener::BeginContact, allow_raw_pointers())
                 .function("EndContact", &b2ContactListener::EndContact, allow_raw_pointers())
@@ -525,7 +523,6 @@
                 .function("isIndexOf", &b2ContactListenerWrapper::isIndexOf)
                 .allow_subclass<b2ContactListenerWrapper>("ContactListenerWrapper", constructor<>());
 
-        //binding class b2Draw
         class_<b2Draw>("Draw")
                 .function("SetFlags", &b2Draw::SetFlags)
                 .function("GetFlags", &b2Draw::GetFlags)
@@ -540,101 +537,100 @@
                 .function("DrawPoint", &b2Draw::DrawPoint, allow_raw_pointers())
                 .allow_subclass<b2DrawWrapper>("DrawWrapper", constructor<>());
 
-        //b2WorldManifold
-        class_<b2WorldManifold>("WorldManifold")
-                .constructor<>()
-                .function("Initialize", &b2WorldManifold::Initialize, allow_raw_pointers())
-                .property("normal", &b2WorldManifold::normal)
-                // .function("GetPoint0", optional_override([](b2WorldManifold* m) {
-                //         return m->points[0];
-                //         }), allow_raw_pointers())
-                // .function("GetPoint1", optional_override([](b2WorldManifold* m) {
-                //         return m->points[1];
-                //         }), allow_raw_pointers())
-                // .function("GetSeperation0", optional_override([](b2WorldManifold* m) {
-                //         return m->separations[0];
-                //         }), allow_raw_pointers())
-                // .function("GetSeperation1", optional_override([](b2WorldManifold* m) {
-                //         return m->separations[1];
-                //         }), allow_raw_pointers())
-                .function("GetPoint", optional_override([](b2WorldManifold* m, int32 i) {
-                        return m->points[i];
-                        }), allow_raw_pointers())
-                .function("GetSeparation", optional_override([](b2WorldManifold* m, int32 i) {
-                        return (m->separations[i]);
-                        }), allow_raw_pointers())
-                ;
-                //.property("points", &b2WorldManifold::points)
-                //.property("separations", &b2WorldManifold::separations);
+        // classes
+        // class_<b2WorldManifold>("WorldManifold")
+        //         .constructor<>()
+        //         .function("Initialize", &b2WorldManifold::Initialize, allow_raw_pointers())
+        //         .property("normal", &b2WorldManifold::normal)
+        //         // .function("GetPoint0", optional_override([](b2WorldManifold* m) {
+        //         //         return m->points[0];
+        //         //         }), allow_raw_pointers())
+        //         // .function("GetPoint1", optional_override([](b2WorldManifold* m) {
+        //         //         return m->points[1];
+        //         //         }), allow_raw_pointers())
+        //         // .function("GetSeperation0", optional_override([](b2WorldManifold* m) {
+        //         //         return m->separations[0];
+        //         //         }), allow_raw_pointers())
+        //         // .function("GetSeperation1", optional_override([](b2WorldManifold* m) {
+        //         //         return m->separations[1];
+        //         //         }), allow_raw_pointers())
+        //         .function("GetPoint", optional_override([](b2WorldManifold* m, int32 i) {
+        //                 return m->points[i];
+        //                 }), allow_raw_pointers())
+        //         .function("GetSeparation", optional_override([](b2WorldManifold* m, int32 i) {
+        //                 return (m->separations[i]);
+        //                 }), allow_raw_pointers())
+        //         ;
+        //         //.property("points", &b2WorldManifold::points)
+        //         //.property("separations", &b2WorldManifold::separations);
         
-        // //b2Filter
         // class_<b2Filter>("Filter")
         //         .constructor<>()
         //         .property("categoryBits", &b2Filter::categoryBits)
         //         .property("maskBits", &b2Filter::maskBits)
         //         .property("groupIndex", &b2Filter::groupIndex);
 
-        //b2Manifold
-        class_<b2Manifold>("Manifold")
-                .constructor<>()
-                // .property("points", &b2Manifold::points)
-                .property("localNormal", &b2Manifold::localNormal)
-                .property("localPoint", &b2Manifold::localPoint)
-                .property("type", &b2Manifold::type)
-                .property("pointCount", &b2Manifold::pointCount)
-                .function("GetPoint", optional_override([](b2Manifold* m, int32 i) {
-                        if(i >= 0 && i < m->pointCount) {
-                                return &(m->points[i]);
-                        } else {
-                                return (b2ManifoldPoint*)nullptr;
-                        }
-                        }), allow_raw_pointers())
-                ;
-        //b2ContactImpulse
-        class_<b2ContactImpulse>("ContactImpulse")
-                .constructor<>()
-                // .property("normalImpulses", &b2ContactImpulse::normalImpulses)
-                // .property("tangentImpulses", &b2ContactImpulse::tangentImpulses)
-                .property("count", &b2ContactImpulse::count);
+        // class_<b2Manifold>("Manifold")
+        //         .constructor<>()
+        //         // .property("points", &b2Manifold::points)
+        //         .property("localNormal", &b2Manifold::localNormal)
+        //         .property("localPoint", &b2Manifold::localPoint)
+        //         .property("type", &b2Manifold::type)
+        //         .property("pointCount", &b2Manifold::pointCount)
+        //         .function("GetPoint", optional_override([](b2Manifold* m, int32 i) {
+        //                 if(i >= 0 && i < m->pointCount) {
+        //                         return &(m->points[i]);
+        //                 } else {
+        //                         return (b2ManifoldPoint*)nullptr;
+        //                 }
+        //                 }), allow_raw_pointers())
+        //         ;
 
-        //binding class b2Contact
-        class_<b2Contact>("Contact")
-                .function("GetManifold", &b2Contact::GetManifold, allow_raw_pointers())
-                .function("GetWorldManifold", &b2Contact::GetWorldManifold, allow_raw_pointers())
-                .function("IsTouching", &b2Contact::IsTouching)
-                .function("SetEnabled", &b2Contact::SetEnabled)
-                .function("IsEnabled", &b2Contact::IsEnabled)
-                .function("GetNext", &b2Contact::GetNext, allow_raw_pointers())
-                .function("GetFixtureA", &b2Contact::GetFixtureA, allow_raw_pointers())
-                .function("GetChildIndexA", &b2Contact::GetChildIndexA)
-                .function("GetFixtureB", &b2Contact::GetFixtureB, allow_raw_pointers())
-                .function("GetChildIndexB", &b2Contact::GetChildIndexB)
-                .function("SetFriction", &b2Contact::SetFriction)
-                .function("GetFriction", &b2Contact::GetFriction)
-                .function("ResetFriction", &b2Contact::ResetFriction)
-                .function("SetRestitution", &b2Contact::SetRestitution)
-                .function("GetRestitution", &b2Contact::GetRestitution)
-                .function("ResetRestitution", &b2Contact::ResetRestitution)
-                .function("SetTangentSpeed", &b2Contact::SetTangentSpeed)
-                .function("GetTangentSpeed", &b2Contact::GetTangentSpeed)
-                .function("Evaluate", &b2Contact::Evaluate, allow_raw_pointers())
-                ;
+        // class_<b2ContactImpulse>("ContactImpulse")
+        //         .constructor<>()
+        //         // .property("normalImpulses", &b2ContactImpulse::normalImpulses)
+        //         // .property("tangentImpulses", &b2ContactImpulse::tangentImpulses)
+        //         .property("count", &b2ContactImpulse::count);
 
-        //b2AABB
+        // class_<b2Contact>("Contact")
+        //         .function("GetManifold", &b2Contact::GetManifold, allow_raw_pointers())
+        //         .function("GetWorldManifold", &b2Contact::GetWorldManifold, allow_raw_pointers())
+        //         .function("IsTouching", &b2Contact::IsTouching)
+        //         .function("SetEnabled", &b2Contact::SetEnabled)
+        //         .function("IsEnabled", &b2Contact::IsEnabled)
+        //         .function("GetNext", &b2Contact::GetNext, allow_raw_pointers())
+        //         .function("GetFixtureA", &b2Contact::GetFixtureA, allow_raw_pointers())
+        //         .function("GetChildIndexA", &b2Contact::GetChildIndexA)
+        //         .function("GetFixtureB", &b2Contact::GetFixtureB, allow_raw_pointers())
+        //         .function("GetChildIndexB", &b2Contact::GetChildIndexB)
+        //         .function("SetFriction", &b2Contact::SetFriction)
+        //         .function("GetFriction", &b2Contact::GetFriction)
+        //         .function("ResetFriction", &b2Contact::ResetFriction)
+        //         .function("SetRestitution", &b2Contact::SetRestitution)
+        //         .function("GetRestitution", &b2Contact::GetRestitution)
+        //         .function("ResetRestitution", &b2Contact::ResetRestitution)
+        //         .function("SetTangentSpeed", &b2Contact::SetTangentSpeed)
+        //         .function("GetTangentSpeed", &b2Contact::GetTangentSpeed)
+        //         .function("Evaluate", &b2Contact::Evaluate, allow_raw_pointers());
+
         class_<b2AABB>("AABB")
                 .constructor<>()
                 .function("IsValid", &b2AABB::IsValid)
                 .function("GetCenter", &b2AABB::GetCenter)
                 .function("GetExtents", &b2AABB::GetExtents)
                 .function("GetPerimeter", &b2AABB::GetPerimeter)
-                // .function("Combine", &b2AABB::Combine)
-                // .function("CombineTwo", &b2AABB::Combine)
+                .function("Combine", optional_override([](b2AABB* aabb, b2AABB* in) {
+                        aabb->Combine(*in);
+                        }), allow_raw_pointers())
+                .function("CombineTwo", optional_override([](b2AABB* aabb, b2AABB* a, b2AABB* b) {
+                        aabb->Combine(*a, *b);
+                        }), allow_raw_pointers())
                 .function("Contains", &b2AABB::Contains)
                 .function("RayCast", &b2AABB::RayCast, allow_raw_pointers())
                 .property("lowerBound", &b2AABB::lowerBound)
                 .property("upperBound", &b2AABB::upperBound);
 
-        //binding class b2World
+        // world
         class_<b2World>("World")
                 .constructor<b2Vec2>()
                 .function("SetDestructionListener", &b2World::SetDestructionListener, allow_raw_pointers())
@@ -648,25 +644,18 @@
                 .function("DestroyJoint", &b2World::DestroyJoint, allow_raw_pointers())
                 .function("Step", &b2World::Step)
                 .function("ClearForces", &b2World::ClearForces)
-                // .function("DrawDebugData", &b2World::DrawDebugData)
                 .function("QueryAABB", &b2World::QueryAABB, allow_raw_pointers())
                 .function("RayCast", &b2World::RayCast, allow_raw_pointers())
-                //.function("GetBodyList", &b2World::GetBodyList)
+                //.function("GetBodyList", &b2World::GetBodyList)       
+                //.function("GetJointList", &b2World::GetJointList)
+                //.function("GetContactList", &b2World::GetContactList)
                 .function("GetBodyList", optional_override([](b2World* f) {
-                                if(f->GetBodyCount()) {
-                                        return &(f->GetBodyList()[0]);
-                                }else{
-                                        return (b2Body*)nullptr;
-                                }
+                                if(f->GetBodyCount()) { return &(f->GetBodyList()[0]);
+                                }else{ return (b2Body*)nullptr;}
                         }), allow_raw_pointers())
-                // .function("GetJointList", &b2World::GetJointList)
-                // .function("GetContactList", &b2World::GetContactList)
                 .function("GetContactList", optional_override([](b2World* f) {
-                                if(f->GetBodyCount()) {
-                                        return &(f->GetContactList()[0]);
-                                }else{
-                                        return (b2Contact*)nullptr;
-                                }
+                                if(f->GetBodyCount()) { return &(f->GetContactList()[0]);
+                                }else{ return (b2Contact*)nullptr; }
                         }), allow_raw_pointers())
                 .function("SetAllowSleeping", &b2World::SetAllowSleeping)
                 .function("GetAllowSleeping", &b2World::GetAllowSleeping)
@@ -693,8 +682,7 @@
                 .function("GetProfile", &b2World::GetProfile)
                 .function("Dump", &b2World::Dump);
 
-
-        //binding class b2Shape
+        // shape
         class_<b2Shape>("Shape")
                 .property("m_type", &b2Shape::m_type)
                 .property("m_radius", &b2Shape::m_radius)
@@ -705,14 +693,10 @@
                 .function("ComputeAABB", &b2Shape::ComputeAABB, allow_raw_pointers())
                 .function("ComputeMass", &b2Shape::ComputeMass, allow_raw_pointers())
                 .function("SetRadius", optional_override([](b2Shape* f, float r) {
-                        f->m_radius = r;
-                        }), allow_raw_pointers())
+                        f->m_radius = r; }), allow_raw_pointers())
                 .function("GetRadius", optional_override([](b2Shape* f) {
-                        return f->m_radius;
-                        }), allow_raw_pointers())
-                ;
+                        return f->m_radius; }), allow_raw_pointers());
 
-        //binding class b2CircleShape
         class_<b2CircleShape, base<b2Shape>>("CircleShape")
                 .constructor<>()
                 .property("m_p", &b2CircleShape::m_p)
@@ -723,7 +707,6 @@
                 .function("ComputeAABB", &b2CircleShape::ComputeAABB, allow_raw_pointers())
                 .function("ComputeMass", &b2CircleShape::ComputeMass, allow_raw_pointers());
 
-        //binding class b2EdgeShape
         class_<b2EdgeShape, base<b2Shape>>("EdgeShape")
                 .function("Clone", &b2EdgeShape::Clone, allow_raw_pointers())
                 .function("GetChildCount", &b2EdgeShape::GetChildCount)
@@ -732,16 +715,12 @@
                 .function("ComputeAABB", &b2EdgeShape::ComputeAABB, allow_raw_pointers())
                 .function("ComputeMass", &b2EdgeShape::ComputeMass, allow_raw_pointers());
 
-        //binding class b2PolygonShape
         class_<b2PolygonShape, base<b2Shape>>("PolygonShape")
                 .constructor<>()
                 .function("Clone", &b2PolygonShape::Clone, allow_raw_pointers())
                 .function("GetChildCount", &b2PolygonShape::GetChildCount)
-                //.function("Set", select_overload<bool(const b2Vec2*, int32)>(&b2PolygonShape::Set), allow_raw_pointers())
                 .function("Set", optional_override([](b2PolygonShape* p, std::vector<b2Vec2> &vertices, int32 count) {
-                        return p->Set(vertices.data(), count);
-                        }), allow_raw_pointers())
-                // .function("SetWithConvexHull", select_overload<void(const b2Hull&)>(&b2PolygonShape::Set))
+                        return p->Set(vertices.data(), count); }), allow_raw_pointers())
                 .function("TestPoint", &b2PolygonShape::TestPoint)
                 .function("RayCast", &b2PolygonShape::RayCast, allow_raw_pointers())
                 .function("ComputeAABB", &b2PolygonShape::ComputeAABB, allow_raw_pointers())
@@ -750,8 +729,7 @@
                 .function("SetAsBox", select_overload<void(float, float)>(&b2PolygonShape::SetAsBox))
                 .function("SetAsBoxWithCenterAndAngle", select_overload<void(float, float, const b2Vec2&, float)>(&b2PolygonShape::SetAsBox));
 
-
-        //binding class b2FixtureDef
+        // fixture
         class_<b2FixtureDef>("FixtureDef")
                 .constructor<>()
                 //.property("shape", &b2FixtureDef::getShape, &b2FixtureDef::setShape, allow_raw_pointers())
@@ -766,7 +744,6 @@
                 .property("isSensor", &b2FixtureDef::isSensor)
                 .property("filter", &b2FixtureDef::filter);
 
-        //binding class b2Fixture
         class_<b2Fixture>("Fixture")
                 .function("GetType", &b2Fixture::GetType)
                 .function("GetShape", &b2Fixture::GetShape, allow_raw_pointers())
@@ -791,13 +768,7 @@
                 .function("GetAABB", &b2Fixture::GetAABB)
                 .function("Dump", &b2Fixture::Dump);
 
-        //bind b2BodyType
-        enum_<b2BodyType>("BodyType")
-                .value("b2_staticBody", b2_staticBody)
-                .value("b2_kinematicBody", b2_kinematicBody)
-                .value("b2_dynamicBody", b2_dynamicBody);
-
-        //binding class b2BodyDef
+        // body
         class_<b2BodyDef>("BodyDef")
                 .constructor<>()
                 .property("type", &b2BodyDef::type)
@@ -814,7 +785,6 @@
                 //.property("userData", &b2BodyDef::userData)
                 .property("gravityScale", &b2BodyDef::gravityScale);
 
-        //binding class b2Body
         class_<b2Body>("Body")
                 .function("CreateFixture", select_overload<b2Fixture*(const b2FixtureDef*)>(&b2Body::CreateFixture), allow_raw_pointers())
                 // .function("CreateFixture", optional_override([](b2Body* body, const b2FixtureDef& f) {
@@ -843,8 +813,7 @@
                 .function("GetMassData", &b2Body::GetMassData, allow_raw_pointers())
                 // .function("SetMassData", &b2Body::SetMassData, allow_raw_pointers())
                 .function("SetMassData", optional_override([](b2Body* body, const b2MassData& f) {
-                        return body->SetMassData(&f);
-                        }), allow_raw_pointers())
+                        return body->SetMassData(&f); }), allow_raw_pointers())
                 .function("ResetMassData", &b2Body::ResetMassData)
                 .function("GetWorldPoint", &b2Body::GetWorldPoint)
                 .function("GetWorldVector", &b2Body::GetWorldVector)
@@ -877,13 +846,9 @@
                 // .function("GetUserData", &b2Body::GetUserData)
                 // .function("SetUserData", &b2Body::SetUserData)
                 .function("GetWorld", &b2Body::GetWorld, allow_raw_pointers())
-                //.function("GetWorld", select_overload<const b2World*()>(&b2Body::GetWorld), allow_raw_pointers())
                 .function("Dump", &b2Body::Dump);
 
-
-
-
-        //binding class b2JointDef
+        // Joint
         class_<b2JointDef>("JointDef")
                 .constructor<>()
                 .property("type", &b2JointDef::type)
@@ -901,18 +866,14 @@
                         return j->bodyB;}), allow_raw_pointers())
                 .property("collideConnected", &b2JointDef::collideConnected);
 
-        //binding class b2DistanceJointDef
         class_<b2DistanceJointDef, base<b2JointDef>>("DistanceJointDef")
                 .constructor<>()
                 .property("localAnchorA", &b2DistanceJointDef::localAnchorA)
                 .property("localAnchorB", &b2DistanceJointDef::localAnchorB)
                 .property("length", &b2DistanceJointDef::length)
-                // .property("minLength", &b2DistanceJointDef::minLength)
-                // .property("maxLength", &b2DistanceJointDef::maxLength)
                 .property("stiffness", &b2DistanceJointDef::stiffness)
                 .property("damping", &b2DistanceJointDef::damping);
 
-        //binding class b2WeldJointDef
         class_<b2WeldJointDef, base<b2JointDef>>("WeldJointDef")
                 .constructor<>()
                 .property("localAnchorA", &b2WeldJointDef::localAnchorA)
@@ -921,7 +882,6 @@
                 .property("stiffness", &b2WeldJointDef::stiffness)
                 .property("damping", &b2WeldJointDef::damping);
 
-        //binding class b2RevoluteJointDef
         class_<b2RevoluteJointDef, base<b2JointDef>>("RevoluteJointDef")
                 .constructor<>()
                 .property("localAnchorA", &b2RevoluteJointDef::localAnchorA)
@@ -934,7 +894,6 @@
                 .property("motorSpeed", &b2RevoluteJointDef::motorSpeed)
                 .property("maxMotorTorque", &b2RevoluteJointDef::maxMotorTorque);
         
-        //binding class b2PrismaticJointDef
         class_<b2PrismaticJointDef, base<b2JointDef>>("PrismaticJointDef")
                 .constructor<>()
                 .property("localAnchorA", &b2PrismaticJointDef::localAnchorA)
@@ -948,7 +907,6 @@
                 .property("motorSpeed", &b2PrismaticJointDef::motorSpeed)
                 .property("maxMotorForce", &b2PrismaticJointDef::maxMotorForce);
 
-        //binding class b2WheelJointDef
         class_<b2WheelJointDef, base<b2JointDef>>("WheelJointDef")
                 .constructor<>()
                 .property("localAnchorA", &b2WheelJointDef::localAnchorA)
@@ -963,14 +921,12 @@
                 .property("stiffness", &b2WheelJointDef::stiffness)
                 .property("damping", &b2WheelJointDef::damping);
 
-        //binding class b2RopeJointDef
         class_<b2RopeJointDef, base<b2JointDef>>("RopeJointDef")
                 .constructor<>()
                 .property("localAnchorA", &b2RopeJointDef::localAnchorA)
                 .property("localAnchorB", &b2RopeJointDef::localAnchorB)
                 .property("maxLength", &b2RopeJointDef::maxLength);
 
-        //binding class b2Joint
         class_<b2Joint>("Joint")
                 .function("GetType", &b2Joint::GetType)
                 .function("GetBodyA", &b2Joint::GetBodyA, allow_raw_pointers())
@@ -982,7 +938,6 @@
                 // .function("GetNext", &b2Joint::GetNext)
                 // .function("GetUserData", &b2Joint::GetUserData)
                 // .function("SetUserData", &b2Joint::SetUserData)
-                // .function("IsActive", &b2Joint::IsActive)
                 .function("GetCollideConnected", &b2Joint::GetCollideConnected)
                 .function("Cast2DistanceJoint", optional_override([](b2Joint* j) {
                         return (b2DistanceJoint*)j;}), allow_raw_pointers())
@@ -1008,23 +963,17 @@
                         return (b2WheelJoint*)j;}), allow_raw_pointers())
                 .function("Dump", &b2Joint::Dump);
 
-        //binding class b2DistanceJoint
         class_<b2DistanceJoint, base<b2Joint>>("DistanceJoint")
                 .function("GetLocalAnchorA", &b2DistanceJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2DistanceJoint::GetLocalAnchorB)
                 .function("SetLength", &b2DistanceJoint::SetLength)
                 .function("GetLength", &b2DistanceJoint::GetLength)
-                // .function("SetMinLength", &b2DistanceJoint::SetMinLength)
-                // .function("GetMinLength", &b2DistanceJoint::GetMinLength)
-                // .function("SetMaxLength", &b2DistanceJoint::SetMaxLength)
-                // .function("GetMaxLength", &b2DistanceJoint::GetMaxLength)
                 .function("SetStiffness", &b2DistanceJoint::SetStiffness)
                 .function("GetStiffness", &b2DistanceJoint::GetStiffness)
                 .function("SetDamping", &b2DistanceJoint::SetDamping)
                 .function("GetDamping", &b2DistanceJoint::GetDamping)
                 .function("Dump", &b2DistanceJoint::Dump);
 
-        //binding class b2FrictionJoint
         class_<b2FrictionJoint, base<b2Joint>>("FrictionJoint")
                 .function("GetLocalAnchorA", &b2FrictionJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2FrictionJoint::GetLocalAnchorB)
@@ -1034,7 +983,6 @@
                 .function("GetMaxTorque", &b2FrictionJoint::GetMaxTorque)
                 .function("Dump", &b2FrictionJoint::Dump);
 
-        //binding class b2GearJoint
         class_<b2GearJoint, base<b2Joint>>("GearJoint")
                 .function("GetJoint1", &b2GearJoint::GetJoint1, allow_raw_pointers())
                 .function("GetJoint2", &b2GearJoint::GetJoint2, allow_raw_pointers())
@@ -1042,7 +990,6 @@
                 .function("GetRatio", &b2GearJoint::GetRatio)
                 .function("Dump", &b2GearJoint::Dump);
 
-        //b2MotorJointDef
         class_<b2MotorJointDef, base<b2JointDef>>("MotorJointDef")
                 .constructor<>()
                 .property("linearOffset", &b2MotorJointDef::linearOffset)
@@ -1051,7 +998,6 @@
                 .property("maxTorque", &b2MotorJointDef::maxTorque)
                 .property("correctionFactor", &b2MotorJointDef::correctionFactor);
 
-        //binding class b2MotorJoint
         class_<b2MotorJoint, base<b2Joint>>("MotorJoint")
                 .function("SetLinearOffset", &b2MotorJoint::SetLinearOffset)
                 .function("GetLinearOffset", &b2MotorJoint::GetLinearOffset)
@@ -1065,7 +1011,6 @@
                 .function("GetCorrectionFactor", &b2MotorJoint::GetCorrectionFactor)
                 .function("Dump", &b2MotorJoint::Dump);
 
-        //binding class b2MouseJointDef
         class_<b2MouseJointDef, base<b2JointDef>>("MouseJointDef")
                 .constructor<>()
                 .property("target", &b2MouseJointDef::target)
@@ -1073,7 +1018,6 @@
                 .property("frequencyHz", &b2MouseJointDef::frequencyHz)
                 .property("dampingRatio", &b2MouseJointDef::dampingRatio);
 
-        //binding class b2MouseJoint
         class_<b2MouseJoint, base<b2Joint>>("MouseJoint")
                 .function("SetTarget", &b2MouseJoint::SetTarget)
                 .function("GetTarget", &b2MouseJoint::GetTarget)
@@ -1085,7 +1029,6 @@
                 .function("GetDampingRatio", &b2MouseJoint::GetDampingRatio)
                 .function("Dump", &b2MouseJoint::Dump);
 
-        //binding class b2PrismaticJoint
         class_<b2PrismaticJoint, base<b2Joint>>("PrismaticJoint")
                 .function("GetLocalAnchorA", &b2PrismaticJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2PrismaticJoint::GetLocalAnchorB)
@@ -1107,7 +1050,6 @@
                 .function("GetMotorForce", &b2PrismaticJoint::GetMotorForce)
                 .function("Dump", &b2PrismaticJoint::Dump);
 
-        //binding class b2PulleyJoint
         class_<b2PulleyJoint, base<b2Joint>>("PulleyJoint")
                 .function("GetGroundAnchorA", &b2PulleyJoint::GetGroundAnchorA)
                 .function("GetGroundAnchorB", &b2PulleyJoint::GetGroundAnchorB)
@@ -1118,7 +1060,6 @@
                 .function("GetCurrentLengthB", &b2PulleyJoint::GetCurrentLengthB)
                 .function("Dump", &b2PulleyJoint::Dump);
 
-        //binding class b2RevoluteJoint
         class_<b2RevoluteJoint, base<b2Joint>>("RevoluteJoint")
                 .function("GetLocalAnchorA", &b2RevoluteJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2RevoluteJoint::GetLocalAnchorB)
@@ -1139,7 +1080,6 @@
                 .function("GetMotorTorque", &b2RevoluteJoint::GetMotorTorque)
                 .function("Dump", &b2RevoluteJoint::Dump);
 
-        //binding class b2WeldJoint
         class_<b2WeldJoint, base<b2Joint>>("WeldJoint")
                 .function("GetLocalAnchorA", &b2WeldJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2WeldJoint::GetLocalAnchorB)
@@ -1150,7 +1090,6 @@
                 .function("GetDamping", &b2WeldJoint::GetDamping)
                 .function("Dump", &b2WeldJoint::Dump);
 
-        //binding class b2WheelJoint
         class_<b2WheelJoint, base<b2Joint>>("WheelJoint")
                 .function("GetLocalAnchorA", &b2WheelJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2WheelJoint::GetLocalAnchorB)
@@ -1170,7 +1109,6 @@
                 .function("GetDamping", &b2WheelJoint::GetDamping)
                 .function("Dump", &b2WheelJoint::Dump);
 
-        //binding class RopeJoint
         class_<b2RopeJoint, base<b2Joint>>("RopeJoint")
                 .function("GetLocalAnchorA", &b2RopeJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2RopeJoint::GetLocalAnchorB)

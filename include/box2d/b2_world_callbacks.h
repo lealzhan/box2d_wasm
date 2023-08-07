@@ -103,7 +103,7 @@ public:
 	/// Note: if you set the number of contact points to zero, you will not
 	/// get an EndContact callback. However, you may get a BeginContact callback
 	/// the next step.
-	virtual void PreSolve(uint32 contact, const b2Manifold* oldManifold)
+	virtual void PreSolve(uint32 contact, uint32 oldManifold)
 	{
 		B2_NOT_USED(contact);
 		B2_NOT_USED(oldManifold);
@@ -115,7 +115,7 @@ public:
 	/// arbitrarily large if the sub-step is small. Hence the impulse is provided explicitly
 	/// in a separate data structure.
 	/// Note: this is only called for contacts that are touching, solid, and awake.
-	virtual void PostSolve(uint32 contact, const b2ContactImpulse* impulse)
+	virtual void PostSolve(uint32 contact, uint32 impulse)
 	{
 		B2_NOT_USED(contact);
 		B2_NOT_USED(impulse);
