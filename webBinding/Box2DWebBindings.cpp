@@ -1,12 +1,87 @@
         #include <set>
 
         #include <box2d.h>
-        #include "tesselator.h"
 
         #include <emscripten.h>
         #include <emscripten/bind.h>
 
         using namespace emscripten;
+
+//#define ENABLE_LIBTESS
+#ifdef ENABLE_LIBTESS
+        #include "tesselator.h"
+
+        static void ConvexPartition(const std::vector<b2Vec2>& points, const std::vector<int>& pathVertCounts,
+                                std::vector<b2Vec2>& resultPoints, std::vector<int>& resultPathVertCounts)
+        {
+                const int maxPolygonVerts = b2_maxPolygonVertices;
+                const int vertexDimension = 2;
+                
+                // new Tessellation
+                TESStesselator* tess = tessNewTess (nullptr);
+
+                // add all paths as a tessellation contour
+                const int pathCount = pathVertCounts.size();
+                int addedContours = 0;
+                int prevPathVertCount = 0;
+                for (int pathID = 0; pathID < pathCount; ++pathID)
+                {
+                        const int pathVertCount = pathVertCounts[pathID];
+
+                        if (pathVertCount < 3)
+                                continue;
+
+                        // Add path contour.
+                        tessAddContour (tess, vertexDimension, points.data() + prevPathVertCount * sizeof(b2Vec2), sizeof(b2Vec2), pathVertCount);
+                        addedContours++;
+                        prevPathVertCount = pathVertCount;
+                }
+
+                // return if no contours added
+                if (addedContours == 0)
+                        return;
+
+                // perform the tessellation
+                tessTesselate(tess, TESS_WINDING_ODD, TESS_POLYGONS, maxPolygonVerts, vertexDimension, nullptr);
+
+                // get the tessellation result
+                const int elemCount = tessGetElementCount (tess);
+                if (elemCount == 0)
+                        return;
+
+                const TESSindex* elements = tessGetElements(tess);
+                const TESSreal* real = tessGetVertices(tess);
+                std::vector<b2Vec2> buffer;
+                buffer.resize(maxPolygonVerts);
+                resultPoints.clear();
+                resultPathVertCounts.clear();
+                for (int elemID = 0; elemID < elemCount; ++elemID)
+                {
+                        const int* indices = &elements[elemID * maxPolygonVerts];
+                        int bufSize = 0;
+                        for (int i = 0; i < maxPolygonVerts && indices[i] != TESS_UNDEF; ++i)
+                        {
+                                const float& x = real[indices[i]*vertexDimension];
+                                const float& y = real[indices[i]*vertexDimension + 1];
+
+                                b2Vec2 newPoint(x, y);
+                                if (bufSize > 0 && b2DistanceSquared(buffer[bufSize-1], newPoint) <= b2_linearSlop * b2_linearSlop)
+                                        continue;
+                                
+                                buffer[bufSize] = newPoint;
+                                ++bufSize;
+                        }
+
+                        if (bufSize < 3)
+                                continue;
+        
+                        resultPoints.insert(resultPoints.end(), buffer.begin(), buffer.begin() + bufSize);
+                        resultPathVertCounts.push_back(bufSize);
+                }
+
+                tessDeleteTess(tess);
+        }
+#endif
 
         //Get Float32 from pointer
         static float GetFloat32(uint32 ptr, int id) {
@@ -142,77 +217,8 @@
                         delete ((b2WorldManifold*)ptr);
         }
 
-        static void ConvexPartition(const std::vector<b2Vec2>& points, const std::vector<int>& pathVertCounts,
-                                std::vector<b2Vec2>& resultPoints, std::vector<int>& resultPathVertCounts)
-        {
-                const int maxPolygonVerts = b2_maxPolygonVertices;
-                const int vertexDimension = 2;
-                
-                // new Tessellation
-                TESStesselator* tess = tessNewTess (nullptr);
 
-                // add all paths as a tessellation contour
-                const int pathCount = pathVertCounts.size();
-                int addedContours = 0;
-                int prevPathVertCount = 0;
-                for (int pathID = 0; pathID < pathCount; ++pathID)
-                {
-                        const int pathVertCount = pathVertCounts[pathID];
 
-                        if (pathVertCount < 3)
-                                continue;
-
-                        // Add path contour.
-                        tessAddContour (tess, vertexDimension, points.data() + prevPathVertCount * sizeof(b2Vec2), sizeof(b2Vec2), pathVertCount);
-                        addedContours++;
-                        prevPathVertCount = pathVertCount;
-                }
-
-                // return if no contours added
-                if (addedContours == 0)
-                        return;
-
-                // perform the tessellation
-                tessTesselate(tess, TESS_WINDING_ODD, TESS_POLYGONS, maxPolygonVerts, vertexDimension, nullptr);
-
-                // get the tessellation result
-                const int elemCount = tessGetElementCount (tess);
-                if (elemCount == 0)
-                        return;
-
-                const TESSindex* elements = tessGetElements(tess);
-                const TESSreal* real = tessGetVertices(tess);
-                std::vector<b2Vec2> buffer;
-                buffer.resize(maxPolygonVerts);
-                resultPoints.clear();
-                resultPathVertCounts.clear();
-                for (int elemID = 0; elemID < elemCount; ++elemID)
-                {
-                        const int* indices = &elements[elemID * maxPolygonVerts];
-                        int bufSize = 0;
-                        for (int i = 0; i < maxPolygonVerts && indices[i] != TESS_UNDEF; ++i)
-                        {
-                                const float& x = real[indices[i]*vertexDimension];
-                                const float& y = real[indices[i]*vertexDimension + 1];
-
-                                b2Vec2 newPoint(x, y);
-                                if (bufSize > 0 && b2DistanceSquared(buffer[bufSize-1], newPoint) <= b2_linearSlop * b2_linearSlop)
-                                        continue;
-                                
-                                buffer[bufSize] = newPoint;
-                                ++bufSize;
-                        }
-
-                        if (bufSize < 3)
-                                continue;
-        
-                        resultPoints.insert(resultPoints.end(), buffer.begin(), buffer.begin() + bufSize);
-                        resultPathVertCounts.push_back(bufSize);
-                }
-
-                tessDeleteTess(tess);
-        }
-        
         //b2QueryCallbackWrapper
         struct b2QueryCallbackWrapper : public wrapper<b2QueryCallback> {
                 EMSCRIPTEN_WRAPPER(b2QueryCallbackWrapper)
@@ -375,9 +381,9 @@
         function("WorldManifoldGetNormalValueY", &WorldManifoldGetNormalValueY);
         function("WorldManifoldDelete", &WorldManifoldDelete);
 
-
+#ifdef ENABLE_LIBTESS
         function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
-
+#endif
         enum_<b2Shape::Type>("ShapeType")
                 .value("e_circle", b2Shape::e_circle)
                 .value("e_edge", b2Shape::e_edge)

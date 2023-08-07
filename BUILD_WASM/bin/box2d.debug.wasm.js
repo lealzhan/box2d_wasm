@@ -3457,10 +3457,6 @@ function dbg(text) {
       });
     }
 
-  var __emscripten_throw_longjmp = () => {
-      throw Infinity;
-    };
-
   function emval_allocateDestructors(destructorsRef) {
       var destructors = [];
       HEAPU32[((destructorsRef)>>2)] = Emval.toHandle(destructors);
@@ -3705,7 +3701,6 @@ function dbg(text) {
       HEAPU32[((pnum)>>2)] = num;
       return 0;
     };
-
 BindingError = Module['BindingError'] = extendError(Error, 'BindingError');;
 init_emval();;
 PureVirtualError = Module['PureVirtualError'] = extendError(Error, 'PureVirtualError');;
@@ -3745,7 +3740,6 @@ var wasmImports = {
   "_embind_register_value_object": __embind_register_value_object,
   "_embind_register_value_object_field": __embind_register_value_object_field,
   "_embind_register_void": __embind_register_void,
-  "_emscripten_throw_longjmp": __emscripten_throw_longjmp,
   "_emval_call_method": __emval_call_method,
   "_emval_call_void_method": __emval_call_void_method,
   "_emval_decref": __emval_decref,
@@ -3759,13 +3753,7 @@ var wasmImports = {
   "fd_close": _fd_close,
   "fd_read": _fd_read,
   "fd_seek": _fd_seek,
-  "fd_write": _fd_write,
-  "invoke_ii": invoke_ii,
-  "invoke_iiii": invoke_iiii,
-  "invoke_vi": invoke_vi,
-  "invoke_vii": invoke_vii,
-  "invoke_viii": invoke_viii,
-  "invoke_viiiii": invoke_viiiii
+  "fd_write": _fd_write
 };
 var asm = createWasm();
 /** @type {function(...*):?} */
@@ -3782,8 +3770,6 @@ var __embind_initialize_bindings = Module["__embind_initialize_bindings"] = crea
 var ___errno_location = createExportWrapper("__errno_location");
 /** @type {function(...*):?} */
 var _fflush = Module["_fflush"] = createExportWrapper("fflush");
-/** @type {function(...*):?} */
-var _setThrew = createExportWrapper("setThrew");
 /** @type {function(...*):?} */
 var _emscripten_stack_init = function() {
   return (_emscripten_stack_init = Module["asm"]["emscripten_stack_init"]).apply(null, arguments);
@@ -3817,72 +3803,6 @@ var _emscripten_stack_get_current = function() {
 
 /** @type {function(...*):?} */
 var dynCall_jiji = Module["dynCall_jiji"] = createExportWrapper("dynCall_jiji");
-
-function invoke_vii(index,a1,a2) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1,a2);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_vi(index,a1) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_ii(index,a1) {
-  var sp = stackSave();
-  try {
-    return getWasmTableEntry(index)(a1);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_iiii(index,a1,a2,a3) {
-  var sp = stackSave();
-  try {
-    return getWasmTableEntry(index)(a1,a2,a3);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_viii(index,a1,a2,a3) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1,a2,a3);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
-
-function invoke_viiiii(index,a1,a2,a3,a4,a5) {
-  var sp = stackSave();
-  try {
-    getWasmTableEntry(index)(a1,a2,a3,a4,a5);
-  } catch(e) {
-    stackRestore(sp);
-    if (e !== e+0) throw e;
-    _setThrew(1, 0);
-  }
-}
 
 
 // include: postamble.js
