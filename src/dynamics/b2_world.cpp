@@ -984,7 +984,7 @@ struct b2WorldQueryWrapper
 	bool QueryCallback(int32 proxyId)
 	{
 		b2FixtureProxy* proxy = (b2FixtureProxy*)broadPhase->GetUserData(proxyId);
-		return callback->ReportFixture(proxy->fixture);
+		return callback->ReportFixture(uint32(proxy->fixture));
 	}
 
 	const b2BroadPhase* broadPhase;
@@ -1014,7 +1014,7 @@ struct b2WorldRayCastWrapper
 		{
 			float fraction = output.fraction;
 			b2Vec2 point = (1.0f - fraction) * input.p1 + fraction * input.p2;
-			return callback->ReportFixture(fixture, point, output.normal, fraction);
+			return callback->ReportFixture((uint32)fixture, point, output.normal, fraction);
 		}
 
 		return input.maxFraction;

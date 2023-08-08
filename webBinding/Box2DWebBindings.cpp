@@ -239,13 +239,13 @@
         //b2QueryCallbackWrapper
         struct b2QueryCallbackWrapper : public wrapper<b2QueryCallback> {
                 EMSCRIPTEN_WRAPPER(b2QueryCallbackWrapper)
-                bool ReportFixture(b2Fixture* fixture) override {
+                bool ReportFixture(uint32 fixture) override {
                         return call<bool>("ReportFixture", fixture);
                 }
         };
         struct b2RayCastCallbackWrapper : public wrapper<b2RayCastCallback> {
                 EMSCRIPTEN_WRAPPER(b2RayCastCallbackWrapper)
-                float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override {
+                float ReportFixture(uint32 fixture, const b2Vec2& point, const b2Vec2& normal, float fraction) override {
                         return call<float>("ReportFixture", fixture, point, normal, fraction);
                 }
         };

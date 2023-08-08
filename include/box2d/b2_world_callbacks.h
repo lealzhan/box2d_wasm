@@ -131,7 +131,7 @@ public:
 
 	/// Called for each fixture found in the query AABB.
 	/// @return false to terminate the query.
-	virtual bool ReportFixture(b2Fixture* fixture) = 0;
+	virtual bool ReportFixture(uint32 fixture) = 0;
 };
 
 /// Callback class for ray casts.
@@ -153,7 +153,7 @@ public:
 	/// @param fraction the fraction along the ray at the point of intersection
 	/// @return -1 to filter, 0 to terminate, fraction to clip the ray for
 	/// closest hit, 1 to continue
-	virtual float ReportFixture(	b2Fixture* fixture, const b2Vec2& point,
+	virtual float ReportFixture(	uint32 fixture, const b2Vec2& point,
 									const b2Vec2& normal, float fraction) = 0;
 };
 
