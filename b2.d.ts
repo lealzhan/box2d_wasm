@@ -482,17 +482,17 @@ declare namespace B2 {
         SetUserData(data: any): void;
         IsActive(): boolean;
         GetCollideConnected(): boolean;
-        Cast2DistanceJoint(): DistanceJoint;
+        //Cast2DistanceJoint(): DistanceJoint;
         // Cast2FrictionJoint(): FrictionJoint;
         // Cast2GearJoint(): GearJoint;
-        Cast2MotorJoint(): MotorJoint;
-        Cast2MouseJoint(): MouseJoint;
-        Cast2PrismaticJoint(): PrismaticJoint;
+        //Cast2MotorJoint(): MotorJoint;
+        //Cast2MouseJoint(): MouseJoint;
+        //Cast2PrismaticJoint(): PrismaticJoint;
         // Cast2PulleyJoint(): PulleyJoint;
-        Cast2RevoluteJoint(): RevoluteJoint;
-        Cast2RopeJoint(): RopeJoint;
-        Cast2WeldJoint(): WeldJoint;
-        Cast2WheelJoint(): WheelJoint;
+        //Cast2RevoluteJoint(): RevoluteJoint;
+        //Cast2RopeJoint(): RopeJoint;
+        //Cast2WeldJoint(): WeldJoint;
+        //Cast2WheelJoint(): WheelJoint;
         Dump(): void;
     }
 

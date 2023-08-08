@@ -14,7 +14,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -fno-exceptions -ffunction-sections\
         -Wno-reserved-id-macro -Wno-c++98-compat-pedantic -Wno-unused-local-typedef -Wno-old-style-cast\
          -Wno-newline-eof -Wno-unused-private-field -Wno-undefined-reinterpret-cast -Wno-invalid-offsetof\
           -Wno-unused-value -Wno-format-nonliteral  -Wno-undef\
-          -Wno-unsafe-buffer-usage -fno-rtti -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0\
+          -Wno-unsafe-buffer-usage\
           -Wno-inconsistent-missing-destructor-override -Wno-suggest-destructor-override\
           -Wno-limited-postlink-optimizations\
           -Wbad-function-cast -Wcast-function-type\

@@ -944,28 +944,28 @@
                 // .function("GetUserData", &b2Joint::GetUserData)
                 // .function("SetUserData", &b2Joint::SetUserData)
                 .function("GetCollideConnected", &b2Joint::GetCollideConnected)
-                .function("Cast2DistanceJoint", optional_override([](b2Joint* j) {
-                        return (b2DistanceJoint*)j;}), allow_raw_pointers())
-                .function("Cast2FrictionJoint", optional_override([](b2Joint* j) {
-                        return (b2FrictionJoint*)j;}), allow_raw_pointers())
-                .function("Cast2GearJoint", optional_override([](b2Joint* j) {
-                        return (b2GearJoint*)j;}), allow_raw_pointers())
-                .function("Cast2MotorJoint", optional_override([](b2Joint* j) {
-                        return (b2MotorJoint*)j;}), allow_raw_pointers())
-                .function("Cast2MouseJoint", optional_override([](b2Joint* j) {
-                        return (b2MouseJoint*)j;}), allow_raw_pointers())
-                .function("Cast2PrismaticJoint", optional_override([](b2Joint* j) {
-                        return (b2PrismaticJoint*)j;}), allow_raw_pointers())
-                .function("Cast2PulleyJoint", optional_override([](b2Joint* j) {
-                        return (b2PulleyJoint*)j;}), allow_raw_pointers())
-                .function("Cast2RevoluteJoint", optional_override([](b2Joint* j) {
-                        return (b2RevoluteJoint*)j;}), allow_raw_pointers())
-                .function("Cast2RopeJoint", optional_override([](b2Joint* j) {
-                        return (b2RopeJoint*)j;}), allow_raw_pointers())
-                .function("Cast2WeldJoint", optional_override([](b2Joint* j) {
-                        return (b2WeldJoint*)j;}), allow_raw_pointers())
-                .function("Cast2WheelJoint", optional_override([](b2Joint* j) {
-                        return (b2WheelJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2DistanceJoint", optional_override([](b2Joint* j) {
+                //         return (b2DistanceJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2FrictionJoint", optional_override([](b2Joint* j) {
+                //         return (b2FrictionJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2GearJoint", optional_override([](b2Joint* j) {
+                //         return (b2GearJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2MotorJoint", optional_override([](b2Joint* j) {
+                //         return (b2MotorJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2MouseJoint", optional_override([](b2Joint* j) {
+                //         return (b2MouseJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2PrismaticJoint", optional_override([](b2Joint* j) {
+                //         return (b2PrismaticJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2PulleyJoint", optional_override([](b2Joint* j) {
+                //         return (b2PulleyJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2RevoluteJoint", optional_override([](b2Joint* j) {
+                //         return (b2RevoluteJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2RopeJoint", optional_override([](b2Joint* j) {
+                //         return (b2RopeJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2WeldJoint", optional_override([](b2Joint* j) {
+                //         return (b2WeldJoint*)j;}), allow_raw_pointers())
+                // .function("Cast2WheelJoint", optional_override([](b2Joint* j) {
+                //         return (b2WheelJoint*)j;}), allow_raw_pointers())
                 .function("Dump", &b2Joint::Dump);
 
         class_<b2DistanceJoint, base<b2Joint>>("DistanceJoint")
