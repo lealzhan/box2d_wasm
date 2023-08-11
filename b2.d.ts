@@ -9,6 +9,12 @@ declare namespace B2 {
         length(): number;
     }
 
+    class Int32Vector {
+        push_back(v: number): void;
+        get(i: number): number;
+        size(): number;
+    }
+
     // interface Transform {
     //     p: Vec2, q: Vec2
     // }
@@ -482,17 +488,17 @@ declare namespace B2 {
         SetUserData(data: any): void;
         IsActive(): boolean;
         GetCollideConnected(): boolean;
-        //Cast2DistanceJoint(): DistanceJoint;
+        Cast2DistanceJoint(): DistanceJoint;
         // Cast2FrictionJoint(): FrictionJoint;
         // Cast2GearJoint(): GearJoint;
-        //Cast2MotorJoint(): MotorJoint;
-        //Cast2MouseJoint(): MouseJoint;
-        //Cast2PrismaticJoint(): PrismaticJoint;
+        Cast2MotorJoint(): MotorJoint;
+        Cast2MouseJoint(): MouseJoint;
+        Cast2PrismaticJoint(): PrismaticJoint;
         // Cast2PulleyJoint(): PulleyJoint;
-        //Cast2RevoluteJoint(): RevoluteJoint;
-        //Cast2RopeJoint(): RopeJoint;
-        //Cast2WeldJoint(): WeldJoint;
-        //Cast2WheelJoint(): WheelJoint;
+        Cast2RevoluteJoint(): RevoluteJoint;
+        Cast2RopeJoint(): RopeJoint;
+        Cast2WeldJoint(): WeldJoint;
+        Cast2WheelJoint(): WheelJoint;
         Dump(): void;
     }
 
@@ -715,4 +721,43 @@ declare namespace B2 {
         GetLength(): number;
         Dump(): void;
     }
+
+    //
+    // functions
+    //
+    function ConvexPartition(verticesIn: Vec2Vector, trianglesIn: Int32Vector, verticesOut: Vec2Vector, trianglesOut: Int32Vector): void;
+    function GetFloat32(memory: number, offset: number): number;
+
+    //Contact
+    function ContactSetEnabled(contactPtr: number, flag: boolean): void;
+    function ContactIsTouching(contactPtr: number): boolean;
+    function ContactSetTangentSpeed(contactPtr: number, speed: number): void;
+    function ContactGetTangentSpeed(contactPtr: number): number;
+    function ContactSetFriction(contactPtr: number, friction: number): void;
+    function ContactGetFriction(contactPtr: number): number;
+    function ContactResetFriction(contactPtr: number): void;
+    function ContactSetRestitution(contactPtr: number, restitution: number): void;
+    function ContactGetRestitution(contactPtr: number): number;
+    function ContactResetRestitution(contactPtr: number): void;
+    function ContactGetFixtureARawPtr(contactPtr: number): number;
+    function ContactGetFixtureBRawPtr(contactPtr: number): number;
+    function ContactGetWorldManifoldRawPtr(contactPtr: number): number;
+    function ContactGetManifoldRawPtr(contactPtr: number): number;
+
+    //Manifold
+    function ManifoldGetType(manifoldPtr: number): number;
+    function ManifoldGetPointCount(manifoldPtr: number): number;
+    function ManifoldGetManifoldPointPtr(manifoldPtr: number, index: number): number;
+    function ManifoldGetLocalPointValueX(manifoldPtr: number, index: number): number;
+    function ManifoldGetLocalPointValueY(manifoldPtr: number, index: number): number;
+    function ManifoldGetLocalNormalValueX(manifoldPtr: number, index: number): number;
+    function ManifoldGetLocalNormalValueY(manifoldPtr: number, index: number): number;
+
+    //ManifoldPoint
+    function WorldManifoldGetPointValueX(worldManifoldPtr: number, index: number): number;
+    function WorldManifoldGetPointValueY(worldManifoldPtr: number, index: number): number;
+    function WorldManifoldGetSeparationValue(worldManifoldPtr: number, index: number): number;
+    function WorldManifoldGetNormalValueX(worldManifoldPtr: number): number;
+    function WorldManifoldGetNormalValueY(worldManifoldPtr: number): number;
+    function WorldManifoldDelete(worldManifoldPtr: number): void;
 }
