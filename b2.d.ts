@@ -1,4 +1,5 @@
 declare namespace B2 {
+    const maxPolygonVertices: number;
 
     interface Vec2 {
         x: number, y: number
@@ -97,8 +98,8 @@ declare namespace B2 {
 
     class World {
         constructor(gravity: Vec2);
-        SetContactListener(listener: B2.ContactListener): void;
-        SetDebugDraw(debugDraw: B2.Draw): void;
+        SetContactListener(listener: ContactListener): void;
+        SetDebugDraw(debugDraw: Draw): void;
         CreateBody(def: BodyDef): Body;
         DestroyBody(body: Body): void;
         CreateJoint(def: JointDef): Joint;
@@ -170,6 +171,9 @@ declare namespace B2 {
         restitution: number;
         density: number;
         isSensor: boolean;
+        filter: Filter;
+        SetShape(shape: Shape): void;
+        GetShape(): Shape;
     }
 
     class Fixture {
@@ -468,8 +472,8 @@ declare namespace B2 {
         localAnchorA: Vec2;
         localAnchorB: Vec2;
         referenceAngle: number;
-        frequencyHz: number;
-        dampingRatio: number;
+        stiffness: number;
+        damping: number;
     }
 
     class WeldJoint extends Joint {
@@ -522,6 +526,7 @@ declare namespace B2 {
     //
     function ConvexPartition(verticesIn: Vec2Vector, trianglesIn: Int32Vector, verticesOut: Vec2Vector, trianglesOut: Int32Vector): void;
     function GetFloat32(memory: number, offset: number): number;
+    function SetLinearFrequencyAndDampingRatio(body: Joint, frequencyHertz: number, dampingRatio: number): void;
 
     //Contact
     function ContactSetEnabled(contactPtr: number, flag: boolean): void;
@@ -536,23 +541,35 @@ declare namespace B2 {
     function ContactResetRestitution(contactPtr: number): void;
     function ContactGetFixtureA(contactPtr: number): number;
     function ContactGetFixtureB(contactPtr: number): number;
-    function ContactGetWorldManifold(contactPtr: number): number;
+    function ContactGetWorldManifold(contactPtr: number, worldManifoldPtr: number): number;
     function ContactGetManifold(contactPtr: number): number;
 
     //Manifold
     function ManifoldGetType(manifoldPtr: number): number;
     function ManifoldGetPointCount(manifoldPtr: number): number;
     function ManifoldGetManifoldPointPtr(manifoldPtr: number, index: number): number;
-    function ManifoldGetLocalPointValueX(manifoldPtr: number, index: number): number;
-    function ManifoldGetLocalPointValueY(manifoldPtr: number, index: number): number;
-    function ManifoldGetLocalNormalValueX(manifoldPtr: number, index: number): number;
-    function ManifoldGetLocalNormalValueY(manifoldPtr: number, index: number): number;
+    function ManifoldGetLocalPointValueX(manifoldPtr: number): number;
+    function ManifoldGetLocalPointValueY(manifoldPtr: number): number;
+    function ManifoldGetLocalNormalValueX(manifoldPtr: number): number;
+    function ManifoldGetLocalNormalValueY(manifoldPtr: number): number;
 
     //ManifoldPoint
+    function ManifoldPointGetLocalPointX(manifoldPointPtr: number): number;
+    function ManifoldPointGetLocalPointY(manifoldPointPtr: number): number;
+    function ManifoldPointGetNormalImpulse(manifoldPointPtr: number): number;
+    function ManifoldPointGetTangentImpulse(manifoldPointPtr: number): number;
+
+    //WorldManifold
+    function WorldManifoldNew(): number;
     function WorldManifoldGetPointValueX(worldManifoldPtr: number, index: number): number;
     function WorldManifoldGetPointValueY(worldManifoldPtr: number, index: number): number;
     function WorldManifoldGetSeparationValue(worldManifoldPtr: number, index: number): number;
     function WorldManifoldGetNormalValueX(worldManifoldPtr: number): number;
     function WorldManifoldGetNormalValueY(worldManifoldPtr: number): number;
     function WorldManifoldDelete(worldManifoldPtr: number): void;
+
+    //ContactImpulse
+    function ContactImpulseGetNormalImpulse(contactImpulsePtr: number, index: number): number;
+    function ContactImpulseGetTangentImpulse(contactImpulsePtr: number, index: number): number;
+    function ContactImpulseGetCount(contactImpulsePtr: number): number;
 }
