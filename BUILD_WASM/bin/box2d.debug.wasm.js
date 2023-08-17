@@ -3,7 +3,7 @@ var BOX2D = (() => {
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
   
   return (
-function(moduleArg = {}) {
+function(BOX2D = {})  {
 
 // include: shell.js
 // The Module object: Our interface to the outside world. We import
@@ -19,7 +19,7 @@ function(moduleArg = {}) {
 // after the generated code, you will need to define   var Module = {};
 // before the code. Then that object will be used in the code, and you
 // can continue to use Module afterwards as well.
-var Module = moduleArg;
+var Module = typeof BOX2D != 'undefined' ? BOX2D : {};
 
 // Set up the promise that indicates the Module is initialized
 var readyPromiseResolve, readyPromiseReject;
@@ -101,16 +101,11 @@ if (ENVIRONMENT_IS_SHELL) {
   };
 
   readAsync = (f, onload, onerror) => {
-    setTimeout(() => onload(readBinary(f)));
+    setTimeout(() => onload(readBinary(f)), 0);
   };
 
   if (typeof clearTimeout == 'undefined') {
     globalThis.clearTimeout = (id) => {};
-  }
-
-  if (typeof setTimeout == 'undefined') {
-    // spidermonkey lacks setTimeout but we use it above in readAsync.
-    globalThis.setTimeout = (f) => (typeof f == 'function') ? f() : abort();
   }
 
   if (typeof scriptArgs != 'undefined') {
@@ -367,6 +362,7 @@ assert(!Module['INITIAL_MEMORY'], 'Detected runtime INITIAL_MEMORY setting.  Use
 // from the wasm module and this will be assigned once
 // the exports are available.
 var wasmTable;
+
 // end include: runtime_init_table.js
 // include: runtime_stack_check.js
 // Initializes the stack cookie. Called at the startup of main and at the startup of each thread in pthreads mode.
@@ -405,6 +401,7 @@ function checkStackCookie() {
     abort('Runtime error: The application has corrupted its heap memory area (address zero)!');
   }
 }
+
 // end include: runtime_stack_check.js
 // include: runtime_assertions.js
 // Endianness check
@@ -490,6 +487,7 @@ assert(Math.imul, 'This browser does not support Math.imul(), build with LEGACY_
 assert(Math.fround, 'This browser does not support Math.fround(), build with LEGACY_VM_SUPPORT or POLYFILL_OLD_MATH_FUNCTIONS to add in a polyfill');
 assert(Math.clz32, 'This browser does not support Math.clz32(), build with LEGACY_VM_SUPPORT or POLYFILL_OLD_MATH_FUNCTIONS to add in a polyfill');
 assert(Math.trunc, 'This browser does not support Math.trunc(), build with LEGACY_VM_SUPPORT or POLYFILL_OLD_MATH_FUNCTIONS to add in a polyfill');
+
 // end include: runtime_math.js
 // A counter of dependencies for calling run(). If we need to
 // do asynchronous work before running, increment this and
@@ -645,6 +643,7 @@ function isDataURI(filename) {
 function isFileURI(filename) {
   return filename.startsWith('file://');
 }
+
 // end include: URIUtils.js
 /** @param {boolean=} fixedasm */
 function createExportWrapper(name, fixedasm) {
@@ -888,7 +887,7 @@ function missingLibrarySymbol(sym) {
         if (!librarySymbol.startsWith('_')) {
           librarySymbol = '$' + sym;
         }
-        msg += " (e.g. -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='" + librarySymbol + "')";
+        msg += " (e.g. -sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE=" + librarySymbol + ")";
         if (isExportedByForceFilesystem(sym)) {
           msg += '. Alternatively, forcing filesystem support (-sFORCE_FILESYSTEM) can export this for you';
         }
@@ -923,8 +922,10 @@ function dbg(text) {
   // logging to show up as warnings.
   console.warn.apply(console, arguments);
 }
+
 // end include: runtime_debug.js
 // === Body ===
+
 
 // end include: preamble.js
 
@@ -935,12 +936,12 @@ function dbg(text) {
       this.status = status;
     }
 
-  var callRuntimeCallbacks = (callbacks) => {
+  function callRuntimeCallbacks(callbacks) {
       while (callbacks.length > 0) {
         // Pass the module as the first argument.
         callbacks.shift()(Module);
       }
-    };
+    }
 
   
     /**
@@ -962,10 +963,10 @@ function dbg(text) {
     }
   }
 
-  var ptrToString = (ptr) => {
+  function ptrToString(ptr) {
       assert(typeof ptr === 'number');
       return '0x' + ptr.toString(16).padStart(8, '0');
-    };
+    }
 
   
     /**
@@ -988,13 +989,13 @@ function dbg(text) {
     }
   }
 
-  var warnOnce = (text) => {
+  function warnOnce(text) {
       if (!warnOnce.shown) warnOnce.shown = {};
       if (!warnOnce.shown[text]) {
         warnOnce.shown[text] = 1;
         err(text);
       }
-    };
+    }
 
   var UTF8Decoder = typeof TextDecoder != 'undefined' ? new TextDecoder('utf8') : undefined;
   
@@ -1007,7 +1008,7 @@ function dbg(text) {
      * @param {number=} maxBytesToRead
      * @return {string}
      */
-  var UTF8ArrayToString = (heapOrArray, idx, maxBytesToRead) => {
+  function UTF8ArrayToString(heapOrArray, idx, maxBytesToRead) {
       var endIdx = idx + maxBytesToRead;
       var endPtr = idx;
       // TextDecoder needs to know the byte length in advance, it doesn't stop on
@@ -1048,7 +1049,8 @@ function dbg(text) {
         }
       }
       return str;
-    };
+    }
+  
   
     /**
      * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
@@ -1065,18 +1067,18 @@ function dbg(text) {
      *   JS JIT optimizations off, so it is worth to consider consistently using one
      * @return {string}
      */
-  var UTF8ToString = (ptr, maxBytesToRead) => {
+  function UTF8ToString(ptr, maxBytesToRead) {
       assert(typeof ptr == 'number');
       return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : '';
-    };
-  var ___assert_fail = (condition, filename, line, func) => {
+    }
+  function ___assert_fail(condition, filename, line, func) {
       abort(`Assertion failed: ${UTF8ToString(condition)}, at: ` + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
-    };
+    }
 
-  var setErrNo = (value) => {
+  function setErrNo(value) {
       HEAP32[((___errno_location())>>2)] = value;
       return value;
-    };
+    }
   
   var SYSCALLS = {varargs:undefined,get:function() {
         assert(SYSCALLS.varargs != undefined);
@@ -1435,7 +1437,7 @@ function dbg(text) {
         } else {
           return makeClassHandle(this.registeredClass.instancePrototype, {
             ptrType: this,
-            ptr,
+            ptr: ptr,
           });
         }
       }
@@ -1473,7 +1475,7 @@ function dbg(text) {
         });
       }
     }
-  var attachFinalizer = function(handle) {
+  function attachFinalizer(handle) {
       if ('undefined' === typeof FinalizationRegistry) {
         attachFinalizer = (handle) => handle;
         return handle;
@@ -1510,7 +1512,7 @@ function dbg(text) {
       };
       detachFinalizer = (handle) => finalizationRegistry.unregister(handle);
       return attachFinalizer(handle);
-    };
+    }
   function __embind_create_inheriting_constructor(constructorName, wrapperType, properties) {
       constructorName = readLatin1String(constructorName);
       wrapperType = requireRegisteredType(wrapperType, 'wrapper');
@@ -1631,7 +1633,7 @@ function dbg(text) {
         onComplete(typeConverters);
       }
     }
-  var __embind_finalize_value_object = function(structType) {
+  function __embind_finalize_value_object(structType) {
       var reg = structRegistrations[structType];
       delete structRegistrations[structType];
   
@@ -1695,7 +1697,7 @@ function dbg(text) {
           destructorFunction: rawDestructor,
         }];
       });
-    };
+    }
 
   function __embind_register_bigint(primitiveType, name, size, minRange, maxRange) {}
 
@@ -1747,7 +1749,7 @@ function dbg(text) {
   
       name = readLatin1String(name);
       registerType(rawType, {
-          name,
+          name: name,
           'fromWireType': function(wt) {
               // ambiguous emscripten ABI: sometimes return values are
               // true or false, and sometimes integers (0 or 1)
@@ -2187,7 +2189,7 @@ function dbg(text) {
   
   
   
-  var dynCallLegacy = (sig, ptr, args) => {
+  function dynCallLegacy(sig, ptr, args) {
       assert(('dynCall_' + sig) in Module, `bad function pointer type - dynCall function not found for sig '${sig}'`);
       if (args && args.length) {
         // j (64-bit integer) must be passed in as two numbers [low 32, high 32].
@@ -2197,10 +2199,11 @@ function dbg(text) {
       }
       var f = Module['dynCall_' + sig];
       return args && args.length ? f.apply(null, [ptr].concat(args)) : f.call(null, ptr);
-    };
+    }
   
   var wasmTableMirror = [];
-  var getWasmTableEntry = (funcPtr) => {
+  
+  function getWasmTableEntry(funcPtr) {
       var func = wasmTableMirror[funcPtr];
       if (!func) {
         if (funcPtr >= wasmTableMirror.length) wasmTableMirror.length = funcPtr + 1;
@@ -2208,10 +2211,10 @@ function dbg(text) {
       }
       assert(wasmTable.get(funcPtr) == func, "JavaScript-side Wasm function table mirror is out of date!");
       return func;
-    };
+    }
   
   /** @param {Object=} args */
-  var dynCall = (sig, ptr, args) => {
+  function dynCall(sig, ptr, args) {
       // Without WASM_BIGINT support we cannot directly call function with i64 as
       // part of thier signature, so we rely the dynCall functions generated by
       // wasm-emscripten-finalize
@@ -2222,8 +2225,9 @@ function dbg(text) {
       var rtn = getWasmTableEntry(ptr).apply(null, args);
       return rtn;
   
-    };
-  var getDynCaller = (sig, ptr) => {
+    }
+  
+  function getDynCaller(sig, ptr) {
       assert(sig.includes('j') || sig.includes('p'), 'getDynCaller should only be called with i64 sigs')
       var argCache = [];
       return function() {
@@ -2231,7 +2235,7 @@ function dbg(text) {
         Object.assign(argCache, arguments);
         return dynCall(sig, ptr, argCache);
       };
-    };
+    }
   
   
   function embind__requireFunction(signature, rawFunction) {
@@ -2775,7 +2779,7 @@ function dbg(text) {
   function __embind_register_emval(rawType, name) {
       name = readLatin1String(name);
       registerType(rawType, {
-        name,
+        name: name,
         'fromWireType': function(handle) {
           var rv = Emval.toValue(handle);
           __emval_decref(handle);
@@ -2823,7 +2827,7 @@ function dbg(text) {
       ctor.values = {};
   
       registerType(rawType, {
-        name,
+        name: name,
         constructor: ctor,
         'fromWireType': function(c) {
           return this.constructor.values[c];
@@ -2885,7 +2889,7 @@ function dbg(text) {
       var shift = getShiftFromSize(size);
       name = readLatin1String(name);
       registerType(rawType, {
-        name,
+        name: name,
         'fromWireType': function(value) {
            return value;
         },
@@ -2988,7 +2992,7 @@ function dbg(text) {
         }
       }
       registerType(primitiveType, {
-        name,
+        name: name,
         'fromWireType': fromWireType,
         'toWireType': toWireType,
         'argPackAdvance': 8,
@@ -3022,7 +3026,7 @@ function dbg(text) {
   
       name = readLatin1String(name);
       registerType(rawType, {
-        name,
+        name: name,
         'fromWireType': decodeMemoryView,
         'argPackAdvance': 8,
         'readValueFromPointer': decodeMemoryView,
@@ -3035,7 +3039,7 @@ function dbg(text) {
   
   
   
-  var stringToUTF8Array = (str, heap, outIdx, maxBytesToWrite) => {
+  function stringToUTF8Array(str, heap, outIdx, maxBytesToWrite) {
       assert(typeof str === 'string');
       // Parameter maxBytesToWrite is not optional. Negative values, 0, null,
       // undefined and false each don't write out any bytes.
@@ -3081,13 +3085,13 @@ function dbg(text) {
       // Null-terminate the pointer to the buffer.
       heap[outIdx] = 0;
       return outIdx - startIdx;
-    };
-  var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
+    }
+  function stringToUTF8(str, outPtr, maxBytesToWrite) {
       assert(typeof maxBytesToWrite == 'number', 'stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
       return stringToUTF8Array(str, HEAPU8,outPtr, maxBytesToWrite);
-    };
+    }
   
-  var lengthBytesUTF8 = (str) => {
+  function lengthBytesUTF8(str) {
       var len = 0;
       for (var i = 0; i < str.length; ++i) {
         // Gotcha: charCodeAt returns a 16-bit word that is a UTF-16 encoded code
@@ -3106,7 +3110,7 @@ function dbg(text) {
         }
       }
       return len;
-    };
+    }
   
   
   
@@ -3117,7 +3121,7 @@ function dbg(text) {
       = (name === "std::string");
   
       registerType(rawType, {
-        name,
+        name: name,
         'fromWireType': function(value) {
           var length = HEAPU32[((value)>>2)];
           var payload = value + 4;
@@ -3207,7 +3211,7 @@ function dbg(text) {
   
   
   var UTF16Decoder = typeof TextDecoder != 'undefined' ? new TextDecoder('utf-16le') : undefined;;
-  var UTF16ToString = (ptr, maxBytesToRead) => {
+  function UTF16ToString(ptr, maxBytesToRead) {
       assert(ptr % 2 == 0, 'Pointer passed to UTF16ToString must be aligned to two bytes!');
       var endPtr = ptr;
       // TextDecoder needs to know the byte length in advance, it doesn't stop on
@@ -3239,9 +3243,9 @@ function dbg(text) {
       }
   
       return str;
-    };
+    }
   
-  var stringToUTF16 = (str, outPtr, maxBytesToWrite) => {
+  function stringToUTF16(str, outPtr, maxBytesToWrite) {
       assert(outPtr % 2 == 0, 'Pointer passed to stringToUTF16 must be aligned to two bytes!');
       assert(typeof maxBytesToWrite == 'number', 'stringToUTF16(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
       // Backwards compatibility: if max bytes is not specified, assume unsafe unbounded write is allowed.
@@ -3261,13 +3265,13 @@ function dbg(text) {
       // Null-terminate the pointer to the HEAP.
       HEAP16[((outPtr)>>1)] = 0;
       return outPtr - startPtr;
-    };
+    }
   
-  var lengthBytesUTF16 = (str) => {
+  function lengthBytesUTF16(str) {
       return str.length*2;
-    };
+    }
   
-  var UTF32ToString = (ptr, maxBytesToRead) => {
+  function UTF32ToString(ptr, maxBytesToRead) {
       assert(ptr % 4 == 0, 'Pointer passed to UTF32ToString must be aligned to four bytes!');
       var i = 0;
   
@@ -3288,9 +3292,9 @@ function dbg(text) {
         }
       }
       return str;
-    };
+    }
   
-  var stringToUTF32 = (str, outPtr, maxBytesToWrite) => {
+  function stringToUTF32(str, outPtr, maxBytesToWrite) {
       assert(outPtr % 4 == 0, 'Pointer passed to stringToUTF32 must be aligned to four bytes!');
       assert(typeof maxBytesToWrite == 'number', 'stringToUTF32(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
       // Backwards compatibility: if max bytes is not specified, assume unsafe unbounded write is allowed.
@@ -3315,9 +3319,9 @@ function dbg(text) {
       // Null-terminate the pointer to the HEAP.
       HEAP32[((outPtr)>>2)] = 0;
       return outPtr - startPtr;
-    };
+    }
   
-  var lengthBytesUTF32 = (str) => {
+  function lengthBytesUTF32(str) {
       var len = 0;
       for (var i = 0; i < str.length; ++i) {
         // Gotcha: charCodeAt returns a 16-bit word that is a UTF-16 encoded code unit, not a Unicode code point of the character! We must decode the string to UTF-32 to the heap.
@@ -3328,8 +3332,8 @@ function dbg(text) {
       }
   
       return len;
-    };
-  var __embind_register_std_wstring = function(rawType, charSize, name) {
+    }
+  function __embind_register_std_wstring(rawType, charSize, name) {
       name = readLatin1String(name);
       var decodeString, encodeString, getHeap, lengthBytesUTF, shift;
       if (charSize === 2) {
@@ -3346,7 +3350,7 @@ function dbg(text) {
         shift = 2;
       }
       registerType(rawType, {
-        name,
+        name: name,
         'fromWireType': function(value) {
           // Code mostly taken from _embind_register_std_string fromWireType
           var length = HEAPU32[value >> 2];
@@ -3395,7 +3399,7 @@ function dbg(text) {
         'readValueFromPointer': simpleReadValueFromPointer,
         destructorFunction: function(ptr) { _free(ptr); },
       });
-    };
+    }
 
   
   
@@ -3431,12 +3435,12 @@ function dbg(text) {
     ) {
       structRegistrations[structType].fields.push({
         fieldName: readLatin1String(fieldName),
-        getterReturnType,
+        getterReturnType: getterReturnType,
         getter: embind__requireFunction(getterSignature, getter),
-        getterContext,
-        setterArgumentType,
+        getterContext: getterContext,
+        setterArgumentType: setterArgumentType,
         setter: embind__requireFunction(setterSignature, setter),
-        setterContext,
+        setterContext: setterContext,
       });
     }
 
@@ -3445,7 +3449,7 @@ function dbg(text) {
       name = readLatin1String(name);
       registerType(rawType, {
           isVoid: true, // void return values can be optimized out sometimes
-          name,
+          name: name,
           'argPackAdvance': 0,
           'fromWireType': function() {
               return undefined;
@@ -3562,20 +3566,23 @@ function dbg(text) {
       return Emval.toHandle(v);
     }
 
-  var _abort = () => {
+  function _abort() {
       abort('native code called abort()');
-    };
+    }
 
-  var _emscripten_memcpy_big = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
+  function _emscripten_memcpy_big(dest, src, num) {
+      HEAPU8.copyWithin(dest, src, src + num);
+    }
 
-  var getHeapMax = () =>
+  function getHeapMax() {
       // Stay one Wasm page short of 4GB: while e.g. Chrome is able to allocate
       // full 4GB Wasm memories, the size will wrap back to 0 bytes in Wasm side
       // for any code that deals with heap sizes, which would require special
       // casing all heap size related code to treat 0 specially.
-      2147483648;
+      return 2147483648;
+    }
   
-  var growMemory = (size) => {
+  function emscripten_realloc_buffer(size) {
       var b = wasmMemory.buffer;
       var pages = (size - b.byteLength + 65535) >>> 16;
       try {
@@ -3584,12 +3591,12 @@ function dbg(text) {
         updateMemoryViews();
         return 1 /*success*/;
       } catch(e) {
-        err(`growMemory: Attempted to grow heap from ${b.byteLength} bytes to ${size} bytes, but got error: ${e}`);
+        err(`emscripten_realloc_buffer: Attempted to grow heap from ${b.byteLength} bytes to ${size} bytes, but got error: ${e}`);
       }
       // implicit 0 return to save code size (caller will cast "undefined" into 0
       // anyhow)
-    };
-  var _emscripten_resize_heap = (requestedSize) => {
+    }
+  function _emscripten_resize_heap(requestedSize) {
       var oldSize = HEAPU8.length;
       requestedSize = requestedSize >>> 0;
       // With multithreaded builds, races can happen (another thread might increase the size
@@ -3633,7 +3640,7 @@ function dbg(text) {
   
         var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
   
-        var replacement = growMemory(newSize);
+        var replacement = emscripten_realloc_buffer(newSize);
         if (replacement) {
   
           return true;
@@ -3641,15 +3648,15 @@ function dbg(text) {
       }
       err(`Failed to grow the heap from ${oldSize} bytes to ${newSize} bytes, not enough memory!`);
       return false;
-    };
+    }
 
-  var _fd_close = (fd) => {
+  function _fd_close(fd) {
       abort('fd_close called without SYSCALLS_REQUIRE_FILESYSTEM');
-    };
+    }
 
-  var _fd_read = (fd, iov, iovcnt, pnum) => {
+  function _fd_read(fd, iov, iovcnt, pnum) {
       abort('fd_read called without SYSCALLS_REQUIRE_FILESYSTEM');
-    };
+    }
 
   function convertI32PairToI53Checked(lo, hi) {
       assert(lo == (lo >>> 0) || lo == (lo|0)); // lo should either be a i32 or a u32
@@ -3660,14 +3667,13 @@ function dbg(text) {
   
   
   
-  
-  var _fd_seek = (fd, offset_low, offset_high, whence, newOffset) => {
+  function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
       return 70;
-    };
+    }
 
   var printCharBuffers = [null,[],[]];
   
-  var printChar = (stream, curr) => {
+  function printChar(stream, curr) {
       var buffer = printCharBuffers[stream];
       assert(buffer);
       if (curr === 0 || curr === 10) {
@@ -3676,17 +3682,17 @@ function dbg(text) {
       } else {
         buffer.push(curr);
       }
-    };
+    }
   
-  var flush_NO_FILESYSTEM = () => {
+  function flush_NO_FILESYSTEM() {
       // flush anything remaining in the buffers during shutdown
       _fflush(0);
       if (printCharBuffers[1].length) printChar(1, 10);
       if (printCharBuffers[2].length) printChar(2, 10);
-    };
+    }
   
   
-  var _fd_write = (fd, iov, iovcnt, pnum) => {
+  function _fd_write(fd, iov, iovcnt, pnum) {
       // hack to support printf in SYSCALLS_REQUIRE_FILESYSTEM=0
       var num = 0;
       for (var i = 0; i < iovcnt; i++) {
@@ -3700,7 +3706,7 @@ function dbg(text) {
       }
       HEAPU32[((pnum)>>2)] = num;
       return 0;
-    };
+    }
 BindingError = Module['BindingError'] = extendError(Error, 'BindingError');;
 init_emval();;
 PureVirtualError = Module['PureVirtualError'] = extendError(Error, 'PureVirtualError');;
@@ -4008,7 +4014,7 @@ var unexportedSymbols = [
   'checkStackCookie',
   'ptrToString',
   'getHeapMax',
-  'growMemory',
+  'emscripten_realloc_buffer',
   'ENV',
   'MONTH_DAYS_REGULAR',
   'MONTH_DAYS_LEAP',
@@ -4054,6 +4060,7 @@ var unexportedSymbols = [
   'restoreOldWindowedStyle',
   'ExitStatus',
   'flush_NO_FILESYSTEM',
+  'dlopenMissingError',
   'promiseMap',
   'Browser',
   'wget',
@@ -4277,7 +4284,7 @@ run();
 // end include: postamble.js
 
 
-  return moduleArg.ready
+  return BOX2D.ready
 }
 
 );
