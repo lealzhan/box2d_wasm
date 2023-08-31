@@ -185,6 +185,7 @@ declare namespace B2 {
         GetFilterData(): Filter;
         Refilter(): void;
         GetBody(): Body;
+        GetNext(): Fixture;
         TestPoint(p: Vec2): boolean;
         RayCast(output: RayCastOutput, input: RayCastInput, childIndex: number): boolean;
         GetMassData(massData: MassData): void;
@@ -272,6 +273,7 @@ declare namespace B2 {
         IsEnabled(): boolean;
         SetFixedRotation(flag: boolean): void;
         IsFixedRotation(): boolean;
+        GetFixtureList(): Fixture;
         GetJointList(): number;
         GetWorld(): World;
         Dump(): void;

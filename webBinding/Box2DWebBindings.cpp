@@ -383,7 +383,7 @@
                 .function("GetFilterData", &b2Fixture::GetFilterData)
                 .function("Refilter", &b2Fixture::Refilter)
                 .function("GetBody", &b2Fixture::GetBody, allow_raw_pointers())
-                // .function("GetNext", &b2Fixture::GetNext, allow_raw_pointers())
+                .function("GetNext", &b2Fixture::GetNext, allow_raw_pointers())
                 // .function("GetUserData", &b2Fixture::GetUserData)
                 // .function("SetUserData", &b2Fixture::SetUserData)
                 .function("TestPoint", &b2Fixture::TestPoint)
