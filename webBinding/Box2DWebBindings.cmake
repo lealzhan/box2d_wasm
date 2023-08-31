@@ -17,7 +17,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -fno-exceptions -ffunction-sections\
           -Wno-unsafe-buffer-usage\
           -Wno-inconsistent-missing-destructor-override -Wno-suggest-destructor-override\
           -Wno-limited-postlink-optimizations\
-          -Wbad-function-cast -Wcast-function-type\
+          -Wbad-function-cast -Wcast-function-type -Wno-unused-parameter\
           ")
 
 # Build debug info for all configurations

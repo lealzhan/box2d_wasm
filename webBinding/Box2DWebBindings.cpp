@@ -153,6 +153,11 @@
         function("ContactImpulseGetTangentImpulse", &ContactImpulseGetTangentImpulse);
         function("ContactImpulseGetCount", &ContactImpulseGetCount);
 
+        function("JointEdgeGetOther", &JointEdgeGetOther, allow_raw_pointers());
+        function("JointEdgeGetJoint", &JointEdgeGetJoint, allow_raw_pointers());
+        function("JointEdgeGetPrev", &JointEdgeGetPrev, allow_raw_pointers());
+        function("JointEdgeGetNext", &JointEdgeGetNext, allow_raw_pointers());
+
         // enum
         enum_<b2Shape::Type>("ShapeType")
                 .value("e_circle", b2Shape::e_circle)
@@ -465,7 +470,9 @@
                 .function("SetFixedRotation", &b2Body::SetFixedRotation)
                 .function("IsFixedRotation", &b2Body::IsFixedRotation)
                 .function("GetFixtureList", &b2Body::GetFixtureList, allow_raw_pointers())
-                // .function("GetJointList", &b2Body::GetJointList)
+                //.function("GetJointList", &b2Body::GetJointList, allow_raw_pointers())
+                .function("GetJointList", optional_override([](b2Body* b) {
+                        return (uint32)(b->GetJointList());}), allow_raw_pointers())
                 // .function("GetContactList", &b2Body::GetContactList)
                 //.function("GetNext", &b2Body::GetNext, allow_raw_pointers())
                 // .function("GetUserData", &b2Body::GetUserData)

@@ -262,3 +262,20 @@ static float ContactImpulseGetTangentImpulse(uint32 ptr, int id) {
 static int ContactImpulseGetCount(uint32 ptr) {
         return ((b2ContactImpulse*)ptr)->count;
 }
+
+//b2JointEdge
+static uint32 JointEdgeGetOther(uint32 ptr) {
+        return (uint32)((b2JointEdge*)ptr)->other;
+}
+
+static uint32 JointEdgeGetJoint(uint32 ptr) {
+        return (uint32)((b2JointEdge*)ptr)->joint;
+}
+
+static uint32 JointEdgeGetPrev(uint32 ptr) {
+        return (uint32)((b2JointEdge*)ptr)->prev;
+}
+
+static uint32 JointEdgeGetNext(uint32 ptr) {
+        return (uint32)((b2JointEdge*)ptr)->next;
+}

@@ -366,7 +366,7 @@ public:
 
 	/// Get the list of all joints attached to this body.
 	b2JointEdge* GetJointList();
-	const b2JointEdge* GetJointList() const;
+	// const b2JointEdge* GetJointList() const;
 
 	/// Get the list of all contacts attached to this body.
 	/// @warning this list changes during the time step and you may
@@ -712,10 +712,10 @@ inline b2JointEdge* b2Body::GetJointList()
 	return m_jointList;
 }
 
-inline const b2JointEdge* b2Body::GetJointList() const
-{
-	return m_jointList;
-}
+// inline const b2JointEdge* b2Body::GetJointList() const
+// {
+// 	return m_jointList;
+// }
 
 inline b2ContactEdge* b2Body::GetContactList()
 {
