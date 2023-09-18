@@ -362,21 +362,21 @@ public:
 
 	/// Get the list of all fixtures attached to this body.
 	b2Fixture* GetFixtureList();
-	const b2Fixture* GetFixtureList() const;
+	// const b2Fixture* GetFixtureList() const;
 
 	/// Get the list of all joints attached to this body.
 	b2JointEdge* GetJointList();
-	const b2JointEdge* GetJointList() const;
+	// const b2JointEdge* GetJointList() const;
 
 	/// Get the list of all contacts attached to this body.
 	/// @warning this list changes during the time step and you may
 	/// miss some collisions if you don't use b2ContactListener.
 	b2ContactEdge* GetContactList();
-	const b2ContactEdge* GetContactList() const;
+	// const b2ContactEdge* GetContactList() const;
 
 	/// Get the next body in the world's body list.
 	b2Body* GetNext();
-	const b2Body* GetNext() const;
+	// const b2Body* GetNext() const;
 
 	/// Get the user data pointer that was provided in the body definition.
 	void* GetUserData() const;
@@ -386,7 +386,10 @@ public:
 
 	/// Get the parent world of this body.
 	b2World* GetWorld();
-	const b2World* GetWorld() const;
+	// const b2World* GetWorld() const;
+
+	/// Does a joint prevent collision?
+	bool ShouldCollideConnected(const b2Body* other) const;
 
 	/// Dump this body to a log file
 	void Dump();
@@ -694,40 +697,40 @@ inline b2Fixture* b2Body::GetFixtureList()
 	return m_fixtureList;
 }
 
-inline const b2Fixture* b2Body::GetFixtureList() const
-{
-	return m_fixtureList;
-}
+// inline const b2Fixture* b2Body::GetFixtureList() const
+// {
+// 	return m_fixtureList;
+// }
 
 inline b2JointEdge* b2Body::GetJointList()
 {
 	return m_jointList;
 }
 
-inline const b2JointEdge* b2Body::GetJointList() const
-{
-	return m_jointList;
-}
+// inline const b2JointEdge* b2Body::GetJointList() const
+// {
+// 	return m_jointList;
+// }
 
 inline b2ContactEdge* b2Body::GetContactList()
 {
 	return m_contactList;
 }
 
-inline const b2ContactEdge* b2Body::GetContactList() const
-{
-	return m_contactList;
-}
+// inline const b2ContactEdge* b2Body::GetContactList() const
+// {
+// 	return m_contactList;
+// }
 
 inline b2Body* b2Body::GetNext()
 {
 	return m_next;
 }
 
-inline const b2Body* b2Body::GetNext() const
-{
-	return m_next;
-}
+// inline const b2Body* b2Body::GetNext() const
+// {
+// 	return m_next;
+// }
 
 inline void b2Body::SetUserData(void* data)
 {
@@ -876,9 +879,9 @@ inline b2World* b2Body::GetWorld()
 	return m_world;
 }
 
-inline const b2World* b2Body::GetWorld() const
-{
-	return m_world;
-}
+// inline const b2World* b2Body::GetWorld() const
+// {
+// 	return m_world;
+// }
 
 #endif

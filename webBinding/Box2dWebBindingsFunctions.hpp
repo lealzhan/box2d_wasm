@@ -76,38 +76,38 @@
         }
 #endif
 
-//SetLinearFrequencyAndDampingRatio
-static void SetLinearFrequencyAndDampingRatio(b2Joint* j, float frequencyHertz, float dampingRatio) {
-        float stiffness, damping;
-        b2LinearStiffness(stiffness, damping, frequencyHertz, dampingRatio, j->GetBodyA(), j->GetBodyB());
-        //cast j to specific type based on its type
-        switch (j->GetType())
-        {
-        case b2JointType::e_distanceJoint:
-                ((b2DistanceJoint*)j)->SetStiffness(stiffness);
-                ((b2DistanceJoint*)j)->SetDamping(damping);
-                break;
-        case b2JointType::e_weldJoint:
-                ((b2WeldJoint*)j)->SetStiffness(stiffness);
-                ((b2WeldJoint*)j)->SetDamping(damping);
-                break;
-        case b2JointType::e_wheelJoint:
-                ((b2WheelJoint*)j)->SetStiffness(stiffness);
-                ((b2WheelJoint*)j)->SetDamping(damping);
-                break;
-        case b2JointType::e_frictionJoint:
-        case b2JointType::e_ropeJoint:
-        case b2JointType::e_motorJoint:
-        case b2JointType::e_prismaticJoint:
-        case b2JointType::e_revoluteJoint:
-        case b2JointType::e_pulleyJoint:
-        case b2JointType::e_mouseJoint:
-        case b2JointType::e_gearJoint:
-        case b2JointType::e_unknownJoint:
-        default:
-                break;
-        }
-}
+// //SetLinearFrequencyAndDampingRatio
+// static void SetLinearFrequencyAndDampingRatio(b2Joint* j, float frequencyHertz, float dampingRatio) {
+//         float stiffness, damping;
+//         b2LinearStiffness(stiffness, damping, frequencyHertz, dampingRatio, j->GetBodyA(), j->GetBodyB());
+//         //cast j to specific type based on its type
+//         switch (j->GetType())
+//         {
+//         case b2JointType::e_distanceJoint:
+//                 ((b2DistanceJoint*)j)->SetStiffness(stiffness);
+//                 ((b2DistanceJoint*)j)->SetDamping(damping);
+//                 break;
+//         case b2JointType::e_weldJoint:
+//                 ((b2WeldJoint*)j)->SetStiffness(stiffness);
+//                 ((b2WeldJoint*)j)->SetDamping(damping);
+//                 break;
+//         case b2JointType::e_wheelJoint:
+//                 ((b2WheelJoint*)j)->SetStiffness(stiffness);
+//                 ((b2WheelJoint*)j)->SetDamping(damping);
+//                 break;
+//         case b2JointType::e_frictionJoint:
+//         case b2JointType::e_ropeJoint:
+//         case b2JointType::e_motorJoint:
+//         case b2JointType::e_prismaticJoint:
+//         case b2JointType::e_revoluteJoint:
+//         case b2JointType::e_pulleyJoint:
+//         case b2JointType::e_mouseJoint:
+//         case b2JointType::e_gearJoint:
+//         case b2JointType::e_unknownJoint:
+//         default:
+//                 break;
+//         }
+// }
 
 //Get Float32 from pointer
 static float GetFloat32(uint32 ptr, int id) {

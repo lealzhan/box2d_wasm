@@ -47,7 +47,7 @@ void b2ContactManager::Destroy(b2Contact* c)
 
 	if (m_contactListener && c->IsTouching())
 	{
-		m_contactListener->EndContact(c);
+		m_contactListener->EndContact((uint32)c);
 	}
 
 	// Remove from the world.

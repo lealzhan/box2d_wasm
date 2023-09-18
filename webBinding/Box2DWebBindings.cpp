@@ -110,7 +110,7 @@
         function("ConvexPartition", &ConvexPartition, allow_raw_pointers());        
         #endif
         function("GetFloat32", &GetFloat32);
-        function("SetLinearFrequencyAndDampingRatio", &SetLinearFrequencyAndDampingRatio, allow_raw_pointers());
+        // function("SetLinearFrequencyAndDampingRatio", &SetLinearFrequencyAndDampingRatio, allow_raw_pointers());
         function("TransformVector2", &TransformVector2, allow_raw_pointers());
 
         function("ContactSetEnabled", &ContactSetEnabled);
@@ -538,18 +538,18 @@
                 .property("localAnchorA", &b2DistanceJointDef::localAnchorA)
                 .property("localAnchorB", &b2DistanceJointDef::localAnchorB)
                 .property("length", &b2DistanceJointDef::length)
-                .property("stiffness", &b2DistanceJointDef::stiffness)
-                .property("damping", &b2DistanceJointDef::damping);
+                .property("frequencyHz", &b2DistanceJointDef::frequencyHz)
+                .property("dampingRatio", &b2DistanceJointDef::dampingRatio);
 
         class_<b2DistanceJoint, base<b2Joint>>("DistanceJoint")
                 .function("GetLocalAnchorA", &b2DistanceJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2DistanceJoint::GetLocalAnchorB)
                 .function("SetLength", &b2DistanceJoint::SetLength)
                 .function("GetLength", &b2DistanceJoint::GetLength)
-                .function("SetStiffness", &b2DistanceJoint::SetStiffness)
-                .function("GetStiffness", &b2DistanceJoint::GetStiffness)
-                .function("SetDamping", &b2DistanceJoint::SetDamping)
-                .function("GetDamping", &b2DistanceJoint::GetDamping)
+                .function("SetFrequency", &b2DistanceJoint::SetFrequency)
+                .function("GetFrequency", &b2DistanceJoint::GetFrequency)
+                .function("SetDampingRatio", &b2DistanceJoint::SetDampingRatio)
+                .function("GetDampingRatio", &b2DistanceJoint::GetDampingRatio)
                 .function("Dump", &b2DistanceJoint::Dump);
 
         class_<b2MotorJointDef, base<b2JointDef>>("MotorJointDef")
@@ -670,7 +670,7 @@
                 .function("GetReactionTorque", &b2RopeJoint::GetReactionTorque)
                 .function("SetMaxLength", &b2RopeJoint::SetMaxLength)
                 .function("GetMaxLength", &b2RopeJoint::GetMaxLength)
-                .function("GetLength", &b2RopeJoint::GetLength)
+                // .function("GetLength", &b2RopeJoint::GetLength)
                 .function("Dump", &b2RopeJoint::Dump);        
 
         class_<b2WeldJointDef, base<b2JointDef>>("WeldJointDef")
@@ -678,17 +678,17 @@
                 .property("localAnchorA", &b2WeldJointDef::localAnchorA)
                 .property("localAnchorB", &b2WeldJointDef::localAnchorB)
                 .property("referenceAngle", &b2WeldJointDef::referenceAngle)
-                .property("stiffness", &b2WeldJointDef::stiffness)
-                .property("damping", &b2WeldJointDef::damping);
+                .property("frequencyHz", &b2WeldJointDef::frequencyHz)
+                .property("dampingRatio", &b2WeldJointDef::dampingRatio);
 
         class_<b2WeldJoint, base<b2Joint>>("WeldJoint")
                 .function("GetLocalAnchorA", &b2WeldJoint::GetLocalAnchorA)
                 .function("GetLocalAnchorB", &b2WeldJoint::GetLocalAnchorB)
                 .function("GetReferenceAngle", &b2WeldJoint::GetReferenceAngle)
-                .function("SetStiffness", &b2WeldJoint::SetStiffness)
-                .function("GetStiffness", &b2WeldJoint::GetStiffness)
-                .function("SetDamping", &b2WeldJoint::SetDamping)
-                .function("GetDamping", &b2WeldJoint::GetDamping)
+                .function("SetFrequency", &b2WeldJoint::SetFrequency)
+                .function("GetFrequency", &b2WeldJoint::GetFrequency)
+                .function("SetDampingRatio", &b2WeldJoint::SetDampingRatio)
+                .function("GetDampingRatio", &b2WeldJoint::GetDampingRatio)
                 .function("Dump", &b2WeldJoint::Dump);
 
         class_<b2WheelJointDef, base<b2JointDef>>("WheelJointDef")
@@ -696,14 +696,14 @@
                 .property("localAnchorA", &b2WheelJointDef::localAnchorA)
                 .property("localAnchorB", &b2WheelJointDef::localAnchorB)
                 .property("localAxisA", &b2WheelJointDef::localAxisA)
-                .property("enableLimit", &b2WheelJointDef::enableLimit)
-                .property("lowerTranslation", &b2WheelJointDef::lowerTranslation)
-                .property("upperTranslation", &b2WheelJointDef::upperTranslation)
+                // .property("enableLimit", &b2WheelJointDef::enableLimit)
+                // .property("lowerTranslation", &b2WheelJointDef::lowerTranslation)
+                // .property("upperTranslation", &b2WheelJointDef::upperTranslation)
                 .property("enableMotor", &b2WheelJointDef::enableMotor)
                 .property("maxMotorTorque", &b2WheelJointDef::maxMotorTorque)
                 .property("motorSpeed", &b2WheelJointDef::motorSpeed)
-                .property("stiffness", &b2WheelJointDef::stiffness)
-                .property("damping", &b2WheelJointDef::damping);
+                .property("frequencyHz", &b2WheelJointDef::frequencyHz)
+                .property("dampingRatio", &b2WheelJointDef::dampingRatio);
 
         class_<b2WheelJoint, base<b2Joint>>("WheelJoint")
                 .function("GetLocalAnchorA", &b2WheelJoint::GetLocalAnchorA)
@@ -718,10 +718,10 @@
                 .function("SetMaxMotorTorque", &b2WheelJoint::SetMaxMotorTorque)
                 .function("GetMaxMotorTorque", &b2WheelJoint::GetMaxMotorTorque)
                 .function("GetMotorTorque", &b2WheelJoint::GetMotorTorque)
-                .function("SetStiffness", &b2WheelJoint::SetStiffness)
-                .function("GetStiffness", &b2WheelJoint::GetStiffness)
-                .function("SetDamping", &b2WheelJoint::SetDamping)
-                .function("GetDamping", &b2WheelJoint::GetDamping)
+                .function("SetSpringFrequencyHz", &b2WheelJoint::SetSpringFrequencyHz)
+                .function("GetSpringFrequencyHz", &b2WheelJoint::GetSpringFrequencyHz)
+                .function("SetSpringDampingRatio", &b2WheelJoint::SetSpringDampingRatio)
+                .function("GetSpringDampingRatio", &b2WheelJoint::GetSpringDampingRatio)
                 .function("Dump", &b2WheelJoint::Dump);
         }
 
