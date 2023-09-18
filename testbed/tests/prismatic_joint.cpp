@@ -22,9 +22,8 @@
 
 #include "settings.h"
 #include "test.h"
-#include "imgui/imgui.h"
 
-// Test the prismatic joint with limits and motor options.
+// The motor in this test gets smoother with higher velocity iterations.
 class PrismaticJoint : public Test
 {
 public:
@@ -40,17 +39,13 @@ public:
 			ground->CreateFixture(&shape, 0.0f);
 		}
 
-		m_enableLimit = true;
-		m_enableMotor = false;
-		m_motorSpeed = 10.0f;
-
 		{
 			b2PolygonShape shape;
-			shape.SetAsBox(1.0f, 1.0f);
+			shape.SetAsBox(2.0f, 0.5f);
 
 			b2BodyDef bd;
 			bd.type = b2_dynamicBody;
-			bd.position.Set(0.0f, 10.0f);
+			bd.position.Set(-10.0f, 10.0f);
 			bd.angle = 0.5f * b2_pi;
 			bd.allowSleep = false;
 			b2Body* body = m_world->CreateBody(&bd);
@@ -58,50 +53,51 @@ public:
 
 			b2PrismaticJointDef pjd;
 
-			// Horizontal
-			pjd.Initialize(ground, body, bd.position, b2Vec2(1.0f, 0.0f));
+			// Bouncy limit
+			b2Vec2 axis(2.0f, 1.0f);
+			axis.Normalize();
+			pjd.Initialize(ground, body, b2Vec2(0.0f, 0.0f), axis);
 
-			pjd.motorSpeed = m_motorSpeed;
+			// Non-bouncy limit
+			//pjd.Initialize(ground, body, b2Vec2(-10.0f, 10.0f), b2Vec2(1.0f, 0.0f));
+
+			pjd.motorSpeed = 10.0f;
 			pjd.maxMotorForce = 10000.0f;
-			pjd.enableMotor = m_enableMotor;
-			pjd.lowerTranslation = -10.0f;
-			pjd.upperTranslation = 10.0f;
-			pjd.enableLimit = m_enableLimit;
+			pjd.enableMotor = true;
+			pjd.lowerTranslation = 0.0f;
+			pjd.upperTranslation = 20.0f;
+			pjd.enableLimit = true;
 
 			m_joint = (b2PrismaticJoint*)m_world->CreateJoint(&pjd);
+		}
+	}
+
+	void Keyboard(int key) override
+	{
+		switch (key)
+		{
+		case GLFW_KEY_L:
+			m_joint->EnableLimit(!m_joint->IsLimitEnabled());
+			break;
+
+		case GLFW_KEY_M:
+			m_joint->EnableMotor(!m_joint->IsMotorEnabled());
+			break;
+
+		case GLFW_KEY_S:
+			m_joint->SetMotorSpeed(-m_joint->GetMotorSpeed());
+			break;
 		}
 	}
 
 	void Step(Settings& settings) override
 	{
 		Test::Step(settings);
+		g_debugDraw.DrawString(5, m_textLine, "Keys: (l) limits, (m) motors, (s) speed");
+		m_textLine += m_textIncrement;
 		float force = m_joint->GetMotorForce(settings.m_hertz);
 		g_debugDraw.DrawString(5, m_textLine, "Motor Force = %4.0f", (float) force);
 		m_textLine += m_textIncrement;
-	}
-
-	void UpdateUI() override
-	{
-		ImGui::SetNextWindowPos(ImVec2(10.0f, 100.0f));
-		ImGui::SetNextWindowSize(ImVec2(200.0f, 100.0f));
-		ImGui::Begin("Joint Controls", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-
-		if (ImGui::Checkbox("Limit", &m_enableLimit))
-		{
-			m_joint->EnableLimit(m_enableLimit);
-		}
-
-		if (ImGui::Checkbox("Motor", &m_enableMotor))
-		{
-			m_joint->EnableMotor(m_enableMotor);
-		}
-
-		if (ImGui::SliderFloat("Speed", &m_motorSpeed, -100.0f, 100.0f, "%.0f"))
-		{
-			m_joint->SetMotorSpeed(m_motorSpeed);
-		}
-
-		ImGui::End();
 	}
 
 	static Test* Create()
@@ -110,9 +106,6 @@ public:
 	}
 
 	b2PrismaticJoint* m_joint;
-	float m_motorSpeed;
-	bool m_enableMotor;
-	bool m_enableLimit;
 };
 
 static int testIndex = RegisterTest("Joints", "Prismatic", PrismaticJoint::Create);
