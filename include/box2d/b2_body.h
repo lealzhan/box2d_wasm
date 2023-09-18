@@ -245,7 +245,7 @@ public:
 	float GetInertia() const;
 
 	/// Get the mass data of the body.
-	/// return a struct containing the mass, inertia and center of the body.
+	/// @return a struct containing the mass, inertia and center of the body.
 	void GetMassData(b2MassData* data) const;
 
 	/// Set the mass properties to override the mass properties of the fixtures.
@@ -362,11 +362,11 @@ public:
 
 	/// Get the list of all fixtures attached to this body.
 	b2Fixture* GetFixtureList();
-	// const b2Fixture* GetFixtureList() const;
+	const b2Fixture* GetFixtureList() const;
 
 	/// Get the list of all joints attached to this body.
 	b2JointEdge* GetJointList();
-	// const b2JointEdge* GetJointList() const;
+	const b2JointEdge* GetJointList() const;
 
 	/// Get the list of all contacts attached to this body.
 	/// @warning this list changes during the time step and you may
@@ -376,7 +376,7 @@ public:
 
 	/// Get the next body in the world's body list.
 	b2Body* GetNext();
-	// const b2Body* GetNext() const;
+	const b2Body* GetNext() const;
 
 	/// Get the user data pointer that was provided in the body definition.
 	void* GetUserData() const;
@@ -386,12 +386,9 @@ public:
 
 	/// Get the parent world of this body.
 	b2World* GetWorld();
-	// const b2World* GetWorld() const;
+	const b2World* GetWorld() const;
 
-	/// Does a joint prevent collision?
-	bool ShouldCollideConnected(const b2Body* other) const;
-	
-	/// Dump this body to a file
+	/// Dump this body to a log file
 	void Dump();
 
 private:
@@ -643,11 +640,6 @@ inline bool b2Body::IsBullet() const
 
 inline void b2Body::SetAwake(bool flag)
 {
-	if (m_type == b2_staticBody)
-	{
-		return;
-	}
-
 	if (flag)
 	{
 		m_flags |= e_awakeFlag;
@@ -702,20 +694,20 @@ inline b2Fixture* b2Body::GetFixtureList()
 	return m_fixtureList;
 }
 
-// inline const b2Fixture* b2Body::GetFixtureList() const
-// {
-// 	return m_fixtureList;
-// }
+inline const b2Fixture* b2Body::GetFixtureList() const
+{
+	return m_fixtureList;
+}
 
 inline b2JointEdge* b2Body::GetJointList()
 {
 	return m_jointList;
 }
 
-// inline const b2JointEdge* b2Body::GetJointList() const
-// {
-// 	return m_jointList;
-// }
+inline const b2JointEdge* b2Body::GetJointList() const
+{
+	return m_jointList;
+}
 
 inline b2ContactEdge* b2Body::GetContactList()
 {
@@ -732,10 +724,10 @@ inline b2Body* b2Body::GetNext()
 	return m_next;
 }
 
-// inline const b2Body* b2Body::GetNext() const
-// {
-// 	return m_next;
-// }
+inline const b2Body* b2Body::GetNext() const
+{
+	return m_next;
+}
 
 inline void b2Body::SetUserData(void* data)
 {
@@ -884,9 +876,9 @@ inline b2World* b2Body::GetWorld()
 	return m_world;
 }
 
-// inline const b2World* b2Body::GetWorld() const
-// {
-// 	return m_world;
-// }
+inline const b2World* b2Body::GetWorld() const
+{
+	return m_world;
+}
 
 #endif
