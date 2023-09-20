@@ -122,14 +122,14 @@ void b2ContactManager::Collide()
 		// Is this contact flagged for filtering?
 		if (c->m_flags & b2Contact::e_filterFlag)
 		{
-			// // Should these bodies collide?
-			// if (bodyB->ShouldCollide(bodyA) == false)
-			// {
-			// 	b2Contact* cNuke = c;
-			// 	c = cNuke->GetNext();
-			// 	Destroy(cNuke);
-			// 	continue;
-			// }
+			// Should these bodies collide?
+			if (bodyB->ShouldCollide(bodyA) == false)
+			{
+				b2Contact* cNuke = c;
+				c = cNuke->GetNext();
+				Destroy(cNuke);
+				continue;
+			}
 
 			// Check user filtering.
 			if (m_contactFilter && m_contactFilter->ShouldCollide(fixtureA, fixtureB) == false)
@@ -227,11 +227,11 @@ void b2ContactManager::AddPair(void* proxyUserDataA, void* proxyUserDataB)
 		edge = edge->next;
 	}
 
-	// // Does a joint override collision? Is at least one body dynamic?
-	// if (bodyB->ShouldCollide(bodyA) == false)
-	// {
-	// 	return;
-	// }
+	// Does a joint override collision? Is at least one body dynamic?
+	if (bodyB->ShouldCollide(bodyA) == false)
+	{
+		return;
+	}
 
 	// Check user filtering.
 	if (m_contactFilter && m_contactFilter->ShouldCollide(fixtureA, fixtureB) == false)
@@ -290,10 +290,11 @@ void b2ContactManager::AddPair(void* proxyUserDataA, void* proxyUserDataB)
 	bodyB->m_contactList = &c->m_nodeB;
 
 	// Wake up the bodies
-    if (!fixtureA->IsSensor() && !fixtureB->IsSensor()) {
-      bodyA->SetAwake(true);
-      bodyB->SetAwake(true);
-    }
+	if (fixtureA->IsSensor() == false && fixtureB->IsSensor() == false)
+	{
+		bodyA->SetAwake(true);
+		bodyB->SetAwake(true);
+	}
 
 	++m_contactCount;
 }

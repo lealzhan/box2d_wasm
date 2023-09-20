@@ -16,7 +16,7 @@ SET(CMAKE_CXX_FLAGS "-std=c++11 -fno-exceptions -ffunction-sections\
           -Wno-unused-value -Wno-format-nonliteral  -Wno-undef\
           -Wno-unsafe-buffer-usage\
           -Wno-inconsistent-missing-destructor-override -Wno-suggest-destructor-override\
-          -Wno-limited-postlink-optimizations\
+          -Wno-limited-postlink-optimizations -Wno-documentation\
           -Wbad-function-cast -Wcast-function-type -Wno-unused-parameter\
           ")
 

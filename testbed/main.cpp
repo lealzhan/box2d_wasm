@@ -512,17 +512,7 @@ int main(int, char**)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	sprintf(buffer, "Box2D Testbed Version %d.%d.%d", b2_version.major, b2_version.minor, b2_version.revision);
-
-	bool fullscreen = false;
-	if (fullscreen)
-	{
-		g_mainWindow = glfwCreateWindow(1920, 1080, buffer, glfwGetPrimaryMonitor(), NULL);
-	}
-	else
-	{
-		g_mainWindow = glfwCreateWindow(g_camera.m_width, g_camera.m_height, buffer, NULL, NULL);
-	}
-
+	g_mainWindow = glfwCreateWindow(g_camera.m_width, g_camera.m_height, buffer, NULL, NULL);
 	if (g_mainWindow == NULL)
 	{
 		fprintf(stderr, "Failed to open GLFW g_mainWindow.\n");
@@ -556,7 +546,7 @@ int main(int, char**)
 	// Control the frame rate. One draw per monitor refresh.
 	//glfwSwapInterval(1);
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.3f, 0.3f, 0.3f, 1.f);
 
 	std::chrono::duration<double> frameTime(0.0);
 	std::chrono::duration<double> sleepAdjust(0.0);

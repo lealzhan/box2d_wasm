@@ -109,9 +109,6 @@ representation can be larger than the polygon to hide any gaps.
 
 ![Skin Collision](images/skin_collision.svg)
 
-Not that polygon skin is only provided to help with continuous collision.
-The purpose is not to simulate rounded polygons.
-
 ### Edge Shapes
 Edge shapes are line segments. These are provided to assist in making a
 free-form static environment for your game. A major limitation of edge
@@ -126,7 +123,7 @@ b2Vec2 v1(0.0f, 0.0f);
 b2Vec2 v2(1.0f, 0.0f);
 
 b2EdgeShape edge;
-edge.SetTwoSided(v1, v2);
+edge.Set(v1, v2);
 ```
 
 In many cases a game environment is constructed by connecting several
@@ -148,11 +145,6 @@ ghost vertices to prevent internal collisions.
 
 ![Ghost Vertices](images/ghost_vertices.svg)
 
-The Box2D algorithm for dealing with ghost collisions only supports
-one-sided collision. The front face is to the right when looking from the first
-vertex towards the second vertex. This matches the CCW winding order
-used by polygons.
-
 ```cpp
 // This is an edge shape with ghost vertices.
 b2Vec2 v0(1.7f, 0.0f);
@@ -161,7 +153,11 @@ b2Vec2 v2(0.0f, 0.0f);
 b2Vec2 v3(-1.7f, 0.4f);
 
 b2EdgeShape edge;
-edge.SetOneSided(v0, v1, v2, v3);
+edge.Set(v1, v2);
+edge.m_hasVertex0 = true;
+edge.m_hasVertex3 = true;
+edge.m_vertex0 = v0;
+edge.m_vertex3 = v3;
 ```
 
 In general stitching edges together this way is a bit wasteful and
@@ -171,16 +167,12 @@ tedious. This brings us to chain shapes.
 
 The chain shape provides an efficient way to connect many edges together
 to construct your static game worlds. Chain shapes automatically
-eliminate ghost collisions and provide one-sided collision. The collision is
-one-sided to eliminate ghost collisions.
+eliminate ghost collisions and provide two-sided collision.
 
-If you don't care about ghost collisions, you can just create a bunch of
-two-sided edge shapes. The efficiency is similar.
-
-The simplest way to use chain shapes is to create loops. Simply provide an
-array of vertices.
+![Chain Shape](images/chain_shape.svg)
 
 ```cpp
+// This a chain shape with isolated vertices
 b2Vec2 vs[4];
 vs[0].Set(1.7f, 0.0f);
 vs[1].Set(1.0f, 0.25f);
@@ -188,23 +180,25 @@ vs[2].Set(0.0f, 0.0f);
 vs[3].Set(-1.7f, 0.4f);
 
 b2ChainShape chain;
-chain.CreateLoop(vs, 4);
+chain.CreateChain(vs, 4);
 ```
 
-The edge normal depends on the winding order. A counter-clockwise winding order orients the normal outwards and a clockwise winding order orients the normal inwards.
-
-![Chain Shape Outwards Loop](images/chain_loop_outwards.svg)
-
-![Chain Shape Inwards Loop](images/chain_loop_inwards.svg)
-
-You may have a scrolling game world and would like to connect several chains together.
-You can connect chains together using ghost vertices, like we did with b2EdgeShape.
-
-![Chain Shape](images/chain_shape.svg)
+You may have a scrolling game world and would like to connect several
+chains together. You can connect chains together using ghost vertices,
+like we did with b2EdgeShape.
 
 ```cpp
-b2ChainShape::CreateChain(const b2Vec2* vertices, int32 count,
-		const b2Vec2& prevVertex, const b2Vec2& nextVertex);
+// Install ghost vertices
+chain.SetPrevVertex(b2Vec2(3.0f, 1.0f));
+chain.SetNextVertex(b2Vec2(-2.0f, 0.0f));
+```
+
+You may also create loops automatically.
+
+```cpp
+// Create a loop. The first and last vertices are connected.
+b2ChainShape chain;
+chain.CreateLoop(vs, 4);
 ```
 
 Self-intersection of chain shapes is not supported. It might work, it
@@ -212,7 +206,7 @@ might not. The code that prevents ghost collisions assumes there are no
 self-intersections of the chain. Also, very close vertices can cause
 problems. Make sure all your edges are longer than b2_linearSlop (5mm).
 
-![Self Intersection is Bad](images/self_intersect.svg)
+![Self Intersection](images/self_intersect.svg)
 
 Each edge in the chain is treated as a child shape and can be accessed
 by index. When a chain shape is connected to a body, each edge gets its
@@ -237,7 +231,7 @@ You can test a point for overlap with a shape. You provide a transform
 for the shape and a world point.
 
 ```cpp
-b2Transform transform;
+b2Transfrom transform;
 transform.SetIdentity();
 b2Vec2 point(5.0f, 2.0f);
 
@@ -247,11 +241,10 @@ bool hit = shape->TestPoint(transform, point);
 Edge and chain shapes always return false, even if the chain is a loop.
 
 ### Shape Ray Cast
-You can cast a ray at a shape to get the point of first intersection and normal vector. A child index is included for chain shapes because the ray cast will only check a single edge at a time.
-
-> **Caution**:
-> No hit will register if the ray starts inside a convex shape like a circle or polygon. This is consistent with Box2D treating convex shapes as solid. 
->
+You can cast a ray at a shape to get the point of first intersection and
+normal vector. No hit will register if the ray starts inside the shape.
+A child index is included for chain shapes because the ray cast will
+only check a single edge at a time.
 
 ```cpp
 b2Transfrom transform;

@@ -28,6 +28,8 @@ class Car : public Test
 public:
 	Car()
 	{		
+		m_hz = 4.0f;
+		m_zeta = 0.7f;
 		m_speed = 50.0f;
 
 		b2Body* ground = NULL;
@@ -42,7 +44,7 @@ public:
 			fd.density = 0.0f;
 			fd.friction = 0.6f;
 
-			shape.SetTwoSided(b2Vec2(-20.0f, 0.0f), b2Vec2(20.0f, 0.0f));
+			shape.Set(b2Vec2(-20.0f, 0.0f), b2Vec2(20.0f, 0.0f));
 			ground->CreateFixture(&fd);
 
 			float hs[10] = {0.25f, 1.0f, 4.0f, 0.0f, 0.0f, -1.0f, -2.0f, -2.0f, -1.25f, 0.0f};
@@ -52,7 +54,7 @@ public:
 			for (int32 i = 0; i < 10; ++i)
 			{
 				float y2 = hs[i];
-				shape.SetTwoSided(b2Vec2(x, y1), b2Vec2(x + dx, y2));
+				shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
 				ground->CreateFixture(&fd);
 				y1 = y2;
 				x += dx;
@@ -61,29 +63,29 @@ public:
 			for (int32 i = 0; i < 10; ++i)
 			{
 				float y2 = hs[i];
-				shape.SetTwoSided(b2Vec2(x, y1), b2Vec2(x + dx, y2));
+				shape.Set(b2Vec2(x, y1), b2Vec2(x + dx, y2));
 				ground->CreateFixture(&fd);
 				y1 = y2;
 				x += dx;
 			}
 
-			shape.SetTwoSided(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
+			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
 			ground->CreateFixture(&fd);
 
 			x += 80.0f;
-			shape.SetTwoSided(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
+			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
 			ground->CreateFixture(&fd);
 
 			x += 40.0f;
-			shape.SetTwoSided(b2Vec2(x, 0.0f), b2Vec2(x + 10.0f, 5.0f));
+			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 10.0f, 5.0f));
 			ground->CreateFixture(&fd);
 
 			x += 20.0f;
-			shape.SetTwoSided(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
+			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x + 40.0f, 0.0f));
 			ground->CreateFixture(&fd);
 
 			x += 40.0f;
-			shape.SetTwoSided(b2Vec2(x, 0.0f), b2Vec2(x, 20.0f));
+			shape.Set(b2Vec2(x, 0.0f), b2Vec2(x, 20.0f));
 			ground->CreateFixture(&fd);
 		}
 
@@ -209,33 +211,20 @@ public:
 			b2WheelJointDef jd;
 			b2Vec2 axis(0.0f, 1.0f);
 
-			float mass1 = m_wheel1->GetMass();
-			float mass2 = m_wheel2->GetMass();
-
-			float hertz = 4.0f;
-			float dampingRatio = 0.7f;
-			float omega = 2.0f * b2_pi * hertz;
-
 			jd.Initialize(m_car, m_wheel1, m_wheel1->GetPosition(), axis);
 			jd.motorSpeed = 0.0f;
 			jd.maxMotorTorque = 20.0f;
 			jd.enableMotor = true;
-			jd.stiffness = mass1 * omega * omega;
-			jd.damping = 2.0f * mass1 * dampingRatio * omega;
-			jd.lowerTranslation = -0.25f;
-			jd.upperTranslation = 0.25f;
-			jd.enableLimit = true;
+			jd.frequencyHz = m_hz;
+			jd.dampingRatio = m_zeta;
 			m_spring1 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 
 			jd.Initialize(m_car, m_wheel2, m_wheel2->GetPosition(), axis);
 			jd.motorSpeed = 0.0f;
 			jd.maxMotorTorque = 10.0f;
 			jd.enableMotor = false;
-			jd.stiffness = mass2 * omega * omega;
-			jd.damping = 2.0f * mass2 * dampingRatio * omega;
-			jd.lowerTranslation = -0.25f;
-			jd.upperTranslation = 0.25f;
-			jd.enableLimit = true;
+			jd.frequencyHz = m_hz;
+			jd.dampingRatio = m_zeta;
 			m_spring2 = (b2WheelJoint*)m_world->CreateJoint(&jd);
 		}
 	}
@@ -255,12 +244,26 @@ public:
 		case GLFW_KEY_D:
 			m_spring1->SetMotorSpeed(-m_speed);
 			break;
+
+		case GLFW_KEY_Q:
+			m_hz = b2Max(0.0f, m_hz - 1.0f);
+			m_spring1->SetSpringFrequencyHz(m_hz);
+			m_spring2->SetSpringFrequencyHz(m_hz);
+			break;
+
+		case GLFW_KEY_E:
+			m_hz += 1.0f;
+			m_spring1->SetSpringFrequencyHz(m_hz);
+			m_spring2->SetSpringFrequencyHz(m_hz);
+			break;
 		}
 	}
 
 	void Step(Settings& settings) override
 	{
 		g_debugDraw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d, hz down = q, hz up = e");
+		m_textLine += m_textIncrement;
+		g_debugDraw.DrawString(5, m_textLine, "frequency = %g hz, damping ratio = %g", m_hz, m_zeta);
 		m_textLine += m_textIncrement;
 
 		g_camera.m_center.x = m_car->GetPosition().x;
@@ -276,6 +279,8 @@ public:
 	b2Body* m_wheel1;
 	b2Body* m_wheel2;
 
+	float m_hz;
+	float m_zeta;
 	float m_speed;
 	b2WheelJoint* m_spring1;
 	b2WheelJoint* m_spring2;

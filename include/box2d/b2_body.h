@@ -245,7 +245,7 @@ public:
 	float GetInertia() const;
 
 	/// Get the mass data of the body.
-	/// return a struct containing the mass, inertia and center of the body.
+	/// @return a struct containing the mass, inertia and center of the body.
 	void GetMassData(b2MassData* data) const;
 
 	/// Set the mass properties to override the mass properties of the fixtures.
@@ -372,7 +372,7 @@ public:
 	/// @warning this list changes during the time step and you may
 	/// miss some collisions if you don't use b2ContactListener.
 	b2ContactEdge* GetContactList();
-	const b2ContactEdge* GetContactList() const;
+	// const b2ContactEdge* GetContactList() const;
 
 	/// Get the next body in the world's body list.
 	b2Body* GetNext();
@@ -390,8 +390,8 @@ public:
 
 	/// Does a joint prevent collision?
 	bool ShouldCollideConnected(const b2Body* other) const;
-	
-	/// Dump this body to a file
+
+	/// Dump this body to a log file
 	void Dump();
 
 private:
@@ -643,11 +643,6 @@ inline bool b2Body::IsBullet() const
 
 inline void b2Body::SetAwake(bool flag)
 {
-	if (m_type == b2_staticBody)
-	{
-		return;
-	}
-
 	if (flag)
 	{
 		m_flags |= e_awakeFlag;
@@ -722,10 +717,10 @@ inline b2ContactEdge* b2Body::GetContactList()
 	return m_contactList;
 }
 
-inline const b2ContactEdge* b2Body::GetContactList() const
-{
-	return m_contactList;
-}
+// inline const b2ContactEdge* b2Body::GetContactList() const
+// {
+// 	return m_contactList;
+// }
 
 inline b2Body* b2Body::GetNext()
 {

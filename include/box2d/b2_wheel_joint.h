@@ -39,14 +39,11 @@ struct b2WheelJointDef : public b2JointDef
 		localAnchorA.SetZero();
 		localAnchorB.SetZero();
 		localAxisA.Set(1.0f, 0.0f);
-		enableLimit = false;
-		lowerTranslation = 0.0f;
-		upperTranslation = 0.0f;
 		enableMotor = false;
 		maxMotorTorque = 0.0f;
 		motorSpeed = 0.0f;
-		stiffness = 0.0f;
-		damping = 0.0f;
+		frequencyHz = 2.0f;
+		dampingRatio = 0.7f;
 	}
 
 	/// Initialize the bodies, anchors, axis, and reference angle using the world
@@ -62,15 +59,6 @@ struct b2WheelJointDef : public b2JointDef
 	/// The local translation axis in bodyA.
 	b2Vec2 localAxisA;
 
-	/// Enable/disable the joint limit.
-	bool enableLimit;
-
-	/// The lower translation limit, usually in meters.
-	float lowerTranslation;
-
-	/// The upper translation limit, usually in meters.
-	float upperTranslation;
-
 	/// Enable/disable the joint motor.
 	bool enableMotor;
 
@@ -80,17 +68,17 @@ struct b2WheelJointDef : public b2JointDef
 	/// The desired motor speed in radians per second.
 	float motorSpeed;
 
-	/// Suspension stiffness. Typically in units N/m.
-	float stiffness;
+	/// Suspension frequency, zero indicates no suspension
+	float frequencyHz;
 
-	/// Suspension damping. Typically in units of N*s/m.
-	float damping;
+	/// Suspension damping ratio, one indicates critical damping
+	float dampingRatio;
 };
 
 /// A wheel joint. This joint provides two degrees of freedom: translation
 /// along an axis fixed in bodyA and rotation in the plane. In other words, it is a point to
-/// line constraint with a rotational motor and a linear spring/damper. The spring/damper is
-/// initialized upon creation. This joint is designed for vehicle suspensions.
+/// line constraint with a rotational motor and a linear spring/damper.
+/// This joint is designed for vehicle suspensions.
 class b2WheelJoint : public b2Joint
 {
 public:
@@ -121,21 +109,6 @@ public:
 	/// Get the current joint angular speed in radians per second.
 	float GetJointAngularSpeed() const;
 
-	/// Is the joint limit enabled?
-	bool IsLimitEnabled() const;
-
-	/// Enable/disable the joint translation limit.
-	void EnableLimit(bool flag);
-
-	/// Get the lower joint translation limit, usually in meters.
-	float GetLowerLimit() const;
-
-	/// Get the upper joint translation limit, usually in meters.
-	float GetUpperLimit() const;
-
-	/// Set the joint translation limits, usually in meters.
-	void SetLimits(float lower, float upper);
-
 	/// Is the joint motor enabled?
 	bool IsMotorEnabled() const;
 
@@ -155,19 +128,16 @@ public:
 	/// Get the current motor torque given the inverse time step, usually in N-m.
 	float GetMotorTorque(float inv_dt) const;
 
-	/// Access spring stiffness
-	void SetStiffness(float stiffness);
-	float GetStiffness() const;
+	/// Set/Get the spring frequency in hertz. Setting the frequency to zero disables the spring.
+	void SetSpringFrequencyHz(float hz);
+	float GetSpringFrequencyHz() const;
 
-	/// Access damping
-	void SetDamping(float damping);
-	float GetDamping() const;
+	/// Set/Get the spring damping ratio
+	void SetSpringDampingRatio(float ratio);
+	float GetSpringDampingRatio() const;
 
 	/// Dump to b2Log
 	void Dump() override;
-
-	///
-	void Draw(b2Draw* draw) const override;
 
 protected:
 
@@ -178,6 +148,10 @@ protected:
 	void SolveVelocityConstraints(const b2SolverData& data) override;
 	bool SolvePositionConstraints(const b2SolverData& data) override;
 
+	float m_frequencyHz;
+	float m_dampingRatio;
+
+	// Solver shared
 	b2Vec2 m_localAnchorA;
 	b2Vec2 m_localAnchorB;
 	b2Vec2 m_localXAxisA;
@@ -187,20 +161,9 @@ protected:
 	float m_motorImpulse;
 	float m_springImpulse;
 
-	float m_lowerImpulse;
-	float m_upperImpulse;
-	float m_translation;
-	float m_lowerTranslation;
-	float m_upperTranslation;
-
 	float m_maxMotorTorque;
 	float m_motorSpeed;
-
-	bool m_enableLimit;
 	bool m_enableMotor;
-
-	float m_stiffness;
-	float m_damping;
 
 	// Solver temp
 	int32 m_indexA;
@@ -218,12 +181,10 @@ protected:
 
 	float m_mass;
 	float m_motorMass;
-	float m_axialMass;
 	float m_springMass;
 
 	float m_bias;
 	float m_gamma;
-
 };
 
 inline float b2WheelJoint::GetMotorSpeed() const
@@ -234,6 +195,26 @@ inline float b2WheelJoint::GetMotorSpeed() const
 inline float b2WheelJoint::GetMaxMotorTorque() const
 {
 	return m_maxMotorTorque;
+}
+
+inline void b2WheelJoint::SetSpringFrequencyHz(float hz)
+{
+	m_frequencyHz = hz;
+}
+
+inline float b2WheelJoint::GetSpringFrequencyHz() const
+{
+	return m_frequencyHz;
+}
+
+inline void b2WheelJoint::SetSpringDampingRatio(float ratio)
+{
+	m_dampingRatio = ratio;
+}
+
+inline float b2WheelJoint::GetSpringDampingRatio() const
+{
+	return m_dampingRatio;
 }
 
 #endif
