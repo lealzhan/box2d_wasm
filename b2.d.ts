@@ -513,10 +513,10 @@ declare namespace B2 {
         SetMaxMotorTorque(torque: number): void;
         GetMaxMotorTorque(): number;
         GetMotorTorque(inv_dt: number): number;
-        SetFrequency(hz: number): void;
-        GetFrequency(): number;
-        SetDampingRatio(ratio: number): void;
-        GetDampingRatio(): number;
+        SetSpringFrequencyHz(hz: number): void;
+        GetSpringFrequencyHz(): number;
+        SetSpringDampingRatio(ratio: number): void;
+        GetSpringDampingRatio(): number;
         Dump(): void;
     }
 
