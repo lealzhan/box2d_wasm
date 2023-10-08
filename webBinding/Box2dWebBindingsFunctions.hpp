@@ -279,3 +279,196 @@ static uint32 JointEdgeGetPrev(uint32 ptr) {
 static uint32 JointEdgeGetNext(uint32 ptr) {
         return (uint32)((b2JointEdge*)ptr)->next;
 }
+//b2FixtureDef
+static uint32 FixtureDefNew() {
+        return (uint32)(new b2FixtureDef());
+}
+static void FixtureDefDelete(uint32 ptr) {
+        if(ptr)
+                delete ((b2FixtureDef*)ptr);
+}
+
+static void FixtureDefSetAll(uint32 ptr, uint32 shapePtr, uint32 userData, float friction, float restitution, float density, bool isSensor, uint16 categoryBits, uint16 maskBits, int16 groupIndex) {
+        ((b2FixtureDef*)ptr)->shape = (b2Shape*)shapePtr;
+        ((b2FixtureDef*)ptr)->userData = (void*)userData;
+        ((b2FixtureDef*)ptr)->friction = friction;
+        ((b2FixtureDef*)ptr)->restitution = restitution;
+        ((b2FixtureDef*)ptr)->density = density;
+        ((b2FixtureDef*)ptr)->isSensor = isSensor;
+        ((b2FixtureDef*)ptr)->filter.categoryBits = categoryBits;
+        ((b2FixtureDef*)ptr)->filter.maskBits = maskBits;
+        ((b2FixtureDef*)ptr)->filter.groupIndex = groupIndex;
+}
+
+static void FixtureDefSetShape(uint32 ptr, uint32 shapePtr) {
+        ((b2FixtureDef*)ptr)->shape = (b2Shape*)shapePtr;
+}
+static void FixtureDefSetUserData(uint32 ptr, uint32 userData) {
+        ((b2FixtureDef*)ptr)->userData = (void*)userData;
+}
+static void FixtureDefSetFriction(uint32 ptr, float friction) {
+        ((b2FixtureDef*)ptr)->friction = friction;
+}
+static void FixtureDefSetRestitution(uint32 ptr, float restitution) {
+        ((b2FixtureDef*)ptr)->restitution = restitution;
+}
+static void FixtureDefSetDensity(uint32 ptr, float density) {
+        ((b2FixtureDef*)ptr)->density = density;
+}
+static void FixtureDefSetIsSensor(uint32 ptr, bool isSensor) {
+        ((b2FixtureDef*)ptr)->isSensor = isSensor;
+}
+static void FixtureDefSetFilter(uint32 ptr, uint32 filterPtr) {
+        ((b2FixtureDef*)ptr)->filter = *(b2Filter*)filterPtr;
+}
+static void FixtureDefSetFilterCategoryBits(uint32 ptr, uint16 categoryBits) {
+        ((b2FixtureDef*)ptr)->filter.categoryBits = categoryBits;
+}
+static void FixtureDefSetFilterMaskBits(uint32 ptr, uint16 maskBits) {
+        ((b2FixtureDef*)ptr)->filter.maskBits = maskBits;
+}
+static void FixtureDefSetFilterGroupIndex(uint32 ptr, int16 groupIndex) {
+        ((b2FixtureDef*)ptr)->filter.groupIndex = groupIndex;
+}
+static uint32 FixtureDefGetUserData(uint32 ptr) {
+        return (uint32)((b2FixtureDef*)ptr)->userData;
+}
+static float FixtureDefGetFriction(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->friction;
+}
+static float FixtureDefGetRestitution(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->restitution;
+}
+static float FixtureDefGetDensity(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->density;
+}
+static bool FixtureDefGetIsSensor(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->isSensor;
+}
+static uint32 FixtureDefGetFilter(uint32 ptr) {
+        return (uint32)&(((b2FixtureDef*)ptr)->filter);
+}
+static uint16 FixtureDefGetFilterCategoryBits(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->filter.categoryBits;
+}
+static uint16 FixtureDefGetFilterMaskBits(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->filter.maskBits;
+}
+static int16 FixtureDefGetFilterGroupIndex(uint32 ptr) {
+        return ((b2FixtureDef*)ptr)->filter.groupIndex;
+}
+static void FixtureDefGetShape(uint32 ptr, uint32 shapePtr) {
+        ((b2FixtureDef*)ptr)->shape = (b2Shape*)shapePtr;
+}
+
+//b2Fixture
+static uint32 FixtureGetType(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetType();
+}
+static uint32 FixtureGetShape(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetShape();
+}
+static b2Shape* FixtureGetShape1(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetShape();
+}
+static void FixtureSetSensor(uint32 ptr, bool sensor) {
+        ((b2Fixture*)ptr)->SetSensor(sensor);
+}
+static bool FixtureIsSensor(uint32 ptr) {
+        return ((b2Fixture*)ptr)->IsSensor();
+}
+// static void FixtureSetFilterData(uint32 ptr, uint32 filterPtr) {
+//         ((b2Fixture*)ptr)->SetFilterData(*(b2Filter*)filterPtr);
+// }
+// static uint32 FixtureGetFilterData(uint32 ptr) {
+//         return (uint32)&(((b2Fixture*)ptr)->GetFilterData());
+// }
+static void FixtureSetFilterData(uint32 ptr, const b2Filter& filterPtr) {
+        ((b2Fixture*)ptr)->SetFilterData(filterPtr);
+}
+static const b2Filter& FixtureGetFilterData(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetFilterData();
+}
+static void FixtureRefilter(uint32 ptr) {
+        ((b2Fixture*)ptr)->Refilter();
+}
+static uint32 FixtureGetBody(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetBody();
+}
+static uint32 FixtureGetNext(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetNext();
+}
+static uint32 FixtureGetUserData(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetUserData();
+}
+static void FixtureSetUserData(uint32 ptr, uint32 data) {
+        ((b2Fixture*)ptr)->SetUserData((void*)data);
+}
+static bool FixtureTestPoint(uint32 ptr, uint32 pPtr) {
+        return ((b2Fixture*)ptr)->TestPoint(*(b2Vec2*)pPtr);
+}
+static bool FixtureRayCast(uint32 ptr, uint32 outputPtr, uint32 inputPtr, int32 childIndex) {
+        return ((b2Fixture*)ptr)->RayCast((b2RayCastOutput*)outputPtr, *(b2RayCastInput*)inputPtr, childIndex);
+}
+static void FixtureGetMassData(uint32 ptr, uint32 massDataPtr) {
+        ((b2Fixture*)ptr)->GetMassData((b2MassData*)massDataPtr);
+}
+static void FixtureSetDensity(uint32 ptr, float density) {
+        ((b2Fixture*)ptr)->SetDensity(density);
+}
+static float FixtureGetDensity(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetDensity();
+}
+static float FixtureGetFriction(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetFriction();
+}
+static void FixtureSetFriction(uint32 ptr, float friction) {
+        ((b2Fixture*)ptr)->SetFriction(friction);
+}
+static float FixtureGetRestitution(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetRestitution();
+}
+static void FixtureSetRestitution(uint32 ptr, float restitution) {
+        ((b2Fixture*)ptr)->SetRestitution(restitution);
+}
+static uint32 FixtureGetAABB(uint32 ptr, int32 childIndex) {
+        return (uint32)&(((b2Fixture*)ptr)->GetAABB(childIndex));
+}
+static const b2AABB& FixtureGetAABB1(uint32 ptr, int32 childIndex) {
+        return ((b2Fixture*)ptr)->GetAABB(childIndex);
+}
+static void FixtureDump(uint32 ptr, int32 bodyIndex) {
+        ((b2Fixture*)ptr)->Dump(bodyIndex);
+}
+
+//temp CircleShape
+static uint32 CircleShapeNew() {
+        return (uint32)(new b2CircleShape());
+}
+static void CircleShapeDelete(uint32 ptr) {
+        if(ptr)
+                delete ((b2CircleShape*)ptr);
+}
+static void CircleShapeSetRadius(uint32 ptr, float radius) {
+        ((b2CircleShape*)ptr)->m_radius = radius;
+}
+static float CircleShapeGetRadius(uint32 ptr) {
+        return ((b2CircleShape*)ptr)->m_radius;
+}
+static void CircleShapeSetPosition(uint32 ptr, float x, float y) {
+        ((b2CircleShape*)ptr)->m_p.x = x;
+        ((b2CircleShape*)ptr)->m_p.y = y;
+}
+static const b2Vec2& CircleShapeGetPosition(uint32 ptr) {
+        return ((b2CircleShape*)ptr)->m_p;
+}
+
+//temp b2Body
+//CreateFixture
+static uint32 BodyCreateFixture(uint32 ptr, uint32 fixtureDefPtr) {
+        return (uint32)((b2Body*)ptr)->CreateFixture((b2FixtureDef*)fixtureDefPtr);
+}
+//DestroyFixture
+static void BodyDestroyFixture(uint32 ptr, uint32 fixturePtr) {
+        ((b2Body*)ptr)->DestroyFixture((b2Fixture*)fixturePtr);
+}

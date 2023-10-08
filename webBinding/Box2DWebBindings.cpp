@@ -158,6 +158,70 @@
         function("JointEdgeGetPrev", &JointEdgeGetPrev, allow_raw_pointers());
         function("JointEdgeGetNext", &JointEdgeGetNext, allow_raw_pointers());
 
+        //FixtureDefNew
+        function("FixtureDefNew", &FixtureDefNew, allow_raw_pointers());
+        function("FixtureDefDelete", &FixtureDefDelete, allow_raw_pointers());
+        function("FixtureDefSetAll", &FixtureDefSetAll, allow_raw_pointers());
+        function("FixtureDefGetShape", &FixtureDefGetShape, allow_raw_pointers());
+        function("FixtureDefSetShape", &FixtureDefSetShape, allow_raw_pointers());
+        function("FixtureDefGetUserData", &FixtureDefGetUserData, allow_raw_pointers());
+        function("FixtureDefSetUserData", &FixtureDefSetUserData, allow_raw_pointers());
+        function("FixtureDefGetFriction", &FixtureDefGetFriction, allow_raw_pointers());
+        function("FixtureDefSetFriction", &FixtureDefSetFriction, allow_raw_pointers());
+        function("FixtureDefGetRestitution", &FixtureDefGetRestitution, allow_raw_pointers());
+        function("FixtureDefSetRestitution", &FixtureDefSetRestitution, allow_raw_pointers());
+        function("FixtureDefGetDensity", &FixtureDefGetDensity, allow_raw_pointers());
+        function("FixtureDefSetDensity", &FixtureDefSetDensity, allow_raw_pointers());
+        function("FixtureDefGetIsSensor", &FixtureDefGetIsSensor, allow_raw_pointers());
+        function("FixtureDefSetIsSensor", &FixtureDefSetIsSensor, allow_raw_pointers());
+        function("FixtureDefGetFilter", &FixtureDefGetFilter, allow_raw_pointers());
+        function("FixtureDefSetFilter", &FixtureDefSetFilter, allow_raw_pointers());
+        function("FixtureDefGetFilterCategoryBits", &FixtureDefGetFilterCategoryBits, allow_raw_pointers());
+        function("FixtureDefSetFilterCategoryBits", &FixtureDefSetFilterCategoryBits, allow_raw_pointers());
+        function("FixtureDefGetFilterMaskBits", &FixtureDefGetFilterMaskBits, allow_raw_pointers());
+        function("FixtureDefSetFilterMaskBits", &FixtureDefSetFilterMaskBits, allow_raw_pointers());
+        function("FixtureDefGetFilterGroupIndex", &FixtureDefGetFilterGroupIndex, allow_raw_pointers());
+        function("FixtureDefSetFilterGroupIndex", &FixtureDefSetFilterGroupIndex, allow_raw_pointers());
+        
+        //Fixture
+        function("FixtureGetType", &FixtureGetType, allow_raw_pointers());
+        function("FixtureGetShape", &FixtureGetShape, allow_raw_pointers());
+        function("FixtureGetShape1", &FixtureGetShape1, allow_raw_pointers());
+        function("FixtureSetSensor", &FixtureSetSensor, allow_raw_pointers());
+        function("FixtureIsSensor", &FixtureIsSensor, allow_raw_pointers());
+        function("FixtureSetFilterData", &FixtureSetFilterData, allow_raw_pointers());
+        function("FixtureGetFilterData", &FixtureGetFilterData, allow_raw_pointers());
+        function("FixtureRefilter", &FixtureRefilter, allow_raw_pointers());
+        function("FixtureGetBody", &FixtureGetBody, allow_raw_pointers());
+        function("FixtureGetNext", &FixtureGetNext, allow_raw_pointers());
+        function("FixtureGetUserData", &FixtureGetUserData, allow_raw_pointers());
+        function("FixtureSetUserData", &FixtureSetUserData, allow_raw_pointers());
+        function("FixtureTestPoint", &FixtureTestPoint, allow_raw_pointers());
+        function("FixtureRayCast", &FixtureRayCast, allow_raw_pointers());
+        function("FixtureGetMassData", &FixtureGetMassData, allow_raw_pointers());
+        function("FixtureSetDensity", &FixtureSetDensity, allow_raw_pointers());
+        function("FixtureGetDensity", &FixtureGetDensity, allow_raw_pointers());
+        function("FixtureGetFriction", &FixtureGetFriction, allow_raw_pointers());
+        function("FixtureSetFriction", &FixtureSetFriction, allow_raw_pointers());
+        function("FixtureGetRestitution", &FixtureGetRestitution, allow_raw_pointers());
+        function("FixtureSetRestitution", &FixtureSetRestitution, allow_raw_pointers());
+        function("FixtureGetAABB", &FixtureGetAABB, allow_raw_pointers());
+        function("FixtureGetAABB1", &FixtureGetAABB1, allow_raw_pointers());
+        function("FixtureDump", &FixtureDump, allow_raw_pointers());
+
+        //temp CircleShape
+        function("CircleShapeNew", &CircleShapeNew, allow_raw_pointers());
+        function("CircleShapeDelete", &CircleShapeDelete, allow_raw_pointers());
+        function("CircleShapeGetRadius", &CircleShapeGetRadius, allow_raw_pointers());
+        function("CircleShapeSetRadius", &CircleShapeSetRadius, allow_raw_pointers());
+        function("CircleShapeSetPosition", &CircleShapeSetPosition, allow_raw_pointers());
+        function("CircleShapeGetPosition", &CircleShapeGetPosition, allow_raw_pointers());
+
+        //temp b2Body
+        //CreateFixture
+        function("BodyCreateFixture", &BodyCreateFixture, allow_raw_pointers());
+        function("BodyDestroyFixture", &BodyDestroyFixture, allow_raw_pointers());
+
         // enum
         enum_<b2Shape::Type>("ShapeType")
                 .value("e_circle", b2Shape::e_circle)
@@ -417,11 +481,15 @@
 
         class_<b2Body>("Body")
                 .function("CreateFixture", select_overload<b2Fixture*(const b2FixtureDef*)>(&b2Body::CreateFixture), allow_raw_pointers())
+                .function("CreateFixtureRaw", optional_override([](b2Body* body, uint32 fixtureDefPtr) {
+                        return body->CreateFixture((b2FixtureDef*)fixtureDefPtr); }), allow_raw_pointers())
                 // .function("CreateFixture", optional_override([](b2Body* body, const b2FixtureDef& f) {
                 //         return body->CreateFixture(&f);
                 //         }), allow_raw_pointers())
                 .function("CreateFixtureWithShape", select_overload<b2Fixture*(const b2Shape*, float)>(&b2Body::CreateFixture), allow_raw_pointers())
                 .function("DestroyFixture", &b2Body::DestroyFixture, allow_raw_pointers())
+                .function("DestroyFixtureRaw", optional_override([](b2Body* body, uint32 fixturePtr) {
+                        body->DestroyFixture((b2Fixture*)fixturePtr); }), allow_raw_pointers())
                 .function("SetTransform", &b2Body::SetTransform)
                 .function("GetTransform", &b2Body::GetTransform)
                 .function("GetPosition", &b2Body::GetPosition)
