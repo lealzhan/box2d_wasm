@@ -1,4 +1,5 @@
 #include <box2d.h>
+#include <vector>
 
 //#define ENABLE_LIBTESS
 #ifdef ENABLE_LIBTESS
@@ -108,6 +109,43 @@
 //                 break;
 //         }
 // }
+
+//Vec2Vector
+class Vec2VectorTemp {
+public:
+  Vec2VectorTemp() {}
+
+  void push(float x, float y) {
+    m_vector.push_back(b2Vec2(x, y));
+  }
+
+  int size() const {
+    return m_vector.size();
+  }
+
+  void clear() {
+    m_vector.clear();
+  }
+
+  void resize(int size, float x, float y) {
+    m_vector.resize(size, b2Vec2(x, y));
+  }
+
+  const b2Vec2& get(int index) const {
+    return m_vector[index];
+  }
+
+  uint32 getPtr() {
+    return (uint32)(&(m_vector[0].x));
+  }
+
+  b2Vec2* getPtr1() {
+    return m_vector.data();
+  }
+
+private:
+  std::vector<b2Vec2> m_vector;
+};
 
 //Get Float32 from pointer
 static float GetFloat32(uint32 ptr, int id) {
@@ -441,7 +479,7 @@ static void FixtureDump(uint32 ptr, int32 bodyIndex) {
         ((b2Fixture*)ptr)->Dump(bodyIndex);
 }
 
-//temp CircleShape
+//b2CircleShape
 static uint32 CircleShapeNew() {
         return (uint32)(new b2CircleShape());
 }
@@ -463,6 +501,41 @@ static const b2Vec2& CircleShapeGetPosition(uint32 ptr) {
         return ((b2CircleShape*)ptr)->m_p;
 }
 
+//b2PolygonShape
+static uint32 PolygonShapeNew() {
+        return (uint32)(new b2PolygonShape());
+}
+static void PolygonShapeDelete(uint32 ptr) {//todo
+        if(ptr)
+                delete ((b2PolygonShape*)ptr);
+}
+static int32 PolygonShapeGetChildCount(uint32 ptr) {
+       return ((b2PolygonShape*)ptr)->GetChildCount();
+}
+static void PolygonShapeSet(uint32 ptr, uint32 verticesPtr, int32 count) {
+        ((b2PolygonShape*)ptr)->Set((b2Vec2*)verticesPtr, count);
+        //verticesPtr is the pointer of class Vec2Vector;
+        // ((b2PolygonShape*)ptr)->Set(((Vec2VectorTemp*)verticesPtr)->getPtr1(), count);
+}
+static void PolygonShapeSetAsBox(uint32 ptr, float hx, float hy) {
+        ((b2PolygonShape*)ptr)->SetAsBox(hx, hy);
+}
+static void PolygonShapeSetAsBoxWithCenterAndAngle(uint32 ptr, float hx, float hy, float centerX, float centerY, float angle) {
+        ((b2PolygonShape*)ptr)->SetAsBox(hx, hy, b2Vec2(centerX, centerY), angle);
+}
+static bool PolygonShapeTestPoint(uint32 ptr, uint32 transformPtr, uint32 pPtr) {
+        return ((b2PolygonShape*)ptr)->TestPoint(*(b2Transform*)transformPtr, *(b2Vec2*)pPtr);
+}
+static bool PolygonShapeRayCast(uint32 ptr, uint32 outputPtr, uint32 inputPtr, uint32 transformPtr, int32 childIndex) {
+        return ((b2PolygonShape*)ptr)->RayCast((b2RayCastOutput*)outputPtr, *(b2RayCastInput*)inputPtr, *(b2Transform*)transformPtr, childIndex);
+}
+static void PolygonShapeComputeAABB(uint32 ptr, uint32 aabbPtr, uint32 transformPtr, int32 childIndex) {
+        ((b2PolygonShape*)ptr)->ComputeAABB((b2AABB*)aabbPtr, *(b2Transform*)transformPtr, childIndex);
+}
+static void PolygonShapeComputeMass(uint32 ptr, uint32 massDataPtr, float density) {
+        ((b2PolygonShape*)ptr)->ComputeMass((b2MassData*)massDataPtr, density);
+}
+
 //temp b2Body
 //CreateFixture
 static uint32 BodyCreateFixture(uint32 ptr, uint32 fixtureDefPtr) {
@@ -471,4 +544,38 @@ static uint32 BodyCreateFixture(uint32 ptr, uint32 fixtureDefPtr) {
 //DestroyFixture
 static void BodyDestroyFixture(uint32 ptr, uint32 fixturePtr) {
         ((b2Body*)ptr)->DestroyFixture((b2Fixture*)fixturePtr);
+}
+
+
+
+static uint32 Vec2VectorNew() {
+        return (uint32)(new Vec2VectorTemp());
+}
+static void Vec2VectorDelete(uint32 ptr) {
+        if(ptr)
+                delete ((Vec2VectorTemp*)ptr);
+}
+static void Vec2VectorPush(uint32 ptr, float x, float y) {
+        ((Vec2VectorTemp*)ptr)->push(x, y);
+}
+static int Vec2VectorSize(uint32 ptr) {
+        return ((Vec2VectorTemp*)ptr)->size();
+}
+static void Vec2VectorClear(uint32 ptr) {
+        ((Vec2VectorTemp*)ptr)->clear();
+}
+static void Vec2VectorResize(uint32 ptr, int size, float x, float y) {
+        ((Vec2VectorTemp*)ptr)->resize(size, x, y);
+}
+static float Vec2VectorGetX(uint32 ptr, int index) {
+        return ((Vec2VectorTemp*)ptr)->get(index).x;
+}
+static float Vec2VectorGetY(uint32 ptr, int index) {
+        return ((Vec2VectorTemp*)ptr)->get(index).y;
+}
+static const b2Vec2& Vec2VectorGet(uint32 ptr, int index) {
+        return ((Vec2VectorTemp*)ptr)->get(index);
+}
+static uint32 Vec2VectorGetPtr(uint32 ptr) {
+        return ((Vec2VectorTemp*)ptr)->getPtr();
 }

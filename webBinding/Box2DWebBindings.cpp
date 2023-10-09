@@ -209,7 +209,7 @@
         function("FixtureGetAABB1", &FixtureGetAABB1, allow_raw_pointers());
         function("FixtureDump", &FixtureDump, allow_raw_pointers());
 
-        //temp CircleShape
+        //CircleShape
         function("CircleShapeNew", &CircleShapeNew, allow_raw_pointers());
         function("CircleShapeDelete", &CircleShapeDelete, allow_raw_pointers());
         function("CircleShapeGetRadius", &CircleShapeGetRadius, allow_raw_pointers());
@@ -217,10 +217,37 @@
         function("CircleShapeSetPosition", &CircleShapeSetPosition, allow_raw_pointers());
         function("CircleShapeGetPosition", &CircleShapeGetPosition, allow_raw_pointers());
 
+        //PolygonShape
+        function("PolygonShapeNew", &PolygonShapeNew, allow_raw_pointers());
+        function("PolygonShapeDelete", &PolygonShapeDelete, allow_raw_pointers());
+        function("PolygonShapeGetChildCount", &PolygonShapeGetChildCount, allow_raw_pointers());
+        function("PolygonShapeSet", &PolygonShapeSet, allow_raw_pointers());
+        function("PolygonShapeSetAsBox", &PolygonShapeSetAsBox, allow_raw_pointers());
+        function("PolygonShapeSetAsBoxWithCenterAndAngle", &PolygonShapeSetAsBoxWithCenterAndAngle, allow_raw_pointers());
+        function("PolygonShapeTestPoint", &PolygonShapeTestPoint, allow_raw_pointers());
+        function("PolygonShapeRayCast", &PolygonShapeRayCast, allow_raw_pointers());
+        function("PolygonShapeComputeAABB", &PolygonShapeComputeAABB, allow_raw_pointers());
+        function("PolygonShapeComputeMass", &PolygonShapeComputeMass, allow_raw_pointers());
+        
+
+
         //temp b2Body
         //CreateFixture
         function("BodyCreateFixture", &BodyCreateFixture, allow_raw_pointers());
         function("BodyDestroyFixture", &BodyDestroyFixture, allow_raw_pointers());
+
+        //Vec2Vector
+        function("Vec2VectorNew", &Vec2VectorNew, allow_raw_pointers());
+        function("Vec2VectorDelete", &Vec2VectorDelete, allow_raw_pointers());
+        function("Vec2VectorPush", &Vec2VectorPush, allow_raw_pointers());
+        function("Vec2VectorSize", &Vec2VectorSize, allow_raw_pointers());
+        function("Vec2VectorGetX", &Vec2VectorGetX, allow_raw_pointers());
+        function("Vec2VectorGetY", &Vec2VectorGetY, allow_raw_pointers());
+        function("Vec2VectorGet", &Vec2VectorGet, allow_raw_pointers());
+        function("Vec2VectorGetPtr", &Vec2VectorGetPtr, allow_raw_pointers());
+        function("Vec2VectorResize", &Vec2VectorResize, allow_raw_pointers());
+        function("Vec2VectorClear", &Vec2VectorClear, allow_raw_pointers());
+
 
         // enum
         enum_<b2Shape::Type>("ShapeType")
