@@ -123,6 +123,7 @@
         function("ContactSetRestitution", &ContactSetRestitution);
         function("ContactGetRestitution", &ContactGetRestitution);
         function("ContactResetRestitution", &ContactResetRestitution);
+        function("ContactGetFixture", &ContactGetFixture);
         function("ContactGetFixtureA", &ContactGetFixtureA);
         function("ContactGetFixtureB", &ContactGetFixtureB);
         function("ContactGetWorldManifold", &ContactGetWorldManifold);
@@ -158,35 +159,14 @@
         function("JointEdgeGetPrev", &JointEdgeGetPrev, allow_raw_pointers());
         function("JointEdgeGetNext", &JointEdgeGetNext, allow_raw_pointers());
 
-        //FixtureDefNew
+        //FixtureDef
         function("FixtureDefNew", &FixtureDefNew, allow_raw_pointers());
         function("FixtureDefDelete", &FixtureDefDelete, allow_raw_pointers());
         function("FixtureDefSetAll", &FixtureDefSetAll, allow_raw_pointers());
-        function("FixtureDefGetShape", &FixtureDefGetShape, allow_raw_pointers());
-        function("FixtureDefSetShape", &FixtureDefSetShape, allow_raw_pointers());
-        function("FixtureDefGetUserData", &FixtureDefGetUserData, allow_raw_pointers());
-        function("FixtureDefSetUserData", &FixtureDefSetUserData, allow_raw_pointers());
-        function("FixtureDefGetFriction", &FixtureDefGetFriction, allow_raw_pointers());
-        function("FixtureDefSetFriction", &FixtureDefSetFriction, allow_raw_pointers());
-        function("FixtureDefGetRestitution", &FixtureDefGetRestitution, allow_raw_pointers());
-        function("FixtureDefSetRestitution", &FixtureDefSetRestitution, allow_raw_pointers());
-        function("FixtureDefGetDensity", &FixtureDefGetDensity, allow_raw_pointers());
-        function("FixtureDefSetDensity", &FixtureDefSetDensity, allow_raw_pointers());
-        function("FixtureDefGetIsSensor", &FixtureDefGetIsSensor, allow_raw_pointers());
-        function("FixtureDefSetIsSensor", &FixtureDefSetIsSensor, allow_raw_pointers());
-        function("FixtureDefGetFilter", &FixtureDefGetFilter, allow_raw_pointers());
-        function("FixtureDefSetFilter", &FixtureDefSetFilter, allow_raw_pointers());
-        function("FixtureDefGetFilterCategoryBits", &FixtureDefGetFilterCategoryBits, allow_raw_pointers());
-        function("FixtureDefSetFilterCategoryBits", &FixtureDefSetFilterCategoryBits, allow_raw_pointers());
-        function("FixtureDefGetFilterMaskBits", &FixtureDefGetFilterMaskBits, allow_raw_pointers());
-        function("FixtureDefSetFilterMaskBits", &FixtureDefSetFilterMaskBits, allow_raw_pointers());
-        function("FixtureDefGetFilterGroupIndex", &FixtureDefGetFilterGroupIndex, allow_raw_pointers());
-        function("FixtureDefSetFilterGroupIndex", &FixtureDefSetFilterGroupIndex, allow_raw_pointers());
         
         //Fixture
         function("FixtureGetType", &FixtureGetType, allow_raw_pointers());
         function("FixtureGetShape", &FixtureGetShape, allow_raw_pointers());
-        function("FixtureGetShape1", &FixtureGetShape1, allow_raw_pointers());
         function("FixtureSetSensor", &FixtureSetSensor, allow_raw_pointers());
         function("FixtureIsSensor", &FixtureIsSensor, allow_raw_pointers());
         function("FixtureSetFilterData", &FixtureSetFilterData, allow_raw_pointers());
@@ -197,8 +177,8 @@
         function("FixtureGetUserData", &FixtureGetUserData, allow_raw_pointers());
         function("FixtureSetUserData", &FixtureSetUserData, allow_raw_pointers());
         function("FixtureTestPoint", &FixtureTestPoint, allow_raw_pointers());
-        function("FixtureRayCast", &FixtureRayCast, allow_raw_pointers());
-        function("FixtureGetMassData", &FixtureGetMassData, allow_raw_pointers());
+        // function("FixtureRayCast", &FixtureRayCast, allow_raw_pointers());
+        // function("FixtureGetMassData", &FixtureGetMassData, allow_raw_pointers());
         function("FixtureSetDensity", &FixtureSetDensity, allow_raw_pointers());
         function("FixtureGetDensity", &FixtureGetDensity, allow_raw_pointers());
         function("FixtureGetFriction", &FixtureGetFriction, allow_raw_pointers());
@@ -206,32 +186,33 @@
         function("FixtureGetRestitution", &FixtureGetRestitution, allow_raw_pointers());
         function("FixtureSetRestitution", &FixtureSetRestitution, allow_raw_pointers());
         function("FixtureGetAABB", &FixtureGetAABB, allow_raw_pointers());
-        function("FixtureGetAABB1", &FixtureGetAABB1, allow_raw_pointers());
         function("FixtureDump", &FixtureDump, allow_raw_pointers());
+
+        //Shape
+        function("ShapeGetRadius", &ShapeGetRadius, allow_raw_pointers());
+        function("ShapeSetRadius", &ShapeSetRadius, allow_raw_pointers());
+        function("ShapeGetType", &ShapeGetType, allow_raw_pointers());
+        function("ShapeGetChildCount", &ShapeGetChildCount, allow_raw_pointers());
+        function("ShapeTestPoint", &ShapeTestPoint, allow_raw_pointers());
+        // function("ShapeRayCast", &ShapeRayCast, allow_raw_pointers());
+        // function("ShapeComputeAABB", &ShapeComputeAABB, allow_raw_pointers());
+        // function("ShapeComputeMass", &ShapeComputeMass, allow_raw_pointers());
 
         //CircleShape
         function("CircleShapeNew", &CircleShapeNew, allow_raw_pointers());
         function("CircleShapeDelete", &CircleShapeDelete, allow_raw_pointers());
-        function("CircleShapeGetRadius", &CircleShapeGetRadius, allow_raw_pointers());
-        function("CircleShapeSetRadius", &CircleShapeSetRadius, allow_raw_pointers());
         function("CircleShapeSetPosition", &CircleShapeSetPosition, allow_raw_pointers());
         function("CircleShapeGetPosition", &CircleShapeGetPosition, allow_raw_pointers());
 
         //PolygonShape
         function("PolygonShapeNew", &PolygonShapeNew, allow_raw_pointers());
         function("PolygonShapeDelete", &PolygonShapeDelete, allow_raw_pointers());
-        function("PolygonShapeGetChildCount", &PolygonShapeGetChildCount, allow_raw_pointers());
+        // function("PolygonShapeGetChildCount", &PolygonShapeGetChildCount, allow_raw_pointers());
         function("PolygonShapeSet", &PolygonShapeSet, allow_raw_pointers());
         function("PolygonShapeSetAsBox", &PolygonShapeSetAsBox, allow_raw_pointers());
         function("PolygonShapeSetAsBoxWithCenterAndAngle", &PolygonShapeSetAsBoxWithCenterAndAngle, allow_raw_pointers());
-        function("PolygonShapeTestPoint", &PolygonShapeTestPoint, allow_raw_pointers());
-        function("PolygonShapeRayCast", &PolygonShapeRayCast, allow_raw_pointers());
-        function("PolygonShapeComputeAABB", &PolygonShapeComputeAABB, allow_raw_pointers());
-        function("PolygonShapeComputeMass", &PolygonShapeComputeMass, allow_raw_pointers());
-        
 
-
-        //temp b2Body
+        //b2Body
         //CreateFixture
         function("BodyCreateFixture", &BodyCreateFixture, allow_raw_pointers());
         function("BodyDestroyFixture", &BodyDestroyFixture, allow_raw_pointers());
@@ -247,7 +228,6 @@
         function("Vec2VectorGetPtr", &Vec2VectorGetPtr, allow_raw_pointers());
         function("Vec2VectorResize", &Vec2VectorResize, allow_raw_pointers());
         function("Vec2VectorClear", &Vec2VectorClear, allow_raw_pointers());
-
 
         // enum
         enum_<b2Shape::Type>("ShapeType")
@@ -403,92 +383,6 @@
                 // .function("GetProfile", &b2World::GetProfile)
                 .function("Dump", &b2World::Dump);
 
-        // shape
-        class_<b2Shape>("Shape")
-                .property("m_type", &b2Shape::m_type)
-                .property("m_radius", &b2Shape::m_radius)
-                .function("GetType", &b2Shape::GetType)
-                .function("GetChildCount", &b2Shape::GetChildCount)
-                .function("TestPoint", &b2Shape::TestPoint)
-                .function("RayCast", &b2Shape::RayCast, allow_raw_pointers())
-                .function("ComputeAABB", &b2Shape::ComputeAABB, allow_raw_pointers())
-                .function("ComputeMass", &b2Shape::ComputeMass, allow_raw_pointers())
-                .function("SetRadius", optional_override([](b2Shape* f, float r) {
-                        f->m_radius = r; }), allow_raw_pointers())
-                .function("GetRadius", optional_override([](b2Shape* f) {
-                        return f->m_radius; }), allow_raw_pointers());
-
-        class_<b2CircleShape, base<b2Shape>>("CircleShape")
-                .constructor<>()
-                .property("m_p", &b2CircleShape::m_p)
-                .function("Clone", &b2CircleShape::Clone, allow_raw_pointers())
-                .function("GetChildCount", &b2CircleShape::GetChildCount)
-                .function("TestPoint", &b2CircleShape::TestPoint)
-                .function("RayCast", &b2CircleShape::RayCast, allow_raw_pointers())
-                .function("ComputeAABB", &b2CircleShape::ComputeAABB, allow_raw_pointers())
-                .function("ComputeMass", &b2CircleShape::ComputeMass, allow_raw_pointers());
-
-        class_<b2EdgeShape, base<b2Shape>>("EdgeShape")
-                .function("Clone", &b2EdgeShape::Clone, allow_raw_pointers())
-                .function("GetChildCount", &b2EdgeShape::GetChildCount)
-                .function("TestPoint", &b2EdgeShape::TestPoint)
-                .function("RayCast", &b2EdgeShape::RayCast, allow_raw_pointers())
-                .function("ComputeAABB", &b2EdgeShape::ComputeAABB, allow_raw_pointers())
-                .function("ComputeMass", &b2EdgeShape::ComputeMass, allow_raw_pointers());
-
-        class_<b2PolygonShape, base<b2Shape>>("PolygonShape")
-                .constructor<>()
-                .function("Clone", &b2PolygonShape::Clone, allow_raw_pointers())
-                .function("GetChildCount", &b2PolygonShape::GetChildCount)
-                .function("Set", optional_override([](b2PolygonShape* p, std::vector<b2Vec2> &vertices, int32 count) {
-                        return p->Set(vertices.data(), count); }), allow_raw_pointers())
-                .function("TestPoint", &b2PolygonShape::TestPoint)
-                .function("RayCast", &b2PolygonShape::RayCast, allow_raw_pointers())
-                .function("ComputeAABB", &b2PolygonShape::ComputeAABB, allow_raw_pointers())
-                .function("ComputeMass", &b2PolygonShape::ComputeMass, allow_raw_pointers())
-                .function("Validate", &b2PolygonShape::Validate)
-                .function("SetAsBox", select_overload<void(float, float)>(&b2PolygonShape::SetAsBox))
-                .function("SetAsBoxWithCenterAndAngle", select_overload<void(float, float, const b2Vec2&, float)>(&b2PolygonShape::SetAsBox));
-
-        // fixture
-        class_<b2FixtureDef>("FixtureDef")
-                .constructor<>()
-                //.property("shape", &b2FixtureDef::getShape, &b2FixtureDef::setShape, allow_raw_pointers())
-                .function("SetShape", optional_override([](b2FixtureDef* f, const b2Shape* s) {
-                        f->shape = s;}), allow_raw_pointers())
-                .function("GetShape", optional_override([](b2FixtureDef* f) {
-                        return f->shape;}), allow_raw_pointers())
-                // .property("userData", &b2FixtureDef::userData)
-                .property("friction", &b2FixtureDef::friction)
-                .property("restitution", &b2FixtureDef::restitution)
-                .property("density", &b2FixtureDef::density)
-                .property("isSensor", &b2FixtureDef::isSensor)
-                .property("filter", &b2FixtureDef::filter);
-
-        class_<b2Fixture>("Fixture")
-                .function("GetType", &b2Fixture::GetType)
-                .function("GetShape", &b2Fixture::GetShape, allow_raw_pointers())
-                .function("SetSensor", &b2Fixture::SetSensor)
-                .function("IsSensor", &b2Fixture::IsSensor)
-                .function("SetFilterData", &b2Fixture::SetFilterData)
-                .function("GetFilterData", &b2Fixture::GetFilterData)
-                .function("Refilter", &b2Fixture::Refilter)
-                .function("GetBody", &b2Fixture::GetBody, allow_raw_pointers())
-                .function("GetNext", &b2Fixture::GetNext, allow_raw_pointers())
-                // .function("GetUserData", &b2Fixture::GetUserData)
-                // .function("SetUserData", &b2Fixture::SetUserData)
-                .function("TestPoint", &b2Fixture::TestPoint)
-                .function("RayCast", &b2Fixture::RayCast, allow_raw_pointers())
-                .function("GetMassData", &b2Fixture::GetMassData, allow_raw_pointers())
-                .function("SetDensity", &b2Fixture::SetDensity)
-                .function("GetDensity", &b2Fixture::GetDensity)
-                .function("GetFriction", &b2Fixture::GetFriction)
-                .function("SetFriction", &b2Fixture::SetFriction)
-                .function("GetRestitution", &b2Fixture::GetRestitution)
-                .function("SetRestitution", &b2Fixture::SetRestitution)
-                .function("GetAABB", &b2Fixture::GetAABB)
-                .function("Dump", &b2Fixture::Dump);
-
         // body
         class_<b2BodyDef>("BodyDef")
                 .constructor<>()
@@ -507,16 +401,6 @@
                 .property("gravityScale", &b2BodyDef::gravityScale);
 
         class_<b2Body>("Body")
-                .function("CreateFixture", select_overload<b2Fixture*(const b2FixtureDef*)>(&b2Body::CreateFixture), allow_raw_pointers())
-                .function("CreateFixtureRaw", optional_override([](b2Body* body, uint32 fixtureDefPtr) {
-                        return body->CreateFixture((b2FixtureDef*)fixtureDefPtr); }), allow_raw_pointers())
-                // .function("CreateFixture", optional_override([](b2Body* body, const b2FixtureDef& f) {
-                //         return body->CreateFixture(&f);
-                //         }), allow_raw_pointers())
-                .function("CreateFixtureWithShape", select_overload<b2Fixture*(const b2Shape*, float)>(&b2Body::CreateFixture), allow_raw_pointers())
-                .function("DestroyFixture", &b2Body::DestroyFixture, allow_raw_pointers())
-                .function("DestroyFixtureRaw", optional_override([](b2Body* body, uint32 fixturePtr) {
-                        body->DestroyFixture((b2Fixture*)fixturePtr); }), allow_raw_pointers())
                 .function("SetTransform", &b2Body::SetTransform)
                 .function("GetTransform", &b2Body::GetTransform)
                 .function("GetPosition", &b2Body::GetPosition)
@@ -564,7 +448,8 @@
                 .function("IsEnabled", &b2Body::IsEnabled)
                 .function("SetFixedRotation", &b2Body::SetFixedRotation)
                 .function("IsFixedRotation", &b2Body::IsFixedRotation)
-                .function("GetFixtureList", &b2Body::GetFixtureList, allow_raw_pointers())
+                .function("GetFixtureList", optional_override([](b2Body* b) {
+                        return (uint32)(b->GetFixtureList());}), allow_raw_pointers())
                 //.function("GetJointList", &b2Body::GetJointList, allow_raw_pointers())
                 .function("GetJointList", optional_override([](b2Body* b) {
                         return (uint32)(b->GetJointList());}), allow_raw_pointers())
@@ -822,15 +707,8 @@
 
         namespace emscripten {
         namespace internal {
-        // template <> void raw_destructor<b2Manifold>(b2Manifold *) {}
-        // template <> void raw_destructor<b2Contact>(b2Contact *) {}
-        template <> void raw_destructor<b2Shape>(b2Shape *) {}
-        template <> void raw_destructor<b2CircleShape>(b2CircleShape *) {}
-        template <> void raw_destructor<b2EdgeShape>(b2EdgeShape *) {}
-        template <> void raw_destructor<b2PolygonShape>(b2PolygonShape *) {}
         template <> void raw_destructor<b2BodyDef>(b2BodyDef *) {}
         template <> void raw_destructor<b2Body>(b2Body *) {}
-        template <> void raw_destructor<b2FixtureDef>(b2FixtureDef *) {}
         template <> void raw_destructor<b2Joint>(b2Joint *) {}
         template <> void raw_destructor<b2DistanceJoint>(b2DistanceJoint *) {}
         template <> void raw_destructor<b2MotorJoint>(b2MotorJoint *) {}
