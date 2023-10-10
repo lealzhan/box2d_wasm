@@ -1,4 +1,5 @@
 #include <box2d.h>
+#include <vector>
 
 //#define ENABLE_LIBTESS
 #ifdef ENABLE_LIBTESS
@@ -109,6 +110,39 @@
 //         }
 // }
 
+//Vec2Vector
+class Vec2VectorCC {
+public:
+  Vec2VectorCC() {}
+
+  void push(float x, float y) {
+    m_vector.push_back(b2Vec2(x, y));
+  }
+
+  int size() const {
+    return m_vector.size();
+  }
+
+  void clear() {
+    m_vector.clear();
+  }
+
+  void resize(int size, float x, float y) {
+    m_vector.resize(size, b2Vec2(x, y));
+  }
+
+  const b2Vec2& get(int index) const {
+    return m_vector[index];
+  }
+
+  uint32 getPtr() {
+    return (uint32)(&(m_vector[0].x));
+  }
+
+private:
+  std::vector<b2Vec2> m_vector;
+};
+
 //Get Float32 from pointer
 static float GetFloat32(uint32 ptr, int id) {
         return *((float*)ptr + id);
@@ -157,6 +191,12 @@ static float ContactGetRestitution(uint32 ptr) {
 
 static void ContactResetRestitution(uint32 ptr) {
         ((b2Contact*)ptr)->ResetRestitution();
+}
+
+static b2Vec2 ContactGetFixture(uint32 ptr) {
+        uint32 a =  (uint32)((b2Contact*)ptr)->GetFixtureA();
+        uint32 b =  (uint32)((b2Contact*)ptr)->GetFixtureB();
+        return b2Vec2(a, b);
 }
 
 static uint32 ContactGetFixtureA(uint32 ptr) {
@@ -278,4 +318,207 @@ static uint32 JointEdgeGetPrev(uint32 ptr) {
 
 static uint32 JointEdgeGetNext(uint32 ptr) {
         return (uint32)((b2JointEdge*)ptr)->next;
+}
+//b2FixtureDef
+static uint32 FixtureDefNew() {
+        return (uint32)(new b2FixtureDef());
+}
+static void FixtureDefDelete(uint32 ptr) {
+        if(ptr)
+                delete ((b2FixtureDef*)ptr);
+}
+
+static void FixtureDefSetAll(uint32 ptr, uint32 shapePtr, uint32 userData, float friction, float restitution, float density, bool isSensor, uint16 categoryBits, uint16 maskBits, int16 groupIndex) {
+        ((b2FixtureDef*)ptr)->shape = (b2Shape*)shapePtr;
+        ((b2FixtureDef*)ptr)->userData = (void*)userData;
+        ((b2FixtureDef*)ptr)->friction = friction;
+        ((b2FixtureDef*)ptr)->restitution = restitution;
+        ((b2FixtureDef*)ptr)->density = density;
+        ((b2FixtureDef*)ptr)->isSensor = isSensor;
+        ((b2FixtureDef*)ptr)->filter.categoryBits = categoryBits;
+        ((b2FixtureDef*)ptr)->filter.maskBits = maskBits;
+        ((b2FixtureDef*)ptr)->filter.groupIndex = groupIndex;
+}
+
+//b2Fixture
+static uint32 FixtureGetType(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetType();
+}
+static uint32 FixtureGetShape(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetShape();
+}
+// static b2Shape* FixtureGetShape1(uint32 ptr) {
+//         return ((b2Fixture*)ptr)->GetShape();
+// }
+static void FixtureSetSensor(uint32 ptr, bool sensor) {
+        ((b2Fixture*)ptr)->SetSensor(sensor);
+}
+static bool FixtureIsSensor(uint32 ptr) {
+        return ((b2Fixture*)ptr)->IsSensor();
+}
+// static void FixtureSetFilterData(uint32 ptr, uint32 filterPtr) {
+//         ((b2Fixture*)ptr)->SetFilterData(*(b2Filter*)filterPtr);
+// }
+// static uint32 FixtureGetFilterData(uint32 ptr) {
+//         return (uint32)&(((b2Fixture*)ptr)->GetFilterData());
+// }
+static void FixtureSetFilterData(uint32 ptr, const b2Filter& filterPtr) {
+        ((b2Fixture*)ptr)->SetFilterData(filterPtr);
+}
+static const b2Filter& FixtureGetFilterData(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetFilterData();
+}
+static void FixtureRefilter(uint32 ptr) {
+        ((b2Fixture*)ptr)->Refilter();
+}
+static uint32 FixtureGetBody(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetBody();
+}
+static uint32 FixtureGetNext(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetNext();
+}
+static uint32 FixtureGetUserData(uint32 ptr) {
+        return (uint32)((b2Fixture*)ptr)->GetUserData();
+}
+static void FixtureSetUserData(uint32 ptr, uint32 data) {
+        ((b2Fixture*)ptr)->SetUserData((void*)data);
+}
+static bool FixtureTestPoint(uint32 ptr, const b2Vec2& p) {
+        return ((b2Fixture*)ptr)->TestPoint(p);
+}
+// static bool FixtureRayCast(uint32 ptr, uint32 outputPtr, uint32 inputPtr, int32 childIndex) {
+//         return ((b2Fixture*)ptr)->RayCast((b2RayCastOutput*)outputPtr, *(b2RayCastInput*)inputPtr, childIndex);
+// }
+// static void FixtureGetMassData(uint32 ptr, uint32 massDataPtr) {
+//         ((b2Fixture*)ptr)->GetMassData((b2MassData*)massDataPtr);
+// }
+static void FixtureSetDensity(uint32 ptr, float density) {
+        ((b2Fixture*)ptr)->SetDensity(density);
+}
+static float FixtureGetDensity(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetDensity();
+}
+static float FixtureGetFriction(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetFriction();
+}
+static void FixtureSetFriction(uint32 ptr, float friction) {
+        ((b2Fixture*)ptr)->SetFriction(friction);
+}
+static float FixtureGetRestitution(uint32 ptr) {
+        return ((b2Fixture*)ptr)->GetRestitution();
+}
+static void FixtureSetRestitution(uint32 ptr, float restitution) {
+        ((b2Fixture*)ptr)->SetRestitution(restitution);
+}
+static const b2AABB& FixtureGetAABB(uint32 ptr, int32 childIndex) {
+        return ((b2Fixture*)ptr)->GetAABB(childIndex);
+}
+static void FixtureDump(uint32 ptr, int32 bodyIndex) {
+        ((b2Fixture*)ptr)->Dump(bodyIndex);
+}
+
+//b2Shape
+static float ShapeGetRadius(uint32 ptr) {
+        return ((b2Shape*)ptr)->m_radius;
+}
+static void ShapeSetRadius(uint32 ptr, float radius) {
+        ((b2Shape*)ptr)->m_radius = radius;
+}
+static uint32 ShapeGetType(uint32 ptr) {
+        return (uint32)((b2Shape*)ptr)->GetType();
+}
+static uint32 ShapeGetChildCount(uint32 ptr) {
+        return (uint32)((b2Shape*)ptr)->GetChildCount();
+}
+static bool ShapeTestPoint(uint32 ptr, const b2Transform& transform, const b2Vec2& p) {
+        return ((b2Shape*)ptr)->TestPoint(transform, p);
+}
+// static bool ShapeRayCast(uint32 ptr, uint32 outputPtr, uint32 inputPtr, const b2Transform& transform, int32 childIndex) {
+//         return ((b2Shape*)ptr)->RayCast((b2RayCastOutput*)outputPtr, *(b2RayCastInput*)inputPtr, transform, childIndex);
+// }
+// static void ShapeComputeAABB(uint32 ptr, uint32 aabbPtr, const b2Transform& transform, int32 childIndex) {
+//         ((b2Shape*)ptr)->ComputeAABB((b2AABB*)aabbPtr, transform, childIndex);
+// }
+// static void ShapeComputeMass(uint32 ptr, b2MassData* massDataPtr, float density) {
+//         ((b2Shape*)ptr)->ComputeMass(massDataPtr, density);
+// }
+
+//b2CircleShape
+static uint32 CircleShapeNew() {
+        return (uint32)(new b2CircleShape());
+}
+static void CircleShapeDelete(uint32 ptr) {
+        if(ptr)
+                delete ((b2CircleShape*)ptr);
+}
+static void CircleShapeSetPosition(uint32 ptr, float x, float y) {
+        ((b2CircleShape*)ptr)->m_p.x = x;
+        ((b2CircleShape*)ptr)->m_p.y = y;
+}
+static const b2Vec2& CircleShapeGetPosition(uint32 ptr) {
+        return ((b2CircleShape*)ptr)->m_p;
+}
+
+//b2PolygonShape
+static uint32 PolygonShapeNew() {
+        return (uint32)(new b2PolygonShape());
+}
+static void PolygonShapeDelete(uint32 ptr) {//todo
+        if(ptr)
+                delete ((b2PolygonShape*)ptr);
+}
+// static int32 PolygonShapeGetChildCount(uint32 ptr) {
+//        return ((b2PolygonShape*)ptr)->GetChildCount();
+// }
+static void PolygonShapeSet(uint32 ptr, uint32 verticesPtr, int32 count) {
+        ((b2PolygonShape*)ptr)->Set((b2Vec2*)verticesPtr, count);
+}
+static void PolygonShapeSetAsBox(uint32 ptr, float hx, float hy) {
+        ((b2PolygonShape*)ptr)->SetAsBox(hx, hy);
+}
+static void PolygonShapeSetAsBoxWithCenterAndAngle(uint32 ptr, float hx, float hy, float centerX, float centerY, float angle) {
+        ((b2PolygonShape*)ptr)->SetAsBox(hx, hy, b2Vec2(centerX, centerY), angle);
+}
+
+//b2Body
+//CreateFixture
+static uint32 BodyCreateFixture(uint32 ptr, uint32 fixtureDefPtr) {
+        return (uint32)((b2Body*)ptr)->CreateFixture((b2FixtureDef*)fixtureDefPtr);
+}
+//DestroyFixture
+static void BodyDestroyFixture(uint32 ptr, uint32 fixturePtr) {
+        ((b2Body*)ptr)->DestroyFixture((b2Fixture*)fixturePtr);
+}
+
+//Vec2Vector
+static uint32 Vec2VectorNew() {
+        return (uint32)(new Vec2VectorCC());
+}
+static void Vec2VectorDelete(uint32 ptr) {
+        if(ptr)
+                delete ((Vec2VectorCC*)ptr);
+}
+static void Vec2VectorPush(uint32 ptr, float x, float y) {
+        ((Vec2VectorCC*)ptr)->push(x, y);
+}
+static int Vec2VectorSize(uint32 ptr) {
+        return ((Vec2VectorCC*)ptr)->size();
+}
+static void Vec2VectorClear(uint32 ptr) {
+        ((Vec2VectorCC*)ptr)->clear();
+}
+static void Vec2VectorResize(uint32 ptr, int size, float x, float y) {
+        ((Vec2VectorCC*)ptr)->resize(size, x, y);
+}
+static float Vec2VectorGetX(uint32 ptr, int index) {
+        return ((Vec2VectorCC*)ptr)->get(index).x;
+}
+static float Vec2VectorGetY(uint32 ptr, int index) {
+        return ((Vec2VectorCC*)ptr)->get(index).y;
+}
+static const b2Vec2& Vec2VectorGet(uint32 ptr, int index) {
+        return ((Vec2VectorCC*)ptr)->get(index);
+}
+static uint32 Vec2VectorGetPtr(uint32 ptr) {
+        return ((Vec2VectorCC*)ptr)->getPtr();
 }
